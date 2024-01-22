@@ -24,8 +24,8 @@ It will do the same thing as build, but afterward it will connect to the roboRIO
 - `src/main/deploy`: Files that need to be loaded onto the RoboRIO (ie auto paths)
 - `src/ds`: (Arduino) source code for driver station rainbow lights.
 - All the `gradle` stuff: Gradle is a build system, which convinces java and kotlin to compile our code. The process involves creating temporary files.
-- `.gitignore`: Tells Git which files are important and which are just temporary, to help prevent enourmous file sizes and odd junk (ie the `.DS_Store` files MacOS sometimes puts everywhere)
-- Everything else: Either self explanitory (ie `.vscode` and `WPILib-License.md`) or temporary files created by gradle.
+- `.gitignore`: Tells Git which files are important and which are just temporary, to help prevent enormous file sizes and odd junk (ie the `.DS_Store` files MacOS sometimes puts everywhere)
+- Everything else: Either self explanatory (ie `.vscode` and `WPILib-License.md`) or temporary files created by gradle.
 
 ## Code Structure
 
