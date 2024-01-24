@@ -6,5 +6,7 @@ object Constants {
         const val RightNEO2ID   = 2
         const val LeftNEO1ID    = 3
         const val LeftNEO2ID    = 4
+        const val KP            = 1.0 // tune later
+        const val KD            = 1.0 // tune later
     }
 }

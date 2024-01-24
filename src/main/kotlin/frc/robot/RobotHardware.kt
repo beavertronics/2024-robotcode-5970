@@ -21,7 +21,7 @@ Talk to Will Kam about why organizing the code this way will be beneficial.
 */
 
 object RobotHardware {
-    class Drive : SubsystemBase() {
+    object Drive : SubsystemBase() {
         private val        left = CANSparkMax(21,MotorType.kBrushless)
         private val  leftFollow = CANSparkMax(22,MotorType.kBrushless)
         private val       right = CANSparkMax(23,MotorType.kBrushless)
@@ -59,5 +59,4 @@ object RobotHardware {
         t o d o
     }
     */
-    val drive = Drive()
 }
