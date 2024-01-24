@@ -22,25 +22,25 @@ Talk to Will Kam about why organizing the code this way will be beneficial.
 
 object RobotHardware {
     object Drive : SubsystemBase() {
-        private val        left = CANSparkMax(21,MotorType.kBrushless)
-        private val  leftFollow = CANSparkMax(22,MotorType.kBrushless)
-        private val       right = CANSparkMax(23,MotorType.kBrushless)
-        private val rightFollow = CANSparkMax(24,MotorType.kBrushless)
+        private val       leftMain = CANSparkMax(21,MotorType.kBrushless)
+        private val  leftSecondary = CANSparkMax(22,MotorType.kBrushless)
+        private val      rightMain = CANSparkMax(23,MotorType.kBrushless)
+        private val rightSecondary = CANSparkMax(24,MotorType.kBrushless)
 
         //Run a piece of code for each drive motor controller.
         fun allMotors(code: CANSparkMax.() -> Unit) {
-            for (motor in listOf(left, right)) {
+            for (motor in listOf(leftMain, rightMain)) {
                 motor.apply(code)
             }
         }
 
-        val drive = DifferentialDrive(left, right)
+        val drive = DifferentialDrive(leftMain, rightMain)
         val imu =  AHRS()
 
         init {
 
-            leftFollow.follow(left)
-            rightFollow.follow(right)
+            leftSecondary.follow(leftMain)
+            rightSecondary.follow(rightMain)
 
             allMotors {
                 restoreFactoryDefaults()
