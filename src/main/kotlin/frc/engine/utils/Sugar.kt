@@ -4,17 +4,13 @@
 package frc.engine.utils
 // File adapted from 2898's bpsrobotics engine
 import com.kauailabs.navx.frc.AHRS
-import kotlin.math.PI
-import kotlin.math.absoluteValue
-import kotlin.math.pow
-import kotlin.math.round
+import kotlin.math.*
 
 // Don't show warnings if these functions are unused or could be private
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 
 
 object Sugar {
-
     /**
      * Converts the value from radians to degrees
      *
@@ -26,6 +22,8 @@ object Sugar {
 
     infix fun Double.eqEpsilon(other: Double) = (this - other).absoluteValue < 0.01
     infix fun Double.eqEpsilon(other: Int) = (this - other).absoluteValue < 0.01
+    inline fun Double.within(maxError: Double, target: Double = 0.0) : Boolean {return (this - target).absoluteValue < maxError }
+
 
     /**
      * Converts the value from degrees to radians

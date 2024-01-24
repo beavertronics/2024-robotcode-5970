@@ -1,8 +1,9 @@
-package com.bpsrobotics.engine.utils.geometry
+package frc.engine.utils.geometry
 // File adapted from 2898 2023 bpsrobotics engine
-import com.bpsrobotics.engine.utils.DistanceUnit
-import com.bpsrobotics.engine.utils.Sugar.eqEpsilon
+import frc.engine.utils.DistanceUnit
+import frc.engine.utils.Sugar.eqEpsilon
 import edu.wpi.first.math.geometry.Pose2d
+import frc.engine.utils.geometry.Coordinate
 import kotlin.math.*
 
 class Line(val point1 : Coordinate, val point2 : Coordinate){

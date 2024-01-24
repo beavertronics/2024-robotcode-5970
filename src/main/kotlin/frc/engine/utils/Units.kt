@@ -8,10 +8,8 @@
 package frc.engine.utils
 // File adapted from 2898's bpsrobotics engine
 
-import engine.utils.Sugar.radiansToDegrees
+import frc.engine.utils.Sugar.radiansToDegrees
 import kotlin.math.PI
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NOTHING_TO_INLINE")  // Not all of these classes are used
-
 interface Unit {
     val value: Double
 }
