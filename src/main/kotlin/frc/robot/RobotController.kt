@@ -4,11 +4,13 @@ import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 
-/* Main code for controlling the robot. 
+import frc.robot.commands.TeleOp
+
+/* Main code for controlling the robot. Mainly just links everything together.
 
     The hardware of the robot (what motor controllers, etc) is defined in RobotHardware.kt
 
-    This should include teleop, as well as autos.
+    Driver control is defined in TeleOp.kt
 
 */
 
@@ -18,6 +20,8 @@ object RobotController : TimedRobot() {
     override fun robotInit() {
         //Initialize the robot!
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi?
+
+        SmartDashboard.putData(RobotHardware.Drive)
     }
     override fun robotPeriodic() {
         //Runs while the robot is on, regarless of whether it is enabled.
@@ -28,7 +32,10 @@ object RobotController : TimedRobot() {
     override fun autonomousInit() {}
     override fun autonomousPeriodic() {}
 
-    override fun teleopInit() {}
+    override fun teleopInit() {
+        selectedAuto.cancel() //Stop Auto before running teleop!
+        TeleOp.schedule()
+    }
     override fun teleopPeriodic() {}
 
     override fun simulationInit() {} //Runs only in simulation mode (other functions run regardless of whether robot is simulated or not)

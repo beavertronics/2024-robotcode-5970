@@ -3,6 +3,7 @@ package frc.robot.commands
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
 
 import frc.engine.utils.Sugar.within
 import kotlin.math.*
@@ -30,12 +31,17 @@ object TeleOp : Command() {
             }
         }
     
-        val turn: Double get() = driverController.leftX.processInput(squared = true)
-        val throttle: Double get() = driverController.leftY.processInput(squared = true)
-        val quickTurnRight get() = driverController.rightTriggerAxis
-        val quickTurnLeft get() = driverController.leftTriggerAxis
+        val turn : Double get() = driverController.leftX.processInput(squared = true)
+        val throttle : Double get() = driverController.leftY.processInput(squared = true)
+
+        //TODO: Bring back this code- quickturns!
+        //val quickTurnRight    get() = driverController.rightTriggerAxis
+        //val quickTurnLeft     get() = driverController.leftTriggerAxis
+
+        //TODO: Increased speed trigger for zipping across the field?
     }
 
+    val oi = OperatorInterface
     val bot = RobotHardware.Drive
 
     override fun initialize() {
@@ -43,7 +49,7 @@ object TeleOp : Command() {
     }
 
     override fun execute() {
-        
+        bot.tankDrive(DifferentialDrive.curvatureDriveIK(oi.throttle,oi.turn,true))
     }
 
 
