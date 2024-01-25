@@ -1,8 +1,12 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.RunCommand
 
 import frc.robot.commands.TeleOp
 
@@ -16,6 +20,25 @@ import frc.robot.commands.TeleOp
 
 object RobotController : TimedRobot() {
     val bot = RobotHardware
+
+    val autos: Map<String,Command> = mapOf(
+        //TODO: Autos go here!
+        //ie 
+        //"Description of auto" to TaxiAuto
+    )
+    private var autoChooser : SendableChooser<Command> = SendableChooser()
+    private lateinit var selectedAuto : Command
+    init {
+        autoChooser.setDefaultOption("No Auto",RunCommand({
+            RobotHardware.Drive.tankDrive(0.0, 0.0)
+        }, RobotHardware.Drive) )
+
+        for (auto in autos) {
+            autoChooser.addOption(auto.key, auto.value);
+        }
+
+        SmartDashboard.putData(autoChooser)
+    }
     
     override fun robotInit() {
         //Initialize the robot!
@@ -29,7 +52,10 @@ object RobotController : TimedRobot() {
         CommandScheduler.getInstance().run()
     }
 
-    override fun autonomousInit() {}
+    override fun autonomousInit() {
+        selectedAuto = autoChooser.selected;
+        selectedAuto.schedule();
+    }
     override fun autonomousPeriodic() {}
 
     override fun teleopInit() {
