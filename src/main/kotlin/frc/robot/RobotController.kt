@@ -1,6 +1,8 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.cameraserver.CameraServer
+import edu.wpi.first.wpilibj2.command.CommandScheduler
 
 /* Main code for controlling the robot. 
 
@@ -15,10 +17,12 @@ object RobotController : TimedRobot() {
     
     override fun robotInit() {
         //Initialize the robot!
+        CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi?
     }
     override fun robotPeriodic() {
         //Runs while the robot is on, regarless of whether it is enabled.
         // (use for telemetry, command scheduler)
+        CommandScheduler.getInstance().run()
     }
 
     override fun autonomousInit() {}
