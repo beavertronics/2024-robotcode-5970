@@ -266,27 +266,27 @@ inline val Int.hz get() = Hertz(toDouble())
 inline val Int.RPM get() = RPM(toDouble())
 inline val Double.RPM get() = RPM(this)
 
-inline operator fun Volts.plus(other: Volts) = (value + other.value).volts
+operator fun Volts.plus(other: Volts) = (value + other.value).volts
 
-inline operator fun Radians.plus(other: Radians) = (value + other.value).rad
+operator fun Radians.plus(other: Radians) = (value + other.value).rad
 
-inline operator fun Radians.minus(other: Radians) = (value - other.value).rad
+operator fun Radians.minus(other: Radians) = (value - other.value).rad
 
-inline operator fun Meters.plus(other: Meters) = (value + other.value).m
+operator fun Meters.plus(other: Meters) = (value + other.value).m
 
-inline operator fun Meters.minus(other: Meters) = (value - other.value).m
+operator fun Meters.minus(other: Meters) = (value - other.value).m
 
-inline operator fun Meters.unaryMinus() = Meters(-value)
+operator fun Meters.unaryMinus() = Meters(-value)
 
-inline operator fun RPM.unaryMinus() = (-value).RPM
+operator fun RPM.unaryMinus() = (-value).RPM
 
-inline operator fun RPM.plus(other: RPM) = (value + other.value).RPM
+operator fun RPM.plus(other: RPM) = (value + other.value).RPM
 
-inline operator fun RPM.minus(other: RPM) = (value - other.value).RPM
+operator fun RPM.minus(other: RPM) = (value - other.value).RPM
 
-inline operator fun Seconds.plus(other: Seconds) = (value + other.value).seconds
+operator fun Seconds.plus(other: Seconds) = (value + other.value).seconds
 
-inline operator fun Seconds.minus(other: Seconds) = (value - other.value).seconds
+operator fun Seconds.minus(other: Seconds) = (value - other.value).seconds
 
 @JvmInline
 value class RGBA(val packed: UInt) {
@@ -320,6 +320,7 @@ value class HSVA(val packed: UInt) {
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE", "FINAL_UPPER_BOUND")
+@kotlin.ExperimentalUnsignedTypes
 @JvmInline
 value class RGBAArray(val array: UIntArray) {
     constructor(size: Int) : this(UIntArray(size))
