@@ -3,7 +3,6 @@
  */
 package frc.engine.utils
 // File adapted from 2898's bpsrobotics engine
-import com.kauailabs.navx.frc.AHRS
 import kotlin.math.*
 
 // Don't show warnings if these functions are unused or could be private
@@ -70,5 +69,3 @@ object Sugar {
         return round(this*multiplier)/multiplier
     }
 }
-
-typealias NAVX = AHRS

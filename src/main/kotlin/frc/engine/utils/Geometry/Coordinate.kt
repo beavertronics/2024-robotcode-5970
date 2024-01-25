@@ -25,14 +25,14 @@ class Coordinate(val x: Double, val y: Double) {
      * Distance from 0, 0, calculated using pythagorean theorem
      * */
     val magnitude get() = sqrt(x.pow(2) + y.pow(2))
-    fun distance(pos: Coordinate): Double{ return sqrt((x-pos.x).pow(2) + (y-pos.y).pow(2)) }
-    fun distance(pose: Pose2d): Double{ return distance(Coordinate(pose)) }
-    fun xdistance(pos: Double): Double { return x-pos}
+    fun distance(pos: Coordinate): Double  { return sqrt((x-pos.x).pow(2) + (y-pos.y).pow(2)) }
+    fun distance(pose: Pose2d): Double     { return distance(Coordinate(pose)) }
+    fun xdistance(pos: Double): Double     { return x-pos}
     fun xdistance(pos: Coordinate): Double { return x-pos.x}
-    fun xdistance(pos: Pose2d): Double { return y-pos.y}
-    fun ydistance(pos: Double): Double { return y-pos}
+    fun xdistance(pos: Pose2d): Double     { return y-pos.y}
+    fun ydistance(pos: Double): Double     { return y-pos}
     fun ydistance(pos: Coordinate): Double { return y-pos.y}
-    fun ydistance(pos: Pose2d): Double { return y-pos.y}
+    fun ydistance(pos: Pose2d): Double     { return y-pos.y}
 
     operator fun plus(other: Coordinate) : Coordinate {
         return Coordinate(x + other.x, y + other.y)

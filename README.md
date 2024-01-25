@@ -17,6 +17,14 @@ If you want to build the code and send it to the RoboRIO for testing:
 4. Hit Enter.
 It will do the same thing as build, but afterward it will connect to the roboRIO and upload everything- You should still see a green `BUILD SUCCESSFUL` at the end.
 
+## Why isn't kotlin doing all the fancy code completion things?
+
+First, make sure you have the Kotlin extention (by fwcd) *and* the Kotlin for FRC extention (by Brenek Harrison) installed.
+Sometimes the extention just freaks out and fails for no reason- Just be calm and close the windows.
+Next, go to the settings for Kotlin (not Kotlin for FRC) and make sure `Kotlin > Language Server` is enabled.
+
+Even when it's working, it can glitch out sometimes- if that happens, modifying the line with the glitch on it (ie type asdfkajhsd and then delete it) usually wakes Kotlin up.
+If this happens a lot, increasing `Kotlin > Diagnostics: Debounce Time` might help.
 
 ## Project Structure
 
@@ -30,7 +38,6 @@ It will do the same thing as build, but afterward it will connect to the roboRIO
 ## Code Structure
 
 Each code file's purpose is outlined briefly near the top of the file- You should read these descriptions now, so that if you need to write some code later, you'll know where that code should go. It has been set up in a way that will hopefully minimize spaghetti, but use your best judgement or else it will become spaghetti anyway.
-
 
 
 ## Credit

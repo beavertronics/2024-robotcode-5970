@@ -24,7 +24,6 @@ class Line(val point1 : Coordinate, val point2 : Coordinate){
      * @sample intersection
      * */
     fun intersection(coordinate : Coordinate, theta : Double) : Coordinate? {
-        val returnCoord = Coordinate(0.0,0.0)
         val xPosition : Double
         val yPosition : Double
         if(!intersects(coordinate, theta)) return null
