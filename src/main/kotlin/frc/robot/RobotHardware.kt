@@ -62,8 +62,13 @@ object RobotHardware {
 
             allMotors {
                 restoreFactoryDefaults()
-                //TODO: initialize spark maxes
+
+                setSmartCurrentLimit(D.CurrentLimit) //Todo: there's a fancy version of this function that may be worth using
+                //TODO: finish initialize spark maxes 
             }
+
+            drive.setDeadband(0.0)
+
             /* TODO: set motor inversion correctly
             leftMain.inverted = false
             leftSecondary.inverted = false

@@ -42,7 +42,14 @@ object Constants {
         const val KV            = 0.0
         /** How much voltage to accelerate- Can go unused (0) */
         const val KA            = 0.0
+
+        const val CurrentLimit = 30 //amps, per motor controller
+        /* See
+           https://the-charge.com/uploads/3/5/3/0/35304458/testing_and_analysis_of_first_robotics_batteries__2018_.pdf
+           For info on battery characteristics
+         */
     }
+
     object TeleopConstants {
         const val MaxSpeed = 5.0 //M/s
         //TODO: Maybe change to feet per second? Metric is Good, but many teams communicate drivetrain speed in feet per second so for communicating quickly it could be worth leaving in fps.
