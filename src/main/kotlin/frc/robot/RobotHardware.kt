@@ -1,14 +1,15 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.math.controller.PIDController
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
-
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkLowLevel.MotorType
 
-import com.kauailabs.navx.frc.AHRS
+import com.kauailabs.navx.frc.AHRS as NAVX
 
+import frc.robot.Constants.DriveConstants as D
 
 /* Object that represents the robot's hardware, organized into subsystems.
 
@@ -21,21 +22,21 @@ Talk to Will Kam about why organizing the code this way will be beneficial.
 */
 
 object RobotHardware {
-    object Drive : SubsystemBase() {
-        private val       leftMain = CANSparkMax(21,MotorType.kBrushless)
-        private val  leftSecondary = CANSparkMax(22,MotorType.kBrushless)
-        private val      rightMain = CANSparkMax(23,MotorType.kBrushless)
-        private val rightSecondary = CANSparkMax(24,MotorType.kBrushless)
 
-        //Run a piece of code for each drive motor controller.
-        fun allMotors(code: CANSparkMax.() -> Unit) {
+    object Drive : SubsystemBase() {
+        private val       leftMain = CANSparkMax(D.MotorRMainID,MotorType.kBrushless)
+        private val  leftSecondary = CANSparkMax(D.MotorRSubID,MotorType.kBrushless)
+        private val      rightMain = CANSparkMax(D.MotorRMainID,MotorType.kBrushless)
+        private val rightSecondary = CANSparkMax(D.MotorRSubID,MotorType.kBrushless)
+
+        val drive = DifferentialDrive(leftMain, rightMain)
+        val imu =  NAVX()
+
+        fun allMotors(code: CANSparkMax.() -> Unit) { //Run a piece of code for each drive motor controller.
             for (motor in listOf(leftMain, rightMain)) {
                 motor.apply(code)
             }
         }
-
-        val drive = DifferentialDrive(leftMain, rightMain)
-        val imu =  AHRS()
 
         init {
 

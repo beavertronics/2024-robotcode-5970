@@ -3,12 +3,11 @@ package frc.robot
 import frc.engine.utils.MetersPerSecond
 
 object Constants {
-        const val RightNEO1ID   = 1 //TODO Get neos from electrical
-        const val RightNEO2ID   = 2
-        const val LeftNEO1ID    = 3
-        const val LeftNEO2ID    = 4
-        /** Proportional to the error */
     object DriveConstants {
+        const val MotorRMainID   = 1 //TODO Get neos from electrical
+        const val MotorRSubID   = 2 // Should start from 21, as is tradition.
+        const val MotorLMainID    = 3
+        const val MotorLSubID    = 4
         const val KP            = 1.0 // tune later
         const val KD            = 0.0 // tune later
         /** How much voltage to overcome friction */
