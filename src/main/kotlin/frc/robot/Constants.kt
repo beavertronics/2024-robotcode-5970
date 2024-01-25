@@ -1,6 +1,6 @@
 package frc.robot
 
-import frc.engine.utils.MetersPerSecond
+import frc.engine.utils.Inches
 
 object Constants {
     object DriveConstants {
@@ -8,6 +8,9 @@ object Constants {
         const val MotorRSubID   = 2 // Should start from 21, as is tradition.
         const val MotorLMainID    = 3
         const val MotorLSubID    = 4
+    
+        const val MotorRevsPerWheelRev = (50/14) * (48/16) //~10:1 As taken from CAD- should verify after drivetrain is built in the real world
+        val WheelDiameter = Inches(6.0).meterValue()
         const val KP            = 1.0 // tune later
         const val KD            = 0.0 // tune later
         /** How much voltage to overcome friction */
