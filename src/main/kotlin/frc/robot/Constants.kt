@@ -1,6 +1,7 @@
 package frc.robot
 
 import frc.engine.utils.Inches
+import frc.engine.utils.Meters
 
 /* Constants for tuning the robot code.
 
@@ -20,6 +21,7 @@ object Constants {
     
         const val MotorRevsPerWheelRev = (50/14) * (48/16) //~10:1 As taken from CAD- should verify after drivetrain is built in the real world
         val WheelDiameter = Inches(6.0).meterValue()
+        val TrackWidth = Meters(0.0) //TODO Get track width
 
         /** Proportional to the error (if it's bad, fix it. If it's really bad, fix it harder based on how bad it is)*/
         const val KP            = 1.0 // tune later
@@ -42,7 +44,6 @@ object Constants {
         const val KV            = 0.0
         /** How much voltage to accelerate- Can go unused (0) */
         const val KA            = 0.0
-
         const val CurrentLimit = 30 //amps, per motor controller
         /* See
            https://the-charge.com/uploads/3/5/3/0/35304458/testing_and_analysis_of_first_robotics_batteries__2018_.pdf

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RunCommand
 
 import frc.robot.commands.TeleOp
+import frc.robot.subsytems.Drivetrain
 
 /* Main code for controlling the robot. Mainly just links everything together.
 
@@ -19,7 +20,6 @@ import frc.robot.commands.TeleOp
 */
 
 object RobotController : TimedRobot() {
-    val bot = RobotHardware
 
     val autos: Map<String,Command> = mapOf(
         //TODO: Autos go here!
@@ -30,8 +30,8 @@ object RobotController : TimedRobot() {
     private lateinit var selectedAuto : Command
     init {
         autoChooser.setDefaultOption("No Auto",RunCommand({
-            RobotHardware.Drive.tankDrive(0.0, 0.0)
-        }, RobotHardware.Drive) )
+            Drivetrain.rawDrive(0.0, 0.0)
+        }) )
 
         for (auto in autos) {
             autoChooser.addOption(auto.key, auto.value);
@@ -44,7 +44,6 @@ object RobotController : TimedRobot() {
         //Initialize the robot!
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi?
 
-        SmartDashboard.putData(RobotHardware.Drive)
     }
     override fun robotPeriodic() {
         //Runs while the robot is on, regarless of whether it is enabled.

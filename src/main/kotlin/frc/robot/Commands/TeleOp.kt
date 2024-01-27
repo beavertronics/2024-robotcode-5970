@@ -1,14 +1,14 @@
 package frc.robot.commands
 
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.drive.DifferentialDrive
-
+import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
+
+import frc.robot.Constants.TeleopConstants
 import kotlin.math.*
 
-import frc.robot.RobotHardware
+import frc.robot.subsytems.Drivetrain
 
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
@@ -16,10 +16,19 @@ import frc.robot.RobotHardware
 object TeleOp : Command() {
 
 
-    object OperatorInterface {
+
+    override fun initialize() {
+        addRequirements(Drivetrain)
+    }
+
+    override fun execute() {
+        Drivetrain.rawCurvatureDrive(OI.throttle, OI.turn)
+    }
+
+    object OI {
         private val driverController    = XboxController(0)
         private val operatorController  = Joystick(1)
-    
+
         private fun Double.processInput(deadzone : Double = 0.1, squared : Boolean = false, cubed : Boolean = false, readjust : Boolean = true) : Double{
             var processed = this
             if(readjust) processed = ((this.absoluteValue - deadzone)/(1 - deadzone))*this.sign
@@ -30,9 +39,12 @@ object TeleOp : Command() {
                 else ->                     processed
             }
         }
-    
-        val turn : Double get() = driverController.leftX.processInput(squared = true)
-        val throttle : Double get() = driverController.leftY.processInput(squared = true)
+        private fun Double.abs_GreaterThan(target: Double): Boolean{
+            return this.absoluteValue > target
+        }
+
+        public val turn get() = driverController.leftX.processInput(squared = true)
+        public val throttle get() = driverController.leftY.processInput(squared = true)
 
         //TODO: Bring back this code- quickturns!
         //val quickTurnRight    get() = driverController.rightTriggerAxis
@@ -40,17 +52,4 @@ object TeleOp : Command() {
 
         //TODO: Increased speed trigger for zipping across the field?
     }
-
-    val oi = OperatorInterface
-    val bot = RobotHardware.Drive
-
-    override fun initialize() {
-        addRequirements(RobotHardware.Drive)
-    }
-
-    override fun execute() {
-        bot.tankDrive(DifferentialDrive.curvatureDriveIK(oi.throttle,oi.turn,true))
-    }
-
-
 }
