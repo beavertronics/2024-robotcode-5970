@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -25,8 +26,8 @@ object Drivetrain : SubsystemBase() {
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 
-    private val leftPid = Controller.PID(DriveConstants.KP, DriveConstants.KD)
-    private val rightPid = Controller.PID(DriveConstants.KP, DriveConstants.KD)
+    private val leftPid = PIDController(DriveConstants.KP, 0.0, DriveConstants.KD)
+    private val rightPid = PIDController(DriveConstants.KP, 0.0, DriveConstants.KD)
     private val FeedForward = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
 
     private fun allMotors(code: CANSparkMax.() -> Unit) { //Run a piece of code for each drive motor controller.
@@ -54,22 +55,23 @@ object Drivetrain : SubsystemBase() {
         rightSecondary.inverted = true
         */
     }
-    /** Runs the drive train
+    /** Drive by setting left and right power (-1 to 1).
      * @param left Power for left motors [-1.0.. 1.0]. Forward is positive.
      * @param right Voltage for right motors [-1.0.. 1.0]. Forward is positive.
      * */
     fun tankDrive(left: Double, right: Double) {
         drive.tankDrive(left, right, false)
     }
-    /** Sets drivetrain motor voltage directly
+    /** Drive by setting left and right voltage (-12v to 12v)
      * @param left Voltage for left motors
      * @param right Voltage for right motors
      * */
     fun rawDrive(left: Double, right: Double) {
+        //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
         leftMain.setVoltage(left)
         rightMain.setVoltage(right)
     }
-    /** Runs the rawDrive by using PID and FeedForward values to adjust voltage output and reach the desired speed.
+    /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
      * @param left Desired speed for the left motors, in M/s
      * @param right Desired speed for the right motors, in M/s
      */
@@ -85,26 +87,9 @@ object Drivetrain : SubsystemBase() {
 
         rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
     }
-    /** Runs the rawDrive by using PID and FeedForward values to adjust voltage output and reach the desired speed.
+    /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
      * @param left Desired speed for the left motors, in M/s
      * @param right Desired speed for the right motors, in M/s
      */
     fun closedLoopDrive(left: `M/s`, right: `M/s`) { closedLoopDrive(left.value, right.value) }
-    /** Runs the tankDrive using the curvature drive inverse kinematics from WPI, applies PID and FeedForward controls.
-     * @param throttle The robots speed along the X-Axis [-1.0.. 1.0].
-     * @param turn The normalized curvature [-1.0.. 1.0]. Counterclockwise is positive
-     */
-    fun rawCurvatureDrive(throttle:Double, turn:Double, allowTurnInPlace:Boolean = true) {
-        val wheelSpeeds = DifferentialDrive.curvatureDriveIK(throttle,turn,true)
-        tankDrive(wheelSpeeds.left, wheelSpeeds.right)
-    }
-    /** Runs the tankDrive using the curvature drive inverse kinematics from WPI, applies PID and FeedForward controls.
-     * @param throttle The robots speed along the X-Axis [-1.0.. 1.0].
-     * @param turn The normalized curvature [-1.0.. 1.0]. Counterclockwise is positive
-     */
-    fun curvatureDrive(throttle:Double, turn:Double, maxSpeed: `M/s` = `M/s`(1.0), allowTurnInPlace:Boolean = true) {
-        val wheelSpeeds = DifferentialDrive.curvatureDriveIK(throttle,turn,true)
-        closedLoopDrive(wheelSpeeds.left * maxSpeed.value, wheelSpeeds.right * maxSpeed.value)
-    }
-
 }

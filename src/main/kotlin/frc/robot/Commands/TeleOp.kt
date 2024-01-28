@@ -5,24 +5,27 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
 
+
 import frc.robot.Constants.TeleopConstants
 import kotlin.math.*
 
 import frc.robot.subsytems.Drivetrain
-
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
 
 object TeleOp : Command() {
 
-
-
     override fun initialize() {
-        addRequirements(Drivetrain)
+        addRequirements(Drivetrain /* TODO: Require shooter/intake/climb subsystems! */)  
     }
 
     override fun execute() {
-        Drivetrain.rawCurvatureDrive(OI.throttle, OI.turn)
+        val speeds = DifferentialDrive.curvatureDriveIK(OI.throttle, OI.turn, true)
+        Drivetrain.rawDrive(speeds.left * TeleopConstants.MaxVoltage, speeds.right * TeleopConstants.MaxVoltage)
+        //TODO: Tune drive!
+
+        //TODO: Control Subsystems!
     }
 
     object OI {
