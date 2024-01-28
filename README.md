@@ -3,10 +3,11 @@
 Welcome to Beavertronics' code for the 2024 FRC Season (Crescendo)!
 
 ## Current Branch
-### - Drivetrain
-Current Developer(s): Ozy, Collin
+### - Intake
+Current Developer(s): Ozy
 
-Purpose: Testing branch for Drivetrain/driving controls code
+Purpose: Testing branch for Intake code
+
 ## How do I run it?
 
 If you want to build the code:
