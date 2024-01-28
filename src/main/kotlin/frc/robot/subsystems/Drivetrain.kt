@@ -1,4 +1,4 @@
-package frc.robot.subsytems
+package frc.robot.subsystems
 
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax

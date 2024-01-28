@@ -9,7 +9,7 @@ import frc.engine.utils.Sugar.within
 import frc.robot.Constants.TeleopConstants
 import kotlin.math.*
 
-import frc.robot.subsytems.Drivetrain
+import frc.robot.subsystems.Drivetrain
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
