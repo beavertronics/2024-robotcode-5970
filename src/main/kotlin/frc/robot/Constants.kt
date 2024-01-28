@@ -2,6 +2,7 @@ package frc.robot
 
 import frc.engine.utils.Inches
 import frc.engine.utils.Meters
+import java.util.Currency
 
 /* Constants for tuning the robot code.
 
@@ -57,5 +58,10 @@ object Constants {
         //  Possible implementation:
         //    FeetPerSecond(16.5).metersPerSecondValue()
         //    (also import utils/Units.kt)
+    }
+
+    object IntakeConstants {
+        const val CurrentLimit = 12
+        const val voltage = 1.0
     }
 }

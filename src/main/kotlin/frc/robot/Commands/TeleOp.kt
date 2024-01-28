@@ -4,44 +4,32 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
+import frc.robot.Constants
 
-
-import frc.robot.Constants.TeleopConstants as C
+import frc.robot.Constants.TeleopConstants
+import frc.robot.subsystems.Intake
 import kotlin.math.*
 
-import frc.robot.subsystems.Drivetrain
-import edu.wpi.first.wpilibj.drive.DifferentialDrive
+import frc.robot.subsytems.Drivetrain
+
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
 
 object TeleOp : Command() {
 
+
+
     override fun initialize() {
-        addRequirements(Drivetrain /* TODO: Require shooter/intake/climb subsystems! */)  
+        addRequirements(Drivetrain)
     }
 
     override fun execute() {
+        Drivetrain.rawCurvatureDrive(OI.throttle, OI.turn)
         when {
-            OI.quickTurnRight > C.quickTurnDeadzone -> {
-                Drivetrain.rawDrive(C.quickTurnSpeed  * OI.quickTurnRight * C.MaxVoltage, -1 * C.quickTurnSpeed * OI.quickTurnRight * C.MaxVoltage)
-
-            }
-            OI.quickTurnLeft > C.quickTurnDeadzone -> {
-                Drivetrain.rawDrive(-1 * C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage, C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage)
-
-            }
-            else -> {
-            val speeds = DifferentialDrive.curvatureDriveIK(OI.throttle, OI.turn, true)
-            val speedsMult = if(OI.speedBoost) C.speedBoostSpeed else C.driveSpeed
-            Drivetrain.rawDrive(speeds.left * speedsMult * C.MaxVoltage, speeds.right * speedsMult * C.MaxVoltage)
-            
-            //TODO: Tune drive!
-
-            }
+            OI.intake -> Intake.runIntakeRaw(Constants.IntakeConstants.voltage)
+            OI.outtake -> Intake.runIntakeRaw(-Constants.IntakeConstants.voltage)
+            else -> Intake.stop()
         }
-
-        //TODO: Control Subsystems!
-
     }
 
     object OI {
@@ -63,14 +51,12 @@ object TeleOp : Command() {
         }
 
         public val turn get() = driverController.leftX.processInput(squared = true)
-
         public val throttle get() = driverController.leftY.processInput(squared = true)
-
+        public val intake get() = operatorController.getRawButton(1) //Todo: Get right button
+        public val outtake get() = operatorController.getRawButton(2) //Todo: Get right button
         //TODO: Bring back this code- quickturns!
-        val quickTurnRight    get() = driverController.rightTriggerAxis
-        val quickTurnLeft     get() = driverController.leftTriggerAxis
-        val speedBoost        get() = driverController.rightBumper or driverController.leftBumper
-
+        //val quickTurnRight    get() = driverController.rightTriggerAxis
+        //val quickTurnLeft     get() = driverController.leftTriggerAxis
 
         //TODO: Increased speed trigger for zipping across the field?
     }
