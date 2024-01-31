@@ -28,6 +28,8 @@ object RobotController : TimedRobot() {
         //"Description of auto" to TaxiAuto
     )
     private var autoChooser : SendableChooser<Command> = SendableChooser()
+    public var driveModeChooser : SendableChooser<TeleOp.DriveMode> = SendableChooser()
+
     private var selectedAuto : Command = InstantCommand({})
 
     init {
@@ -40,6 +42,10 @@ object RobotController : TimedRobot() {
         }
 
         SmartDashboard.putData(autoChooser)
+        driveModeChooser.setDefaultOption("Default",TeleOp.DriveMode.DEFAULT)
+        driveModeChooser.addOption("Child",TeleOp.DriveMode.CHILD)
+        SmartDashboard.putData(driveModeChooser)
+
     }
     
     override fun robotInit() {

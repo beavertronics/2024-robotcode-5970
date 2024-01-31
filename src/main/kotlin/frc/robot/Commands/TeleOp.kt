@@ -2,34 +2,44 @@ package frc.robot.commands
 
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
 
 import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
+import frc.robot.RobotController
 
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
 
 object TeleOp : Command() {
-
+    var maxChildSpeed = 0.25
+    var maxChildTurningSpeed = 0.5
     enum class DriveMode {
         DEFAULT,CHILD
     }
     private var driveMode = DriveMode.DEFAULT
     override fun initialize() {
+        SmartDashboard.putNumber("MaxChildSpeed", 0.35)
+        SmartDashboard.putNumber("MaxChildTurningSpeed", 0.4)
         addRequirements(Drivetrain)
+        driveMode = RobotController.driveModeChooser.selected
     }
 
     override fun execute() {
         when (driveMode) {
-            DriveMode.DEFAULT -> Drivetrain.percentCurvatureDrive(OI.throttle*0.5, OI.turn*0.5)
+            DriveMode.DEFAULT -> Drivetrain.percentCurvatureDrive(OI.throttle, OI.turn)
             
             DriveMode.CHILD -> {
+                maxChildSpeed = SmartDashboard.getNumber("MaxChildSpeed",maxChildSpeed)
+                maxChildTurningSpeed = SmartDashboard.getNumber("MaxChildTurningSpeed",maxChildTurningSpeed)
                 if (OI.rTrigger) {
                     // Safe for kid to drive. Uses flight joysticks
-                    Drivetrain.percentDrive(OI.leftJoystick*0.25, OI.rightJoystick*0.25)
+                    val speedMult = maxChildSpeed + (((OI.leftJoystick - OI.rightJoystick).absoluteValue/2)*( maxChildTurningSpeed- maxChildSpeed))
+
+                    Drivetrain.percentDrive(OI.leftJoystick*speedMult, OI.rightJoystick*speedMult)
                 } else {
                     // Not safe. Drives with xbox controller
                     Drivetrain.percentCurvatureDrive(OI.throttle*0.5, OI.turn*0.5)
@@ -61,8 +71,8 @@ object TeleOp : Command() {
 
         public val turn get() = driverController.leftX.processInput(squared = true)
         public val throttle get() = driverController.leftY.processInput(squared = true)
-        public val leftJoystick get() = lOpControl.getRawAxis(2)
-        public val rightJoystick get() = rOpControl.getRawAxis(2)
+        public val leftJoystick get() = lOpControl.getRawAxis(1)
+        public val rightJoystick get() = rOpControl.getRawAxis(1)
 
         //TODO: Bring back this code- quickturns!
         val rTrigger    get() = driverController.rightTriggerAxis.abs_GreaterThan(0.1)
@@ -70,4 +80,4 @@ object TeleOp : Command() {
 
         //TODO: Increased speed trigger for zipping across the field?
     }
-}0
+}
