@@ -2,6 +2,12 @@
 
 Welcome to Beavertronics' code for the 2024 FRC Season (Crescendo)!
 
+## Current Branch
+### - Practice Bot
+Current Developer(s): Ozy, Collin, Ansh
+
+Purpose: Separate Branch with code compatible with Janky. Also used for PhotonVision testing
+
 ## How do I run it?
 
 If you want to build the code:
