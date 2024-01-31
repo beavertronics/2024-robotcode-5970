@@ -6,10 +6,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.RunCommand
 
 import frc.robot.commands.TeleOp
-import frc.robot.subsytems.Drivetrain
+import frc.robot.subsystems.Drivetrain
 
 /* Main code for controlling the robot. Mainly just links everything together.
 
@@ -27,10 +28,11 @@ object RobotController : TimedRobot() {
         //"Description of auto" to TaxiAuto
     )
     private var autoChooser : SendableChooser<Command> = SendableChooser()
-    private lateinit var selectedAuto : Command
+    private var selectedAuto : Command = InstantCommand({})
+
     init {
         autoChooser.setDefaultOption("No Auto",RunCommand({
-            Drivetrain.rawDrive(0.0, 0.0)
+            Drivetrain.percentDrive(0.0, 0.0)
         }) )
 
         for (auto in autos) {
@@ -42,7 +44,7 @@ object RobotController : TimedRobot() {
     
     override fun robotInit() {
         //Initialize the robot!
-        CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi?
+        //CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi?
 
     }
     override fun robotPeriodic() {

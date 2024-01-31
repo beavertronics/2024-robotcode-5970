@@ -5,10 +5,9 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
 
-import frc.robot.Constants.TeleopConstants
 import kotlin.math.*
 
-import frc.robot.subsytems.Drivetrain
+import frc.robot.subsystems.Drivetrain
 
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
@@ -22,12 +21,14 @@ object TeleOp : Command() {
     }
 
     override fun execute() {
-        Drivetrain.rawCurvatureDrive(OI.throttle, OI.turn)
+        Drivetrain.percentCurvatureDrive(OI.throttle*0.5, OI.turn*0.5)
     }
 
     object OI {
         private val driverController    = XboxController(0)
-        private val operatorController  = Joystick(1)
+        private val lOpControl  = Joystick(1)
+        private val rOpControl  = Joystick(2)
+
 
         private fun Double.processInput(deadzone : Double = 0.1, squared : Boolean = false, cubed : Boolean = false, readjust : Boolean = true) : Double{
             var processed = this

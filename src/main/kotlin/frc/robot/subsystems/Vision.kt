@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.*
 //TODO: Update for Photon
-object Vision : SubsystemBase() {
+/*object Vision : SubsystemBase() {
     var currentRobotPose = Pose2d()
         private set
 
@@ -43,4 +43,4 @@ object Vision : SubsystemBase() {
             Odometry.field.getObject("vision pose").pose = currentRobotPose
         }
     }
-}
+}*/

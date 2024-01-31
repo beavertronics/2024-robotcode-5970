@@ -14,10 +14,10 @@ be located in RobotHardware.kt instead.
 object Constants {
     object DriveConstants {
 
-        const val MotorRMainID   = 1 //TODO Get neos from electrical
-        const val MotorRSubID   = 2 // Should start from 21, as is tradition.
-        const val MotorLMainID    = 3
-        const val MotorLSubID    = 4
+        const val MotorRMainID   = 21 //TODO Get neos from electrical
+        const val MotorRSubID   = 22 // Should start from 21, as is tradition.
+        const val MotorLMainID    = 23
+        const val MotorLSubID    = 24
     
         const val MotorRevsPerWheelRev = (50/14) * (48/16) //~10:1 As taken from CAD- should verify after drivetrain is built in the real world
         val WheelDiameter = Inches(6.0).meterValue()
