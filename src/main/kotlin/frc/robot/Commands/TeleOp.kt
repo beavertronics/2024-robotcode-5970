@@ -14,14 +14,29 @@ import frc.robot.subsystems.Drivetrain
 
 object TeleOp : Command() {
 
-
-
+    enum class DriveMode {
+        DEFAULT,CHILD
+    }
+    private var driveMode = DriveMode.DEFAULT
     override fun initialize() {
         addRequirements(Drivetrain)
     }
 
     override fun execute() {
-        Drivetrain.percentCurvatureDrive(OI.throttle*0.5, OI.turn*0.5)
+        when (driveMode) {
+            DriveMode.DEFAULT -> Drivetrain.percentCurvatureDrive(OI.throttle*0.5, OI.turn*0.5)
+            
+            DriveMode.CHILD -> {
+                if (OI.rTrigger) {
+                    // Safe for kid to drive. Uses flight joysticks
+                    Drivetrain.percentDrive(OI.leftJoystick*0.25, OI.rightJoystick*0.25)
+                } else {
+                    // Not safe. Drives with xbox controller
+                    Drivetrain.percentCurvatureDrive(OI.throttle*0.5, OI.turn*0.5)
+                }
+            }
+        }
+
     }
 
     object OI {
@@ -46,11 +61,13 @@ object TeleOp : Command() {
 
         public val turn get() = driverController.leftX.processInput(squared = true)
         public val throttle get() = driverController.leftY.processInput(squared = true)
+        public val leftJoystick get() = lOpControl.getRawAxis(2)
+        public val rightJoystick get() = rOpControl.getRawAxis(2)
 
         //TODO: Bring back this code- quickturns!
-        //val quickTurnRight    get() = driverController.rightTriggerAxis
+        val rTrigger    get() = driverController.rightTriggerAxis.abs_GreaterThan(0.1)
         //val quickTurnLeft     get() = driverController.leftTriggerAxis
 
         //TODO: Increased speed trigger for zipping across the field?
     }
-}
+}0
