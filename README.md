@@ -3,10 +3,10 @@
 Welcome to Beavertronics' code for the 2024 FRC Season (Crescendo)!
 
 ## Current Branch
-### - Intake
-Current Developer(s): Ozy, Collin
+### - Shooter
+Current Developer(s): Ozy
 
-Purpose: Testing branch for Intake code
+Purposes: Closed Loop control for shooter
 
 ## How do I run it?
 
