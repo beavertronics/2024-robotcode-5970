@@ -2,6 +2,12 @@
 
 Welcome to Beavertronics' code for the 2024 FRC Season (Crescendo)!
 
+## Current Branch
+### - Shooter
+Current Developer(s): Ozy
+
+Purposes: Closed Loop control for shooter
+
 ## How do I run it?
 
 If you want to build the code:
