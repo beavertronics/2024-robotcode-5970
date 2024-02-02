@@ -1,6 +1,5 @@
 package frc.robot.subsystems
 //File adapted from 2898's 2023 Charged Up Code
-import edu.wpi.first.math.MatBuilder
 import frc.engine.odometry.PoseProvider
 import frc.engine.utils.Degrees
 import frc.engine.utils.Meters
@@ -28,10 +27,11 @@ object Odometry : SubsystemBase(), PoseProvider {
     private val vision = Vision("testCamera")
 
     private val visionProvider = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
+    private val encoderOnly = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
+
     val leftVel get() =  MetersPerSecond(Drivetrain.leftEncoder.velocity)
     val rightVel get() = MetersPerSecond(Drivetrain.rightEncoder.velocity)
     val vels get() = DifferentialDriveWheelSpeeds(leftVel.metersPerSecondValue(), rightVel.metersPerSecondValue())
-    private val thirdProvider = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
 
     override var pose: Pose2d = Pose2d(0.0, 0.0, Rotation2d(0.0))
         private set
@@ -55,7 +55,7 @@ object Odometry : SubsystemBase(), PoseProvider {
     override fun reset(x: Meters, y: Meters, theta: Degrees) {
         val p = Pose2d(x.value, y.value, Rotation2d.fromDegrees(theta.value))
         visionProvider.resetPosition(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position, p)
-        thirdProvider.resetPosition(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position, p)
+        encoderOnly.resetPosition(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position, p)
     }
 
     override fun update() {
@@ -66,10 +66,10 @@ object Odometry : SubsystemBase(), PoseProvider {
         }
 
         pose = visionProvider.update(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position)
-        thirdProvider.update(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position)
+        encoderOnly.update(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position)
 
         field.robotPose = pose
-        field.getObject("pure odometry").pose = thirdProvider.estimatedPosition
+        field.getObject("pure odometry").pose = encoderOnly.estimatedPosition
         SmartDashboard.putData(field)
     }
 
