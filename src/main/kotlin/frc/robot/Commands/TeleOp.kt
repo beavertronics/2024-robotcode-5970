@@ -32,12 +32,12 @@ object TeleOp : Command() {
         when (driveMode) {
             DriveMode.DEFAULT -> Drivetrain.percentCurvatureDrive(OI.throttle, OI.turn)
             
-            DriveMode.CHILD -> {
+            else -> {
                 maxChildSpeed = SmartDashboard.getNumber("MaxChildSpeed",maxChildSpeed)
                 maxChildTurningSpeed = SmartDashboard.getNumber("MaxChildTurningSpeed",maxChildTurningSpeed)
-                if (OI.rTrigger) {
+                if (OI.rTriggerDown) {
                     // Safe for kid to drive. Uses flight joysticks
-                    val speedMult = maxChildSpeed + (((OI.leftJoystick - OI.rightJoystick).absoluteValue/2)*( maxChildTurningSpeed- maxChildSpeed))
+                    val speedMult = (maxChildSpeed + (((OI.leftJoystick - OI.rightJoystick).absoluteValue/2)*( maxChildTurningSpeed- maxChildSpeed)))*OI.rTrigger
 
                     Drivetrain.percentDrive(OI.leftJoystick*speedMult, OI.rightJoystick*speedMult)
                 } else {
@@ -45,6 +45,7 @@ object TeleOp : Command() {
                     Drivetrain.percentCurvatureDrive(OI.throttle*0.5, OI.turn*0.5)
                 }
             }
+
         }
 
     }
@@ -75,7 +76,8 @@ object TeleOp : Command() {
         public val rightJoystick get() = rOpControl.getRawAxis(1)
 
         //TODO: Bring back this code- quickturns!
-        val rTrigger    get() = driverController.rightTriggerAxis.abs_GreaterThan(0.1)
+        val rTrigger    get() = driverController.rightTriggerAxis
+        val rTriggerDown    get() = driverController.rightTriggerAxis.abs_GreaterThan(0.1)
         //val quickTurnLeft     get() = driverController.leftTriggerAxis
 
         //TODO: Increased speed trigger for zipping across the field?
