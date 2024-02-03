@@ -1,10 +1,14 @@
 package frc.robot
 
+import edu.wpi.first.math.MatBuilder
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.Nat
 import frc.engine.utils.Inches
 import frc.engine.utils.Meters
 import java.util.Currency
 import frc.engine.utils.Polynomial
 
+import edu.wpi.first.math.Num
 /* Constants for tuning the robot code.
 
 This should NOT include hardware constants (ie CAN bus IDs, wheel diameter and gear ratios); 
@@ -79,6 +83,10 @@ object Constants {
         const val CurrentLimit = 20 //amps, per motor controller
         val SpeakerPoly = Polynomial() //TODO Desmos this
 
+    }
+    object OdometryConstants {
+        @Suppress("removal")
+        val VisionDeviation = MatBuilder(Nat.N3(),Nat.N1()).fill(3.0,3.0,1000.0)
     }
 
     object TeleopConstants {
