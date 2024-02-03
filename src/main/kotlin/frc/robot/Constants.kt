@@ -47,6 +47,8 @@ object Constants {
 
     object TeleopConstants {
         const val MaxVoltage = 5.0
+        const val driveSpeed = 0.7 //TODO set drive speed
+        const val speedBoostSpeed = 1.0 //TODO set speed boost speed
         const val quickTurnDeadzone = 0.1 //TODO set quick turn dead zone
         const val quickTurnSpeed = 0.5 //TODO set quick turn speed.
         

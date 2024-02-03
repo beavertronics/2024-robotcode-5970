@@ -29,9 +29,12 @@ object TeleOp : Command() {
             OI.quickTurnLeft > C.quickTurnDeadzone -> {
                 Drivetrain.rawDrive(-1 * C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage, C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage)
 
-            } else -> {
+            }
+            else -> {
             val speeds = DifferentialDrive.curvatureDriveIK(OI.throttle, OI.turn, true)
-            Drivetrain.rawDrive(speeds.left * C.MaxVoltage, speeds.right * C.MaxVoltage)
+            val speedsMult = if(OI.speedBoost) C.speedBoostSpeed else C.driveSpeed
+            Drivetrain.rawDrive(speeds.left * speedsMult * C.MaxVoltage, speeds.right * speedsMult * C.MaxVoltage)
+            
             //TODO: Tune drive!
 
             }
@@ -66,6 +69,7 @@ object TeleOp : Command() {
         //TODO: Bring back this code- quickturns!
         val quickTurnRight    get() = driverController.rightTriggerAxis
         val quickTurnLeft     get() = driverController.leftTriggerAxis
+        val speedBoost        get() = driverController.rightBumper or driverController.leftBumper
 
 
         //TODO: Increased speed trigger for zipping across the field?
