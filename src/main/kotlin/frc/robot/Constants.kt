@@ -3,6 +3,7 @@ package frc.robot
 import frc.engine.utils.Inches
 import frc.engine.utils.Meters
 import java.util.Currency
+import frc.engine.utils.Polynomial
 
 /* Constants for tuning the robot code.
 
@@ -32,6 +33,12 @@ object Constants {
          * getting close to being good, fix it less hard so it doesn't overshoot)*/
         const val KD            = 0.0 // tune later
 
+        /** Propotional to the integral of the error
+         * (If it's been bad for a long time, fix it harder.)
+         * Usually very unstable; much safer to leave at 0.0 if possible
+        */
+        const val KI            = 0.0
+
 
         /** (roughly) how much voltage to overcome static friction */
         const val KS            = 0.0
@@ -45,6 +52,34 @@ object Constants {
            For info on battery characteristics
          */
     }
+    object ShooterConstants {
+        const val leftFlywheel   = 5 //TODO
+        const val rightFlywheel = 6 //TODO
+        /** Proportional to the error (if it's bad, fix it. If it's really bad, fix it harder based on how bad it is)*/
+        const val KP            = 1.0 // tune later
+
+        /** Proportional to the slope (derivative) of the error
+         * (If it's OK but it's starting to go bad, fix it ahead of time, and if it's bad but it's
+         * getting close to being good, fix it less hard so it doesn't overshoot)*/
+        const val KD            = 0.0 // tune later
+
+        /** Propotional to the integral of the error
+         * (If it's been bad for a long time, fix it harder.)
+         * Usually very unstable; much safer to leave at 0.0 if possible
+         */
+        const val KI            = 0.0
+
+        /** (roughly) how much voltage to overcome static friction */
+        const val KS            = 0.0
+        /** How much voltage to maintain a velocity*/
+        const val KV            = 0.0
+        /** How much voltage to accelerate- Can go unused (0) */
+        const val KA            = 0.0
+
+        const val CurrentLimit = 20 //amps, per motor controller
+        val SpeakerPoly = Polynomial() //TODO Desmos this
+
+    }
 
     object TeleopConstants {
         const val MaxVoltage = 5.0
@@ -52,7 +87,7 @@ object Constants {
         const val speedBoostSpeed = 1.0 //TODO set speed boost speed
         const val quickTurnDeadzone = 0.1 //TODO set quick turn dead zone
         const val quickTurnSpeed = 0.5 //TODO set quick turn speed.
-        
+
         //const val MaxSpeed = 5.0 //M/s
         //TODO: Maybe change to feet per second? Metric is Good, but many teams communicate drivetrain speed in feet per second so for communicating quickly it could be worth leaving in fps.
         //  Possible implementation:

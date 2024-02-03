@@ -4,7 +4,7 @@ import frc.engine.odometry.PoseProvider
 import frc.engine.utils.Degrees
 import frc.engine.utils.Meters
 import frc.engine.utils.MetersPerSecond
-import frc.engine.utils.NAVX
+import com.kauailabs.navx.frc.AHRS as NAVX
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator
@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.DriveConstants as D
+
+
 object Odometry : SubsystemBase(), PoseProvider {
 
     var navx = NAVX()
