@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
 import frc.robot.Constants
 
+import frc.robot.Constants.TeleopConstants
 import frc.robot.subsystems.Intake
 import kotlin.math.*
 

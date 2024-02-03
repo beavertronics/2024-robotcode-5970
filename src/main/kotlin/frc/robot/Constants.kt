@@ -63,5 +63,6 @@ object Constants {
     object IntakeConstants {
         const val CurrentLimit = 12
         const val voltage = 1.0
+        const val limitSwitchChannel = 1 // TODO get limit switch channel number
     }
 }
