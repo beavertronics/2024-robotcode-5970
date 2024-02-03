@@ -6,13 +6,9 @@ import com.revrobotics.RelativeEncoder
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.utils.`M/s`
 import frc.robot.Constants.DriveConstants
-import frc.robot.commands.TeleOp
-import frc.robot.subsystems.Odometry
-import kotlin.math.absoluteValue
 
 object Drivetrain : SubsystemBase() {
     private val       leftMain = CANSparkMax(DriveConstants.MotorLMainID, CANSparkLowLevel.MotorType.kBrushless)
