@@ -4,10 +4,7 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
-import frc.robot.Constants
 
-import frc.robot.Constants.TeleopConstants
-import frc.robot.subsystems.Intake
 import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
@@ -25,11 +22,6 @@ object TeleOp : Command() {
 
     override fun execute() {
         Drivetrain.rawCurvatureDrive(OI.throttle, OI.turn)
-        when {
-            OI.intake -> Intake.runIntakeRaw(Constants.IntakeConstants.voltage)
-            OI.outtake -> Intake.runIntakeRaw(-Constants.IntakeConstants.voltage)
-            else -> Intake.stop()
-        }
     }
 
     object OI {
@@ -52,8 +44,7 @@ object TeleOp : Command() {
 
         public val turn get() = driverController.leftX.processInput(squared = true)
         public val throttle get() = driverController.leftY.processInput(squared = true)
-        public val intake get() = operatorController.getRawButton(1) //Todo: Get right button
-        public val outtake get() = operatorController.getRawButton(2) //Todo: Get right button
+
         //TODO: Bring back this code- quickturns!
         //val quickTurnRight    get() = driverController.rightTriggerAxis
         //val quickTurnLeft     get() = driverController.leftTriggerAxis
