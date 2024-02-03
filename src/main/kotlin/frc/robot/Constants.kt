@@ -2,6 +2,7 @@ package frc.robot
 
 import frc.engine.utils.Inches
 import frc.engine.utils.Meters
+import frc.engine.utils.Polynomial
 
 /* Constants for tuning the robot code.
 
@@ -75,6 +76,7 @@ object Constants {
         const val KA            = 0.0
 
         const val CurrentLimit = 20 //amps, per motor controller
+        val SpeakerPoly = Polynomial() //TODO Desmos this
 
     }
 

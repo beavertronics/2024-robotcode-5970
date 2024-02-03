@@ -21,6 +21,8 @@ object Shooter : SubsystemBase() {
     private val rightPid    = Controller.PID(C.KP, C.KD)
     private val feedForward = SimpleMotorFeedforward(C.KS, C.KV, C.KA)
 
+
+
     var targetSpeed = ShooterSpeeds()
 
     init {
@@ -65,6 +67,10 @@ object Shooter : SubsystemBase() {
      */
     fun setSpeed(speed : RPM) = setSpeed(speed, speed)
     fun stop() = setSpeed(0.RPM,0.RPM)
+    fun shootSpeaker(distToSpeaker: Double){
+        setSpeed(C.SpeakerPoly.calculate(distToSpeaker))
+    }
+
     override fun periodic() {
         val leftpid = leftPid.calculate(leftEncoder.velocity)
         val rightpid = leftPid.calculate(rightEncoder.velocity)
@@ -73,9 +79,6 @@ object Shooter : SubsystemBase() {
 
         leftFlywheel.setVoltage(leftpid+leftFF)
         rightFlywheel.setVoltage(rightpid+rightFF)
-
-
-
     }
 
 }
