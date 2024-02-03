@@ -4,7 +4,7 @@ Welcome to Beavertronics' code for the 2024 FRC Season (Crescendo)!
 
 ## Current Branch
 ### - Intake
-Current Developer(s): Ozy
+Current Developer(s): Ozy, Collin
 
 Purpose: Testing branch for Intake code
 
