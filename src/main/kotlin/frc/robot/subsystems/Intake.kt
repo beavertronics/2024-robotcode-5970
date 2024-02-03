@@ -4,17 +4,19 @@ import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.Timer
 import frc.robot.Constants
 import frc.robot.Constants.IntakeConstants as C
 
 object Intake : SubsystemBase() {
 
-    val limitSwitch = DigitalInput(C.limitSwitchChannel)
+    private val limitSwitch = DigitalInput(C.limitSwitchChannel)
+    private val feedingTimer = Timer()
     enum class IntakeState {
-        INTAKING, PULLBACK, LOADED, SHOOTING, IDLE
+        INTAKING, PULLBACK, LOADED, FEEDING, IDLE, OUTTAKING
     }
 
-    val intakeState = IntakeState.IDLE
+    var intakeState = IntakeState.IDLE
 
     private val DriverMotor = CANSparkMax(Constants.DriveConstants.MotorLMainID, CANSparkLowLevel.MotorType.kBrushless)
     init {
@@ -35,14 +37,50 @@ object Intake : SubsystemBase() {
         DriverMotor.set(speed)
     }
     fun intakeNote() {
-
+        if (intakeState == IntakeState.IDLE) {
+            intakeState = IntakeState.INTAKING
+        }
     }
-    fun stopeIntakeNote() {
-
+    fun stopIntakingNote() {
+        if (intakeState == IntakeState.INTAKING) {
+            intakeState = IntakeState.IDLE
+        }
+    }
+    fun startFeeding() {
+        intakeState = IntakeState.FEEDING
+        feedingTimer.reset()
+        feedingTimer.start()
+    }
+    fun outtake() {
+        intakeState = IntakeState.OUTTAKING
     }
 
     override fun periodic() {
-        
+        when (intakeState) {
+            IntakeState.INTAKING -> {
+                runIntake(C.intakeSpeed)
+                if (limitSwitch.get()) {
+                    intakeState = IntakeState.PULLBACK
+                }
+            }
+            IntakeState.PULLBACK -> {
+                runIntake(-1 * C.pullbackSpeed)
+                if (!limitSwitch.get()) {
+                    intakeState = IntakeState.LOADED
+                }
+
+            }
+            IntakeState.FEEDING -> {
+                runIntake(C.feedingSpeed)
+                if (feedingTimer.hasElapsed(C.feedingTime)) {
+                    feedingTimer.stop()
+                    stop()
+                    intakeState = IntakeState.IDLE
+                }
+            }
+            IntakeState.OUTTAKING -> runIntake(C.outtakeSpeed)
+            else -> stop()
+        }
     }
 
 }
