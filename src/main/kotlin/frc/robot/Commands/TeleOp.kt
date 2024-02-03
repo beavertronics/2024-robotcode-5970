@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Sugar.within
 
 
-import frc.robot.Constants.TeleopConstants
+import frc.robot.Constants.TeleopConstants as C
 import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
@@ -21,11 +21,24 @@ object TeleOp : Command() {
     }
 
     override fun execute() {
-        val speeds = DifferentialDrive.curvatureDriveIK(OI.throttle, OI.turn, true)
-        Drivetrain.rawDrive(speeds.left * TeleopConstants.MaxVoltage, speeds.right * TeleopConstants.MaxVoltage)
-        //TODO: Tune drive!
+        when {
+            OI.quickTurnRight > C.quickTurnDeadzone -> {
+                Drivetrain.rawDrive(C.quickTurnSpeed  * OI.quickTurnRight * C.MaxVoltage, -1 * C.quickTurnSpeed * OI.quickTurnRight * C.MaxVoltage)
+
+            }
+            OI.quickTurnLeft > C.quickTurnDeadzone -> {
+                Drivetrain.rawDrive(-1 * C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage, C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage)
+
+            } else -> {
+            val speeds = DifferentialDrive.curvatureDriveIK(OI.throttle, OI.turn, true)
+            Drivetrain.rawDrive(speeds.left * C.MaxVoltage, speeds.right * C.MaxVoltage)
+            //TODO: Tune drive!
+
+            }
+        }
 
         //TODO: Control Subsystems!
+
     }
 
     object OI {
@@ -47,11 +60,13 @@ object TeleOp : Command() {
         }
 
         public val turn get() = driverController.leftX.processInput(squared = true)
+
         public val throttle get() = driverController.leftY.processInput(squared = true)
 
         //TODO: Bring back this code- quickturns!
-        //val quickTurnRight    get() = driverController.rightTriggerAxis
-        //val quickTurnLeft     get() = driverController.leftTriggerAxis
+        val quickTurnRight    get() = driverController.rightTriggerAxis
+        val quickTurnLeft     get() = driverController.leftTriggerAxis
+
 
         //TODO: Increased speed trigger for zipping across the field?
     }
