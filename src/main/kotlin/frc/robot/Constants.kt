@@ -47,6 +47,8 @@ object Constants {
 
     object TeleopConstants {
         const val MaxVoltage = 5.0
+        const val quickTurnDeadzone = 0.1 //TODO set quick turn dead zone
+        const val quickTurnSpeed = 0.5 //TODO set quick turn speed.
         
         //const val MaxSpeed = 5.0 //M/s
         //TODO: Maybe change to feet per second? Metric is Good, but many teams communicate drivetrain speed in feet per second so for communicating quickly it could be worth leaving in fps.
