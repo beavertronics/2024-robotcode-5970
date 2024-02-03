@@ -24,9 +24,9 @@ object Shooter : SubsystemBase() {
     private var rawShooterSpeed = 0.0;
 
     enum class ShooterMode {
-        CLOSED, OPEN
+        CLOSED_LOOP, OPEN_LOOP
     }
-    var shooterMode = ShooterMode.OPEN
+    var shooterMode = ShooterMode.OPEN_LOOP
 
     var targetSpeed = ShooterSpeeds()
 
@@ -58,7 +58,7 @@ object Shooter : SubsystemBase() {
         targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
         leftPid.setpoint = leftSpeeds.rotationsPerMinute()
         rightPid.setpoint = rightSpeeds.rotationsPerMinute()
-        shooterMode = ShooterMode.OPEN
+        shooterMode = ShooterMode.CLOSED_LOOP
 
     }
 
@@ -77,14 +77,14 @@ object Shooter : SubsystemBase() {
         setSpeed(C.SpeakerPoly.calculate(distToSpeaker))
     }
     fun setSpeedRaw(speed: Double) {
-        shooterMode = ShooterMode.CLOSED
+        shooterMode = ShooterMode.OPEN_LOOP
         rawShooterSpeed = speed
     }
 
 
     override fun periodic() {
-        when {
-            shooterMode == ShooterMode.OPEN -> {
+        when(shooterMode) {
+            ShooterMode.CLOSED_LOOP -> {
                 val leftpid = leftPid.calculate(leftEncoder.velocity)
                 val rightpid = leftPid.calculate(rightEncoder.velocity)
                 val leftFF = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
@@ -93,7 +93,7 @@ object Shooter : SubsystemBase() {
                 leftFlywheel.setVoltage(leftpid+leftFF)
                 rightFlywheel.setVoltage(rightpid+rightFF)
             }
-            shooterMode == ShooterMode.CLOSED -> {
+            ShooterMode.OPEN_LOOP -> {
                 leftFlywheel.setVoltage(rawShooterSpeed)
                 rightFlywheel.setVoltage(rawShooterSpeed)
             }
