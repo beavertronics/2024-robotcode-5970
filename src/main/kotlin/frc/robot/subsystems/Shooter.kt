@@ -21,7 +21,12 @@ object Shooter : SubsystemBase() {
     private val rightPid    = Controller.PID(C.KP, C.KD)
     private val feedForward = SimpleMotorFeedforward(C.KS, C.KV, C.KA)
 
+    private var rawShooterSpeed = 0.0;
 
+    enum class ShooterMode {
+        CLOSED, OPEN
+    }
+    var shooterMode = ShooterMode.OPEN
 
     var targetSpeed = ShooterSpeeds()
 
@@ -53,6 +58,7 @@ object Shooter : SubsystemBase() {
         targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
         leftPid.setpoint = leftSpeeds.rotationsPerMinute()
         rightPid.setpoint = rightSpeeds.rotationsPerMinute()
+        shooterMode = ShooterMode.OPEN
 
     }
 
@@ -70,15 +76,30 @@ object Shooter : SubsystemBase() {
     fun shootSpeaker(distToSpeaker: Double){
         setSpeed(C.SpeakerPoly.calculate(distToSpeaker))
     }
+    fun setSpeedRaw(speed: Double) {
+        shooterMode = ShooterMode.CLOSED
+        rawShooterSpeed = speed
+    }
+
 
     override fun periodic() {
-        val leftpid = leftPid.calculate(leftEncoder.velocity)
-        val rightpid = leftPid.calculate(rightEncoder.velocity)
-        val leftFF = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
-        val rightFF = feedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
+        when {
+            shooterMode == ShooterMode.OPEN -> {
+                val leftpid = leftPid.calculate(leftEncoder.velocity)
+                val rightpid = leftPid.calculate(rightEncoder.velocity)
+                val leftFF = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
+                val rightFF = feedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
 
-        leftFlywheel.setVoltage(leftpid+leftFF)
-        rightFlywheel.setVoltage(rightpid+rightFF)
+                leftFlywheel.setVoltage(leftpid+leftFF)
+                rightFlywheel.setVoltage(rightpid+rightFF)
+            }
+            shooterMode == ShooterMode.CLOSED -> {
+                leftFlywheel.setVoltage(rawShooterSpeed)
+                rightFlywheel.setVoltage(rawShooterSpeed)
+            }
+
+        }
+
     }
 
 }
