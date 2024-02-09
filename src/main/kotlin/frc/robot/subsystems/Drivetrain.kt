@@ -3,12 +3,18 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
-import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.utils.`M/s`
+import frc.robot.Constants
 import frc.robot.Constants.DriveConstants
+import frc.robot.subsystems.Odometry.chassisSpeeds
+
 
 object Drivetrain : SubsystemBase() {
     private val       leftMain = CANSparkMax(DriveConstants.MotorLMainID, CANSparkLowLevel.MotorType.kBrushless)
@@ -87,4 +93,12 @@ object Drivetrain : SubsystemBase() {
      * @param right Desired speed for the right motors, in M/s
      */
     fun closedLoopDrive(left: `M/s`, right: `M/s`) { closedLoopDrive(left.value, right.value) }
+    fun closedLoopDrive(speeds: ChassisSpeeds){
+        val kinematics = DifferentialDriveKinematics(DriveConstants.TrackWidth.value)
+        val wheelSpeeds: DifferentialDriveWheelSpeeds = kinematics.toWheelSpeeds(chassisSpeeds)
+        closedLoopDrive(wheelSpeeds.leftMetersPerSecond,wheelSpeeds.rightMetersPerSecond)
+     }
+    val consumeDrive: (ChassisSpeeds) -> Unit = {
+        closedLoopDrive(it)
+    }
 }
