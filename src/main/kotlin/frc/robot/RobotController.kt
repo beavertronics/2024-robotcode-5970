@@ -63,13 +63,13 @@ object RobotController : TimedRobot() {
         selectedAuto = autoChooser.selected;
         selectedAuto.schedule();
     }
-    override fun autonomousPeriodic() {}
+    override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?
 
     override fun teleopInit() {
         selectedAuto.cancel() //Stop Auto before running teleop!
         TeleOp.schedule()
     }
-    override fun teleopPeriodic() {}
+    override fun teleopPeriodic() {} //TODO: Unnecessary with command-based programming?
 
     override fun simulationInit() {} //Runs only in simulation mode (other functions run regardless of whether robot is simulated or not)
 
