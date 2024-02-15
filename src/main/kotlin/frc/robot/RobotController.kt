@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand
 
 import frc.robot.commands.TeleOp
 import frc.robot.subsystems.Drivetrain
+import frc.robot.subsystems.Odometry
 
 /* Main code for controlling the robot. Mainly just links everything together.
 
@@ -51,6 +52,8 @@ object RobotController : TimedRobot() {
     override fun robotInit() {
         //Initialize the robot!
         //CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi?
+        Odometry
+        Drivetrain
 
     }
     override fun robotPeriodic() {
