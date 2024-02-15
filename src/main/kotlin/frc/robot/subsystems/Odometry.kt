@@ -17,13 +17,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.Drivetrain
 import frc.engine.odometry.Vision
+import frc.engine.odometry.testLayout1
 import frc.robot.Constants
 import frc.robot.Constants.DriveConstants as D
 
 object Odometry : SubsystemBase(), PoseProvider {
 
     var navx = NAVX()
-    private val vision = Vision("Wyatt")
+    private val vision = Vision("Camera1", testLayout1)
 
     private val visionProvider = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
     private val encoderOnly = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
@@ -60,7 +61,7 @@ object Odometry : SubsystemBase(), PoseProvider {
     override fun update() {
         val visionMeasurements = vision.getEstimatedPose(pose)
         if(visionMeasurements != null){
-            visionProvider.setVisionMeasurementStdDevs(Constants.OdometryConstants.VisionDeviation)
+            visionProvider.setVisionMeasurementStdDevs(vision.getStdDev())
             visionProvider.addVisionMeasurement(visionMeasurements.estimatedPose.toPose2d(), visionMeasurements.timestampSeconds)
         }
 
