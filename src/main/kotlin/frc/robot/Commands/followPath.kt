@@ -1,5 +1,5 @@
 package frc.robot.Commands
-
+/*
 import com.pathplanner.lib.commands.FollowPathRamsete
 import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.util.ReplanningConfig
@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.frcUtils.getAlliance
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Odometry
+
 
 fun followPathCommand(pathName: String) : Command {
     val path = PathPlannerPath.fromPathFile(pathName);
@@ -28,4 +29,4 @@ fun followPathCommand(pathName: String) : Command {
         getAllianceLambda,
         Drivetrain // Reference to this subsystem to set requirements
     )
-}
+}*/
