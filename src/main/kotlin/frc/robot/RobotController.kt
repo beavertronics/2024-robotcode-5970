@@ -27,7 +27,9 @@ object RobotController : TimedRobot() {
         //"Description of auto" to TaxiAuto
     )
     private var autoChooser : SendableChooser<Command> = SendableChooser()
-    private lateinit var selectedAuto : Command
+    private var selectedAuto : Command = RunCommand({
+        Drivetrain.rawDrive(0.0, 0.0)
+    })
     init {
         autoChooser.setDefaultOption("No Auto",RunCommand({
             Drivetrain.rawDrive(0.0, 0.0)

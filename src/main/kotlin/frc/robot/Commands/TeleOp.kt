@@ -41,9 +41,9 @@ object TeleOp : Command() {
             }
         }
         if(OI.intake == OI.DirectionalPOV.UP){
-            Intake.intakeNote()
-        } else if(OI.intake == OI.DirectionalPOV.DOWN){
             Intake.outtake()
+        } else if(OI.intake == OI.DirectionalPOV.DOWN){
+            Intake.intakeNote()
         } else{
             Intake.stopIntakingNote()
         }

@@ -23,9 +23,9 @@ interface PoseProvider : Sendable {
     fun reset(pose2d: Pose2d) {
         reset(pose2d.x.m, pose2d.y.m, pose2d.rotation.degrees.deg)
     }
-    fun getPose() : Pose2d{
+    /*fun getPose() : Pose2d{
         return pose
-    }
+    }*/
     override fun initSendable(builder: SendableBuilder) {
         SendableRegistry.setName(this, toString())
         builder.addDoubleProperty("x", { pose.x }, null)
