@@ -10,6 +10,7 @@ import frc.robot.Constants.TeleopConstants as C
 import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
+import frc.robot.subsystems.Intake
 
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
@@ -19,11 +20,39 @@ object TeleOp : Command() {
 
 
     override fun initialize() {
-        addRequirements(Drivetrain)
+        addRequirements(Drivetrain,Intake)
     }
 
     override fun execute() {
-        Drivetrain.rawCurvatureDrive(OI.throttle, OI.turn)
+        when {
+            OI.quickTurnRight > C.quickTurnDeadzone -> {
+                Drivetrain.rawDrive(C.quickTurnSpeed  * OI.quickTurnRight * C.MaxVoltage, -1 * C.quickTurnSpeed * OI.quickTurnRight * C.MaxVoltage)
+
+            }
+            OI.quickTurnLeft > C.quickTurnDeadzone -> {
+                Drivetrain.rawDrive(-1 * C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage, C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage)
+
+            }
+            else -> {
+            val speeds = DifferentialDrive.curvatureDriveIK(OI.throttle, OI.turn, true)
+            val speedsMult = if(OI.speedBoost) C.speedBoostSpeed else C.driveSpeed
+            Drivetrain.rawDrive(speeds.left * speedsMult * C.MaxVoltage, speeds.right * speedsMult * C.MaxVoltage) //TODO: Tune drive!
+
+            }
+        }
+        if(OI.intake == OI.DirectionalPOV.UP){
+            Intake.intakeNote()
+        } else if(OI.intake == OI.DirectionalPOV.DOWN){
+            Intake.outtake()
+        } else{
+            Intake.stopIntakingNote()
+        }
+
+
+
+
+        //TODO: Control Subsystems!
+
     }
 
     object OI {
@@ -45,11 +74,27 @@ object TeleOp : Command() {
         }
 
         public val turn get() = driverController.leftX.processInput(squared = true)
+
         public val throttle get() = driverController.leftY.processInput(squared = true)
 
         //TODO: Bring back this code- quickturns!
-        //val quickTurnRight    get() = driverController.rightTriggerAxis
-        //val quickTurnLeft     get() = driverController.leftTriggerAxis
+        val quickTurnRight    get() = driverController.rightTriggerAxis
+        val quickTurnLeft     get() = driverController.leftTriggerAxis
+        val speedBoost        get() = driverController.rightBumper or driverController.leftBumper
+        enum class DirectionalPOV(val degrees: Int){
+            UP(0),
+            RIGHT(90),
+            DOWN(180),
+            LEFT(270),
+            NEUTRAL(-1)
+        }
+        fun Int.DirectionY() : DirectionalPOV{
+            if(this == 45 || this == 0 || this == 315) return DirectionalPOV.UP
+            if(this == 135 || this == 180 || this == 225) return DirectionalPOV.DOWN
+            return DirectionalPOV.NEUTRAL
+        }
+        val intake            get() = operatorController.pov.DirectionY()
+
 
         //TODO: Increased speed trigger for zipping across the field?
     }

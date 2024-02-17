@@ -47,9 +47,12 @@ object Intake : SubsystemBase() {
         }
     }
     fun startFeeding() {
+        if(intakeState != IntakeState.FEEDING)
+        {
+            feedingTimer.reset()
+            feedingTimer.start()
+        }
         intakeState = IntakeState.FEEDING
-        feedingTimer.reset()
-        feedingTimer.start()
     }
     fun outtake() {
         intakeState = IntakeState.OUTTAKING
