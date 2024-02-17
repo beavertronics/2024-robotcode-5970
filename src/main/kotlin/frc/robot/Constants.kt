@@ -104,13 +104,16 @@ object Constants {
     }
 
     object IntakeConstants {
+        const val TopMotorID = 27
+        const val BottomMotorID = 28
+
         const val CurrentLimit = 12
         const val voltage = 1.0
         const val limitSwitchChannel = 1 // TODO get limit switch channel number
-        const val intakeSpeed = 0.5 //TODO set intake speed.
-        const val pullbackSpeed = 0.3 //TODO set pullback speed. Multiplied by -1
-        const val feedingSpeed = 1.0 //TODO set feeding speed.
+        const val intakeSpeed = 0.4 //TODO set intake speed.
+        const val pullbackSpeed = 0.25 //TODO set pullback speed. Multiplied by -1
+        const val feedingSpeed = 0.5 //TODO set feeding speed.
         const val feedingTime = 1.0 //TODO set feedingTime. In seconds
-        const val outtakeSpeed = 0.6 //TODO set outtake Speed.
+        const val outtakeSpeed = 0.4 //TODO set outtake Speed.
     }
 }
