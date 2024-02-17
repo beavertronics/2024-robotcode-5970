@@ -55,7 +55,7 @@ object Constants {
     }
     object OdometryConstants {
         @Suppress("removal")
-        val VisionDeviation = MatBuilder(Nat.N3(),Nat.N1()).fill(30.0,30.0,1000.0)
+        val VisionDeviation = MatBuilder(Nat.N3(),Nat.N1()).fill(0.1,0.1,1000.0)
     }
 
     object TeleopConstants {

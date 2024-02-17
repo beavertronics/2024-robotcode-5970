@@ -12,19 +12,27 @@ import edu.wpi.first.networktables.NetworkTableEvent
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.engine.utils.Sugar.degreesToRadians
 import frc.robot.Constants
 import frc.robot.subsystems.Odometry
 import org.photonvision.EstimatedRobotPose
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import java.util.*
+
 val aprilTags1: MutableList<AprilTag> = mutableListOf(
+    AprilTag(2,
+        Pose3d(
+            Translation3d(0.00,0.0,0.0),
+            Rotation3d(0.0,0.0,90.0.degreesToRadians())
+        )
+    ) ,
     AprilTag(1,
         Pose3d(
-            Translation3d(1.00,0.0,0.0),
-            Rotation3d()
-        )
+            Translation3d(0.4445,0.0,0.0),
+            Rotation3d(0.0,0.0,90.0.degreesToRadians())
     )
+)
 )
 val testLayout1 = AprilTagFieldLayout(aprilTags1,10.0,5.0)
 val aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile)
