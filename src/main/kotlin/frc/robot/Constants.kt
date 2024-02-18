@@ -20,10 +20,10 @@ be located in RobotHardware.kt instead.
 object Constants {
     object DriveConstants {
 
+        const val MotorLMainID = 21
+        const val MotorLSubID  = 22
         const val MotorRMainID = 23
         const val MotorRSubID  = 24
-        const val MotorLMainID = 22
-        const val MotorLSubID  = 21
 
         const val MotorRevsPerWheelRev = (50/14) * (48/16) //~10:1 As taken from CAD- should verify after drivetrain is built in the real world
         val WheelDiameter = Inches(6.0).meterValue()
@@ -56,9 +56,22 @@ object Constants {
            For info on battery characteristics
          */
     }
+    object IntakeConstants {
+        const val TopMotorID = 28
+        const val BottomMotorID = 27
+
+        const val CurrentLimit = 12
+        const val voltage = 1.0
+        const val limitSwitchChannel = 1 // TODO get limit switch channel number
+        const val intakeSpeed = 0.4 //TODO set intake speed.
+        const val pullbackSpeed = 0.25 //TODO set pullback speed. Multiplied by -1
+        const val feedingSpeed = 0.5 //TODO set feeding speed.
+        const val feedingTime = 1.0 //TODO set feedingTime. In seconds
+        const val outtakeSpeed = 0.4 //TODO set outtake Speed.
+    }
     object ShooterConstants {
-        const val leftFlywheel   = 5 //TODO
-        const val rightFlywheel = 6 //TODO
+        const val leftFlywheel   = 25
+        const val rightFlywheel = 26
         /** Proportional to the error (if it's bad, fix it. If it's really bad, fix it harder based on how bad it is)*/
         const val KP            = 1.0 // tune later
 
@@ -94,7 +107,7 @@ object Constants {
         const val driveSpeed = 0.7 //TODO set drive speed
         const val speedBoostSpeed = 1.0 //TODO set speed boost speed
         const val quickTurnDeadzone = 0.1 //TODO set quick turn dead zone
-        const val quickTurnSpeed = 0.5 //TODO set quick turn speed.
+        const val quickTurnSpeed = 0.7 //TODO set quick turn speed.
 
         //const val MaxSpeed = 5.0 //M/s
         //TODO: Maybe change to feet per second? Metric is Good, but many teams communicate drivetrain speed in feet per second so for communicating quickly it could be worth leaving in fps.
@@ -103,17 +116,5 @@ object Constants {
         //    (also import utils/Units.kt)
     }
 
-    object IntakeConstants {
-        const val TopMotorID = 27
-        const val BottomMotorID = 28
 
-        const val CurrentLimit = 12
-        const val voltage = 1.0
-        const val limitSwitchChannel = 1 // TODO get limit switch channel number
-        const val intakeSpeed = 0.4 //TODO set intake speed.
-        const val pullbackSpeed = 0.25 //TODO set pullback speed. Multiplied by -1
-        const val feedingSpeed = 0.5 //TODO set feeding speed.
-        const val feedingTime = 1.0 //TODO set feedingTime. In seconds
-        const val outtakeSpeed = 0.4 //TODO set outtake Speed.
-    }
 }
