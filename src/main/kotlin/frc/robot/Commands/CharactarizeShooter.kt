@@ -9,7 +9,7 @@ var routine = SysIdRoutine(
     SysIdRoutine.Config(),
     SysIdRoutine.Mechanism(
         Shooter.rawDrive,
-        logger,
+        Shooter.logger,
         Shooter
     )
 )
