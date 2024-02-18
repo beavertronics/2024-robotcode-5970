@@ -72,6 +72,9 @@ object Drivetrain : SubsystemBase() {
         leftMain.setVoltage(left)
         rightMain.setVoltage(right)
     }
+    fun stop(){
+        rawDrive(0.0,0.0)
+    }
     /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
      * @param left Desired speed for the left motors, in M/s
      * @param right Desired speed for the right motors, in M/s
