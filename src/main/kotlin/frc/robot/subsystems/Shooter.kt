@@ -4,6 +4,9 @@ import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.units.*
+import edu.wpi.first.wpilibj.RobotController
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.Controller
 import frc.engine.utils.RPM
@@ -24,7 +27,7 @@ object Shooter : SubsystemBase() {
     private var rawShooterSpeed = 0.0;
 
     enum class ShooterMode {
-        CLOSED_LOOP, OPEN_LOOP
+        CLOSED_LOOP, OPEN_LOOP, STOP
     }
     var shooterMode = ShooterMode.OPEN_LOOP
 
@@ -72,13 +75,27 @@ object Shooter : SubsystemBase() {
      * @param speed Desired speed of the motor in RPM
      */
     fun setSpeed(speed : RPM) = setSpeed(speed, speed)
-    fun stop() = setSpeed(0.RPM,0.RPM)
+    fun stop() {
+        shooterMode=ShooterMode.STOP
+
+    }
+
     fun shootSpeaker(distToSpeaker: Double){
         setSpeed(C.SpeakerPoly.calculate(distToSpeaker))
     }
     fun setSpeedRaw(speed: Double) {
         shooterMode = ShooterMode.OPEN_LOOP
         rawShooterSpeed = speed
+    }
+
+
+    /**
+     * Charactarization only DON'T USE
+     */
+    val rawDrive: (Measure<Voltage>) -> Unit =  {
+        //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
+        leftFlywheel.setVoltage(it.`in`(Units.Volts))
+        rightFlywheel.setVoltage(it.`in`(Units.Volts))
     }
 
 
@@ -97,9 +114,39 @@ object Shooter : SubsystemBase() {
                 leftFlywheel.set(rawShooterSpeed)
                 rightFlywheel.set(rawShooterSpeed)
             }
-
+            else -> {
+                leftFlywheel.set(0.0)
+                rightFlywheel.set(0.0)
+            }
         }
 
     }
+    private val m_appliedVoltage: MutableMeasure<Voltage> = MutableMeasure.mutable(Units.Volts.of(0.0))
+    private val m_distance: MutableMeasure<Distance> = MutableMeasure.mutable(Units.Meters.of(0.0))
+    private val m_velocity: MutableMeasure<Velocity<Distance>> = MutableMeasure.mutable(Units.MetersPerSecond.of(0.0))
+
+    val logger: (SysIdRoutineLog) -> Unit =  {
+        // Record a frame for the left motors.  Since these share an encoder, we consider
+        // the entire group to be one motor.
+        it.motor("drive-left")
+            .voltage(
+                m_appliedVoltage.mut_replace(
+                    leftFlywheel.get() * RobotController.getBatteryVoltage(), Units.Volts
+                ))
+            .linearPosition(m_distance.mut_replace(Drivetrain.leftEncoder.position, Units.Meters))
+            .linearVelocity(
+                m_velocity.mut_replace(Drivetrain.leftEncoder.velocity, Units.MetersPerSecond));
+        // Record a frame for the right motors.  Since these share an encoder, we consider
+        // the entire group to be one motor.
+        it.motor("drive-right")
+            .voltage(
+                m_appliedVoltage.mut_replace(
+                    rightFlywheel.get() * RobotController.getBatteryVoltage(), Units.Volts
+                ))
+            .linearPosition(m_distance.mut_replace(Drivetrain.rightEncoder.position, Units.Meters))
+            .linearVelocity(
+                m_velocity.mut_replace(Drivetrain.rightEncoder.velocity, Units.MetersPerSecond));
+    }
+
 
 }
