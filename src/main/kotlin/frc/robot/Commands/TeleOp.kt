@@ -1,6 +1,7 @@
 package frc.robot.commands
 
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.Command
@@ -11,13 +12,15 @@ import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Shooter
 
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
 
 object TeleOp : Command() {
 
-
+    var shooting = false
+    val shootTimer = Timer()
 
     override fun initialize() {
         addRequirements(Drivetrain,Intake)
@@ -40,13 +43,17 @@ object TeleOp : Command() {
 
             }
         }
-        if(OI.intake == OI.DirectionalPOV.UP){
-            Intake.outtake()
-        } else if(OI.intake == OI.DirectionalPOV.DOWN){
-            Intake.intakeNote()
-        } else{
-            Intake.stopIntakingNote()
+        Shooter.setSpeedRaw(OI.shooterSpeeds)
+
+        when {
+            OI.shoot -> Intake.startFeeding()
+
+            OI.intake == OI.DirectionalPOV.UP -> Intake.outtake()
+            OI.intake == OI.DirectionalPOV.DOWN -> Intake.intakeNote()
+            else -> Intake.stopIntakingNote()
         }
+
+
 
 
 
@@ -94,6 +101,9 @@ object TeleOp : Command() {
             return DirectionalPOV.NEUTRAL
         }
         val intake            get() = operatorController.pov.DirectionY()
+        val shoot get() = operatorController.trigger
+        val shooterSpeeds get() = operatorController.getRawAxis(1).processInput(deadzone = 0.2,squared = true, readjust = false)
+
 
 
         //TODO: Increased speed trigger for zipping across the field?

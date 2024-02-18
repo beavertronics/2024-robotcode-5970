@@ -94,8 +94,8 @@ object Shooter : SubsystemBase() {
                 rightFlywheel.setVoltage(rightpid+rightFF)
             }
             ShooterMode.OPEN_LOOP -> {
-                leftFlywheel.setVoltage(rawShooterSpeed)
-                rightFlywheel.setVoltage(rawShooterSpeed)
+                leftFlywheel.set(rawShooterSpeed)
+                rightFlywheel.set(rawShooterSpeed)
             }
 
         }
