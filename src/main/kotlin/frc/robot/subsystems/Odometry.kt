@@ -57,9 +57,6 @@ object Odometry : SubsystemBase(), PoseProvider {
         reset(initial)
     }
 
-    override fun periodic() {
-        update()
-    }
 
     override fun reset(x: Meters, y: Meters, theta: Degrees) {
         val p = Pose2d(x.value, y.value, Rotation2d.fromDegrees(theta.value))
@@ -67,7 +64,11 @@ object Odometry : SubsystemBase(), PoseProvider {
         encoderOnly.resetPosition(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position, p)
     }
 
-    override fun update() {
+    /*override fun periodic() {
+        update()
+    }*/
+
+    override fun periodic() {
         val visionMeasurements = vision.getEstimatedPose(pose)
         if(visionMeasurements != null){
             visionProvider.setVisionMeasurementStdDevs(Constants.OdometryConstants.VisionDeviation)

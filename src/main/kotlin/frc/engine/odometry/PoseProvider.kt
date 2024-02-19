@@ -17,7 +17,7 @@ interface PoseProvider : Sendable {
     val pose: Pose2d
 
     /** Updates the [pose] variable */
-    fun update()
+    fun periodic()
 
     fun reset(x: Meters, y: Meters, theta: Degrees)
     fun reset(pose2d: Pose2d) {
