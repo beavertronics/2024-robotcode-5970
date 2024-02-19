@@ -23,7 +23,7 @@ object TeleOp : Command() {
     val shootTimer = Timer()
 
     override fun initialize() {
-        addRequirements(Drivetrain,Intake)
+        addRequirements(Drivetrain,Intake,Shooter)
     }
 
     override fun execute() {

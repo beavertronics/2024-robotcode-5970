@@ -49,6 +49,9 @@ object Drivetrain : SubsystemBase() {
 
         drive.setDeadband(0.0)
 
+        leftMain.inverted = true
+        leftSecondary.inverted = true
+
         /* TODO: set motor inversion correctly
         leftMain.inverted = false
         leftSecondary.inverted = false
