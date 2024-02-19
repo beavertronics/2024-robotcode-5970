@@ -37,6 +37,8 @@ object Shooter : SubsystemBase() {
 
         leftFlywheel.restoreFactoryDefaults()
         leftFlywheel.setSmartCurrentLimit(C.CurrentLimit) //Todo: there's a fancy version of this function that may be worth using
+        rightFlywheel.restoreFactoryDefaults()
+        rightFlywheel.setSmartCurrentLimit(C.CurrentLimit) //Todo: there's a fancy version of this function that may be worth using
             //TODO: finish initialize spark maxes
 
 
@@ -133,6 +135,7 @@ object Shooter : SubsystemBase() {
                 m_appliedVoltage.mut_replace(
                     leftFlywheel.get() * RobotController.getBatteryVoltage(), Units.Volts
                 ))
+            .linearPosition(m_distance.mut_replace(leftEncoder.position, Units.Meters))
             .linearVelocity(
                 m_velocity.mut_replace(leftEncoder.velocity, Units.MetersPerSecond));
         // Record a frame for the right motors.  Since these share an encoder, we consider
