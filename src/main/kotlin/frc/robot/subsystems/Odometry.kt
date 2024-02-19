@@ -46,16 +46,16 @@ object Odometry : SubsystemBase(), PoseProvider {
     val getPose: () -> Pose2d = { pose }
 
     val field = Field2d()
-    val initial = Pose2d(11.789039, 0.74, Rotation2d.fromDegrees(0.0))
+    //val initial = Pose2d(11.789039, 0.74, Rotation2d.fromDegrees(0.0))
 
     init {
 
     }
 
-    fun zero() {
-//        val initial = Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180.0))
-        reset(initial)
-    }
+    //fun zero() {
+    //    val initial = Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180.0))
+    //    reset(initial)
+    //}
 
 
     override fun reset(x: Meters, y: Meters, theta: Degrees) {
