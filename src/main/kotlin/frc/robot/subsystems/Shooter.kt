@@ -42,7 +42,6 @@ object Shooter : SubsystemBase() {
             //TODO: finish initialize spark maxes
 
 
-        // TODO: set motor inversion correctly
         leftFlywheel.inverted = false
         rightFlywheel.inverted = true
     }
@@ -64,7 +63,6 @@ object Shooter : SubsystemBase() {
         leftPid.setpoint = leftSpeeds.rotationsPerMinute()
         rightPid.setpoint = rightSpeeds.rotationsPerMinute()
         shooterMode = ShooterMode.CLOSED_LOOP
-
     }
 
     /**

@@ -51,6 +51,7 @@ object Intake : SubsystemBase() {
         TopMotor.set(speed)
 
     }
+
     fun intakeNote() {
         if (intakeState == IntakeState.IDLE || intakeState == IntakeState.OUTTAKING) {
             intakeState = IntakeState.INTAKING

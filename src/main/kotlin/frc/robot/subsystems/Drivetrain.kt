@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.utils.`M/s`
 import frc.robot.Constants
 import frc.robot.Constants.DriveConstants
-import frc.robot.subsystems.Odometry.chassisSpeeds
+//import frc.robot.subsystems.Odometry.chassisSpeeds
 
 
 object Drivetrain : SubsystemBase() {
@@ -51,13 +51,6 @@ object Drivetrain : SubsystemBase() {
 
         leftMain.inverted = true
         leftSecondary.inverted = true
-
-        /* TODO: set motor inversion correctly
-        leftMain.inverted = false
-        leftSecondary.inverted = false
-        rightMain.inverted = true
-        rightSecondary.inverted = true
-        */
     }
     /** Drive by setting left and right power (-1 to 1).
      * @param left Power for left motors [-1.0.. 1.0]. Forward is positive.

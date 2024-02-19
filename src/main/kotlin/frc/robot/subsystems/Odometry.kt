@@ -39,7 +39,6 @@ object Odometry : SubsystemBase(), PoseProvider {
     val chassisSpeeds get() = ChassisSpeeds(leftVel.metersPerSecondValue(), rightVel.metersPerSecondValue(), navx.rate)
     val getChassesSpeeds: () -> ChassisSpeeds = { chassisSpeeds }
     val getCurrentSpeeds: () -> DifferentialDriveWheelSpeeds = { vels }
-    private val thirdProvider = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
 
     override var pose: Pose2d = Pose2d(0.0, 0.0, Rotation2d(0.0))
         private set
