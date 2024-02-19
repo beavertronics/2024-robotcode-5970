@@ -128,24 +128,23 @@ object Shooter : SubsystemBase() {
     val logger: (SysIdRoutineLog) -> Unit =  {
         // Record a frame for the left motors.  Since these share an encoder, we consider
         // the entire group to be one motor.
-        it.motor("drive-left")
+        it.motor("shoot-left")
             .voltage(
                 m_appliedVoltage.mut_replace(
                     leftFlywheel.get() * RobotController.getBatteryVoltage(), Units.Volts
                 ))
-            .linearPosition(m_distance.mut_replace(Drivetrain.leftEncoder.position, Units.Meters))
             .linearVelocity(
-                m_velocity.mut_replace(Drivetrain.leftEncoder.velocity, Units.MetersPerSecond));
+                m_velocity.mut_replace(leftEncoder.velocity, Units.MetersPerSecond));
         // Record a frame for the right motors.  Since these share an encoder, we consider
         // the entire group to be one motor.
-        it.motor("drive-right")
+        it.motor("shoot-right")
             .voltage(
                 m_appliedVoltage.mut_replace(
                     rightFlywheel.get() * RobotController.getBatteryVoltage(), Units.Volts
                 ))
-            .linearPosition(m_distance.mut_replace(Drivetrain.rightEncoder.position, Units.Meters))
+            .linearPosition(m_distance.mut_replace(rightEncoder.position, Units.Meters))
             .linearVelocity(
-                m_velocity.mut_replace(Drivetrain.rightEncoder.velocity, Units.MetersPerSecond));
+                m_velocity.mut_replace(rightEncoder.velocity, Units.MetersPerSecond));
     }
 
 
