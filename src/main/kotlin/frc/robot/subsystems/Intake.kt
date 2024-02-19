@@ -20,17 +20,16 @@ object Intake : SubsystemBase() {
 
     var intakeState = IntakeState.IDLE
 
-    private val TopMotor = TalonSRX(C.TopMotorID)
+    private val TopMotor = CANSparkMax(C.TopMotorID, CANSparkLowLevel.MotorType.kBrushed)
     private val bottomMotor = TalonSRX(C.BottomMotorID)
 
     init {
-        TopMotor.configContinuousCurrentLimit(C.CurrentLimit)
-        TopMotor.configFactoryDefault()
+        TopMotor.setSmartCurrentLimit(C.CurrentLimit)
+        TopMotor.restoreFactoryDefaults()
         bottomMotor.configContinuousCurrentLimit(C.CurrentLimit)
         bottomMotor.configFactoryDefault()
-        bottomMotor.follow(TopMotor)
         bottomMotor.inverted = true
-        TopMotor.inverted = true
+        TopMotor.inverted = false
 
     }
 
@@ -38,13 +37,18 @@ object Intake : SubsystemBase() {
      * @param voltage The voltage to run the motor at. Positive is intake, Negative is outake
      */
     fun runIntakeRaw(voltage:Double) {
-        TopMotor.set(ControlMode.PercentOutput, voltage/12)
+        bottomMotor.set(ControlMode.PercentOutput, voltage/12)
+        TopMotor.set(voltage/12)
     }
     /** Runs the intake motor at 0V, stopping it
      */
-    fun stop() { TopMotor.set(ControlMode.PercentOutput, 0.0) }
+    fun stop() {
+        bottomMotor.set(ControlMode.PercentOutput, 0.0)
+        TopMotor.set(0.0)
+    }
     fun runIntake(speed:Double) {
-        TopMotor.set(ControlMode.PercentOutput, speed)
+        bottomMotor.set(ControlMode.PercentOutput, speed)
+        TopMotor.set(speed)
 
     }
     fun intakeNote() {
