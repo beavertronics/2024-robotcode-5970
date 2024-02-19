@@ -74,6 +74,7 @@ object Drivetrain : SubsystemBase() {
         //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
         leftMain.setVoltage(left)
         rightMain.setVoltage(right)
+        drive.feed()
     }
     fun stop(){
         rawDrive(0.0,0.0)
