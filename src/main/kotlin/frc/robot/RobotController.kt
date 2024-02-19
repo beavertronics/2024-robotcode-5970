@@ -26,6 +26,7 @@ object RobotController : TimedRobot() {
         //TODO: Autos go here!
         //ie 
         //"Description of auto" to TaxiAuto
+        "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto()
     )
     private var autoChooser : SendableChooser<Command> = SendableChooser()
     private var selectedAuto : Command = RunCommand({
@@ -35,9 +36,6 @@ object RobotController : TimedRobot() {
         autoChooser.setDefaultOption("No Auto",RunCommand({
             Drivetrain.rawDrive(0.0, 0.0)
         }) )
-        autoChooser.addOption("OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto",
-            OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto()
-        )
 
         for (auto in autos) {
             autoChooser.addOption(auto.key, auto.value);
