@@ -99,9 +99,9 @@ object Drivetrain : SubsystemBase() {
      * @param right Desired speed for the right motors, in M/s
      */
     fun closedLoopDrive(left: `M/s`, right: `M/s`) { closedLoopDrive(left.value, right.value) }
-    fun closedLoopDrive(speeds: ChassisSpeeds){
+    fun closedLoopDrive(speeds: ChassisSpeeds){ //Todo: speeds is passed directly from odometry
         val kinematics = DifferentialDriveKinematics(DriveConstants.TrackWidth.value)
-        val wheelSpeeds: DifferentialDriveWheelSpeeds = kinematics.toWheelSpeeds(chassisSpeeds)
+        val wheelSpeeds: DifferentialDriveWheelSpeeds = kinematics.toWheelSpeeds(speeds)
         closedLoopDrive(wheelSpeeds.leftMetersPerSecond,wheelSpeeds.rightMetersPerSecond)
      }
     val consumeDrive: (ChassisSpeeds) -> Unit = {
