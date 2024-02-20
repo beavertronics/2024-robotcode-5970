@@ -1,15 +1,14 @@
 package frc.robot.commands
 
+import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
-import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
-import frc.robot.Constants.IntakeConstants
 import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
@@ -30,55 +29,56 @@ object TeleOp : Command() {
     }
 
     override fun execute() {
-    
+        OI.Rumble.update()
+        // HANDLE DRIVE
         var baseSpeed = if (OI.speedBoost) C.speedBoostSpeed else C.driveSpeed
 
         if (OI.reverseDrive) baseSpeed *= -1
-
         val leftSpeed  = baseSpeed * OI.leftThrottle
         val rightSpeed = baseSpeed * OI.rightThrottle
 
         Drivetrain.rawDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
 
-          
+        // HANDLE INTAKE
+        when{
+            OI.shoot -> Intake.feed().schedule()
+            OI.manualIntakeSpeed > 0.3 -> { // OUTTAKE
+                Intake.outtakeSpeed = OI.manualIntakeSpeed * C.MaxIntakeSpeed
+                if(Intake.currentCommand.name != "FEEDING") Intake.outtake().schedule()
+            }
+            OI.manualIntakeSpeed < 0 -> { // INTAKE
+                Intake.intakeSpeed = -OI.manualIntakeSpeed * C.MaxIntakeSpeed
+                if(Intake.currentCommand.name == "IDLE" || Intake.currentCommand.name == "OUTTAKE" && Intake.currentCommand.name != "PICKUP") Intake.doIntake().schedule()
+            }
+            else -> if(Intake.currentCommand.name != "PULL_BACK" && Intake.currentCommand.name != "IDLE") Intake.idle().schedule() // IDLE
+
+        }
+        Intake.doIntake()
         Shooter.setSpeedRaw(OI.shooterSpeed)
     }
 
     object OI {
-        private val operatorController = CommandXboxController(0)
+
+        private val commandOperatorController = CommandXboxController(0)
+        private val operatorController = XboxController(0)
         private val driverControllerL = Joystick(1) //TODO: Fix!
         private val driverControllerR = Joystick(2)
-
-                /* Old joystick-drive code 
-        public val turn get() = driverController.leftX.processInput(squared = true)
-        public val throttle get() = driverController.leftY.processInput(squared = true)
-        */
-        
-        //New joystick tank drive code
-        public val leftThrottle  get() = driverControllerL.getY().processInput(0.1,SquareMode.SQUARED,false)
-        public val rightThrottle get() = driverControllerR.getY().processInput(0.1,SquareMode.SQUARED,false)
-
-        /* Old quickturn bindings
-        val quickTurnLeft     get() = driverController.leftTriggerAxis
-        val quickTurnRight    get() = driverController.rightTriggerAxis
-        val speedBoost        get() = driverController.rightBumper or driverController.leftBumper
-        */
-
-        public val speedBoost get() = driverControllerR.trigger
-        public val reverseDrive get() = driverControllerL.trigger
-
-                /*
-        val intake get() = operatorController.pov.DirectionY()
-        val shoot  get() = operatorController.trigger
-        val shooterSpeed get() = operatorController.getRawAxis(1).processInput(deadzone = 0.2,squared = true, readjust = false)
-        */
-        val shooterSpeed get() =  abs(operatorController.getLeftY())
-        val manualIntakeSpeed get() = operatorController.getRightY()
-
         init {
-            operatorController.b().whileTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
-            operatorController.rightBumper().whileTrue(Intake.run({Intake.runIntake(IntakeConstants.feedingSpeed)}))
+            //commandOperatorController.b().whileTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
+            //commandOperatorController.rightBumper().whileTrue(Intake.feed())
         }
+        //Driver Controls
+        val leftThrottle  get() = driverControllerL.y.processInput(squared=SquareMode.SQUARED, readjust = false)
+        val rightThrottle get() = driverControllerR.y.processInput(squared=SquareMode.SQUARED, readjust = false)
+
+        val speedBoost get() = driverControllerR.trigger
+        val reverseDrive get() = driverControllerL.trigger
+        //Operator controls
+
+        val shooterSpeed get() =  abs(operatorController.leftY.processInput())
+        val manualIntakeSpeed get() = operatorController.rightY.processInput()
+        val shoot get() = operatorController.rightTriggerAxis.absGreaterThan(0.5)
+
 
 
         enum class SquareMode {
@@ -87,6 +87,12 @@ object TeleOp : Command() {
             CUBED
         }
 
+        /**
+         * Processes user input to ensure smooth control of subsystems
+         * @param deadzone returns 0 if the absolute value of the input is less than deadzone
+         * @param squared whether to square the input (Automatically adjusts so that the sign of the output is not changed)
+         * @param readjust readjusts the output so that deadzone is the starting point for the output (ex. if input = deadzone+0.1, output = 0.1)
+         */
         private fun Double.processInput(deadzone : Double = 0.1, squared : SquareMode = SquareMode.NORMAL, readjust : Boolean = true) : Double{
             var processed = this
 
@@ -100,7 +106,7 @@ object TeleOp : Command() {
                 SquareMode.NORMAL  -> processed
             }
         }
-        private fun Double.abs_GreaterThan(target: Double): Boolean{
+        private fun Double.absGreaterThan(target: Double): Boolean{
             return this.absoluteValue > target
         }
 
@@ -116,5 +122,22 @@ object TeleOp : Command() {
             if(this == 135 || this == 180 || this == 225) return DirectionalPOV.DOWN
             return DirectionalPOV.NEUTRAL
         }
+        object Rumble {
+            private val rumbleTimer = Timer()
+            private var rumbleTime  = 0.0
+
+            fun set(time: Double, power: Double, side: GenericHID.RumbleType = GenericHID.RumbleType.kBothRumble){
+                rumbleTimer.reset()
+                rumbleTime = time
+                operatorController.setRumble(side, power)
+                rumbleTimer.start()
+            }
+            fun update(){
+                if(rumbleTimer.hasElapsed(rumbleTime)){
+                    operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
+                }
+            }
+        }
+
     }
 }
