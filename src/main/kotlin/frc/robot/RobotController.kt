@@ -22,21 +22,18 @@ import frc.robot.subsystems.Drivetrain
 
 object RobotController : TimedRobot() {
 
-    val autos: Map<String,Command> = mapOf(
+    val noAuto = RunCommand({Drivetrain.rawDrive(0.0, 0.0)})
+    var autos: Map<String,Command> = mapOf(
         //TODO: Autos go here!
         //ie 
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto()
     )
-    private var autoChooser : SendableChooser<Command> = SendableChooser()
-    private var selectedAuto : Command = RunCommand({
-        Drivetrain.rawDrive(0.0, 0.0)
-    })
-    init {
-        autoChooser.setDefaultOption("No Auto",RunCommand({
-            Drivetrain.rawDrive(0.0, 0.0)
-        }) )
 
+    private var autoChooser : SendableChooser<Command> = SendableChooser()
+    private var selectedAuto : Command = noAuto
+    init {
+        autoChooser.setDefaultOption("No Auto", noAuto)
         for (auto in autos) {
             autoChooser.addOption(auto.key, auto.value);
         }
