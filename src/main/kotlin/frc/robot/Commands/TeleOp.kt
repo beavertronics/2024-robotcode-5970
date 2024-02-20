@@ -5,9 +5,11 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
+import frc.robot.Constants.IntakeConstants
 import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
@@ -24,70 +26,84 @@ object TeleOp : Command() {
 
     override fun initialize() {
         addRequirements(Drivetrain,Intake,Shooter)
+        
     }
 
     override fun execute() {
-        when {
-            OI.quickTurnRight > C.quickTurnDeadzone -> {
-                Drivetrain.rawDrive(C.quickTurnSpeed  * OI.quickTurnRight * C.MaxVoltage, -1 * C.quickTurnSpeed * OI.quickTurnRight * C.MaxVoltage)
+    
+        var baseSpeed = if (OI.speedBoost) C.speedBoostSpeed else C.driveSpeed
 
-            }
-            OI.quickTurnLeft > C.quickTurnDeadzone -> {
-                Drivetrain.rawDrive(-1 * C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage, C.quickTurnSpeed * OI.quickTurnLeft * C.MaxVoltage)
+        if (OI.reverseDrive) baseSpeed *= -1
 
-            }
-            else -> {
-            val speeds = DifferentialDrive.curvatureDriveIK(OI.throttle, OI.turn, true)
-            val speedsMult = if(OI.speedBoost) C.speedBoostSpeed else C.driveSpeed
-            Drivetrain.rawDrive(speeds.left * speedsMult * C.MaxVoltage, speeds.right * speedsMult * C.MaxVoltage) //TODO: Tune drive!
+        val leftSpeed  = baseSpeed * OI.leftThrottle
+        val rightSpeed = baseSpeed * OI.rightThrottle
 
-            }
-        }
-        Shooter.setSpeedRaw(OI.shooterSpeeds)
+        Drivetrain.rawDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
 
-        when {
-            OI.shoot -> Intake.startFeeding()
-
-            OI.intake == OI.DirectionalPOV.UP -> Intake.outtake()
-            OI.intake == OI.DirectionalPOV.DOWN -> Intake.intakeNote()
-            else -> Intake.stopIntakingNote()
-        }
-
-
-
-
-
-
-        //TODO: Control Subsystems!
-
+          
+        Shooter.setSpeedRaw(OI.shooterSpeed)
     }
 
     object OI {
-        private val driverController    = XboxController(0)
-        private val operatorController  = Joystick(1)
+        private val operatorController = CommandXboxController(0)
+        private val driverControllerL = Joystick(1) //TODO: Fix!
+        private val driverControllerR = Joystick(2)
 
-        private fun Double.processInput(deadzone : Double = 0.1, squared : Boolean = false, cubed : Boolean = false, readjust : Boolean = true) : Double{
+                /* Old joystick-drive code 
+        public val turn get() = driverController.leftX.processInput(squared = true)
+        public val throttle get() = driverController.leftY.processInput(squared = true)
+        */
+        
+        //New joystick tank drive code
+        public val leftThrottle  get() = driverControllerL.getY().processInput(0.1,SquareMode.SQUARED,false)
+        public val rightThrottle get() = driverControllerR.getY().processInput(0.1,SquareMode.SQUARED,false)
+
+        /* Old quickturn bindings
+        val quickTurnLeft     get() = driverController.leftTriggerAxis
+        val quickTurnRight    get() = driverController.rightTriggerAxis
+        val speedBoost        get() = driverController.rightBumper or driverController.leftBumper
+        */
+
+        public val speedBoost get() = driverControllerR.trigger
+        public val reverseDrive get() = driverControllerL.trigger
+
+                /*
+        val intake get() = operatorController.pov.DirectionY()
+        val shoot  get() = operatorController.trigger
+        val shooterSpeed get() = operatorController.getRawAxis(1).processInput(deadzone = 0.2,squared = true, readjust = false)
+        */
+        val shooterSpeed get() =  abs(operatorController.getLeftY())
+        val manualIntakeSpeed get() = operatorController.getRightY()
+
+        init {
+            operatorController.b().whileTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
+            operatorController.rightBumper().whileTrue(Intake.run({Intake.runIntake(IntakeConstants.feedingSpeed)}))
+        }
+
+
+        enum class SquareMode {
+            NORMAL,
+            SQUARED,
+            CUBED
+        }
+
+        private fun Double.processInput(deadzone : Double = 0.1, squared : SquareMode = SquareMode.NORMAL, readjust : Boolean = true) : Double{
             var processed = this
-            if(readjust) processed = ((this.absoluteValue - deadzone)/(1 - deadzone))*this.sign
-            return when {
-                this.within(deadzone) ->    0.0
-                squared ->                  processed.pow(2) * this.sign
-                cubed ->                    processed.pow(3)
-                else ->                     processed
+
+            if (processed.within(deadzone)) return 0.0
+
+            if(readjust) processed = ((processed.absoluteValue - deadzone)/(1 - deadzone))*processed.sign
+
+            return when (squared) {
+                SquareMode.SQUARED -> processed.pow(2) * this.sign
+                SquareMode.CUBED   -> processed.pow(3)
+                SquareMode.NORMAL  -> processed
             }
         }
         private fun Double.abs_GreaterThan(target: Double): Boolean{
             return this.absoluteValue > target
         }
 
-        public val turn get() = driverController.leftX.processInput(squared = true)
-
-        public val throttle get() = driverController.leftY.processInput(squared = true)
-
-        //TODO: Bring back this code- quickturns!
-        val quickTurnRight    get() = driverController.rightTriggerAxis
-        val quickTurnLeft     get() = driverController.leftTriggerAxis
-        val speedBoost        get() = driverController.rightBumper or driverController.leftBumper
         enum class DirectionalPOV(val degrees: Int){
             UP(0),
             RIGHT(90),
@@ -100,12 +116,5 @@ object TeleOp : Command() {
             if(this == 135 || this == 180 || this == 225) return DirectionalPOV.DOWN
             return DirectionalPOV.NEUTRAL
         }
-        val intake            get() = operatorController.pov.DirectionY()
-        val shoot get() = operatorController.trigger
-        val shooterSpeeds get() = operatorController.getRawAxis(1).processInput(deadzone = 0.2,squared = true, readjust = false)
-
-
-
-        //TODO: Increased speed trigger for zipping across the field?
     }
 }

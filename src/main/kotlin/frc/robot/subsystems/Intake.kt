@@ -5,20 +5,17 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior.*
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.util.sendable.SendableBuilder
 import frc.robot.Constants
 import frc.robot.Constants.IntakeConstants as C
 
 object Intake : SubsystemBase() {
 
     private val limitSwitch = DigitalInput(C.limitSwitchChannel)
-    private val feedingTimer = Timer()
-    enum class IntakeState {
-        INTAKING, PULLBACK, LOADED, FEEDING, IDLE, OUTTAKING
-    }
-
-    var intakeState = IntakeState.IDLE
 
     private val TopMotor = CANSparkMax(C.TopMotorID, CANSparkLowLevel.MotorType.kBrushed)
     private val bottomMotor = TalonSRX(C.BottomMotorID)
@@ -28,6 +25,7 @@ object Intake : SubsystemBase() {
         TopMotor.restoreFactoryDefaults()
         bottomMotor.configContinuousCurrentLimit(C.CurrentLimit)
         bottomMotor.configFactoryDefault()
+
         bottomMotor.inverted = true
         TopMotor.inverted = false
 
@@ -49,58 +47,14 @@ object Intake : SubsystemBase() {
     fun runIntake(speed:Double) {
         bottomMotor.set(ControlMode.PercentOutput, speed)
         TopMotor.set(speed)
-
     }
 
-    fun intakeNote() {
-        if (intakeState == IntakeState.IDLE || intakeState == IntakeState.OUTTAKING) {
-            intakeState = IntakeState.INTAKING
-        }
-    }
-    fun stopIntakingNote() {
+    fun doIntake() : Command = this.pickup().andThen(this.pullBack().withInterruptBehavior(kCancelIncoming))
 
-        if (intakeState == IntakeState.INTAKING || intakeState == IntakeState.OUTTAKING || intakeState == IntakeState.LOADED) {
-            intakeState = IntakeState.IDLE
-        }
-    }
-    fun startFeeding() {
-        if(intakeState != IntakeState.FEEDING)
-        {
-            feedingTimer.reset()
-            feedingTimer.start()
-        }
-        intakeState = IntakeState.FEEDING
-    }
-    fun outtake() {
-        intakeState = IntakeState.OUTTAKING
-    }
+    fun pickup()   : Command = this.run({ runIntake(C.pickupSpeed)  }).onlyWhile({ !limitSwitch.get() }).withName("Pickup")
+    fun pullBack() : Command = this.run({ runIntake(C.pullbackSpeed) }).onlyWhile({ limitSwitch.get() }).withName("Pull Back")
 
-    override fun periodic() {
-        when (intakeState) {
-            IntakeState.INTAKING -> {
-                runIntake(C.intakeSpeed)
-                if (!limitSwitch.get()) {
-                    intakeState = IntakeState.PULLBACK
-                }
-            }
-            IntakeState.PULLBACK -> {
-                runIntake(-1 * C.pullbackSpeed)
-                if (limitSwitch.get()) {
-                    intakeState = IntakeState.LOADED
-                }
-
-            }
-            IntakeState.FEEDING -> {
-                runIntake(C.feedingSpeed)
-                if (feedingTimer.hasElapsed(C.feedingTime)) {
-                    feedingTimer.stop()
-                    stop()
-                    intakeState = IntakeState.IDLE
-                }
-            }
-            IntakeState.OUTTAKING -> runIntake(-C.outtakeSpeed)
-            else -> stop()
-        }
+    init {
+        defaultCommand = this.run({ stop() }).withName("Idle")
     }
-
 }

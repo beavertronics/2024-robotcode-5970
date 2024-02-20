@@ -60,12 +60,12 @@ object Constants {
         const val TopMotorID = 29
         const val BottomMotorID = 27
 
-        const val CurrentLimit = 12
-        const val limitSwitchChannel = 1 // TODO get limit switch channel number
+        const val CurrentLimit = 12 //Current limit 12 amps?
+        const val limitSwitchChannel = 1
 
-        const val intakeSpeed = 0.5 //TODO set intake speed.
+        const val pickupSpeed = 0.5 //TODO set intake speed.
         const val pullbackSpeed = 0.3 //TODO set pullback speed. Multiplied by -1
-        const val outtakeSpeed = 0.5 //TODO set outtake Speed.
+        const val reverseSpeed = 0.5 //TODO set outtake Speed.
         const val feedingSpeed = 0.7 //TODO set feeding speed.
 
         const val feedingTime = 0.5 //TODO set feedingTime. In seconds
