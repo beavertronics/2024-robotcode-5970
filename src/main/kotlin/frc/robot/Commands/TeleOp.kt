@@ -1,5 +1,6 @@
 package frc.robot.commands
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
@@ -41,10 +42,10 @@ object TeleOp : Command() {
           
         Shooter.setSpeedRaw(OI.shooterSpeed)
 
-        if (OI.manualIntakeSpeed != 0.0) {
+        /*if (OI.manualIntakeSpeed != 0.0) {
             Intake.run {}
             Intake.runIntake(OI.manualIntakeSpeed);
-        }
+        }*/
 
         if (!Intake.limitSwitch.get()) {
             OI.Rumble.set(0.25,1.0)
@@ -59,35 +60,31 @@ object TeleOp : Command() {
         private val driverControllerL = Joystick(1) //TODO: Fix!
         private val driverControllerR = Joystick(2)
 
-                /* Old joystick-drive code 
-        public val turn get() = driverController.leftX.processInput(squared = true)
-        public val throttle get() = driverController.leftY.processInput(squared = true)
-        */
         
         //New joystick tank drive code
         public val leftThrottle  get() = driverControllerL.getY().processInput(0.1,SquareMode.SQUARED,false)
         public val rightThrottle get() = driverControllerR.getY().processInput(0.1,SquareMode.SQUARED,false)
 
-        /* Old quickturn bindings
-        val quickTurnLeft     get() = driverController.leftTriggerAxis
-        val quickTurnRight    get() = driverController.rightTriggerAxis
-        val speedBoost        get() = driverController.rightBumper or driverController.leftBumper
-        */
-
         public val speedBoost get() = driverControllerR.trigger
         public val reverseDrive get() = driverControllerL.trigger
-
-                /*
-        val intake get() = operatorController.pov.DirectionY()
-        val shoot  get() = operatorController.trigger
-        val shooterSpeed get() = operatorController.getRawAxis(1).processInput(deadzone = 0.2,squared = true, readjust = false)
-        */
         val shooterSpeed get() =  abs(operatorController.leftY).processInput()
-        val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.2, readjust = false)
+        val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.1, readjust = false)
+        val getManualIntakeSpeed: () -> Double = { -manualIntakeSpeed }
 
         init {
-            operatorController.b().whileTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
-            operatorController.rightBumper().whileTrue(Intake.feed())
+
+            operatorController
+                .axisGreaterThan(XboxController.Axis.kRightTrigger.value,0.1)
+                .onTrue(Intake.feed())
+            operatorController
+                .axisGreaterThan(XboxController.Axis.kRightY.value,0.1)
+                .onTrue(Intake.outtake(getManualIntakeSpeed))
+            operatorController
+                .axisLessThan(XboxController.Axis.kRightY.value,-0.1)
+                .onTrue(Intake.doIntake(getManualIntakeSpeed))
+                .onFalse(Intake.idle())
+            //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
+            //operatorController.rightBumper().whileTrue(Intake.feed())
         }
 
         object Rumble {
