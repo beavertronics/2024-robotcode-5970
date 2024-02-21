@@ -9,14 +9,17 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior.*
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.util.sendable.SendableBuilder
+import frc.robot.Constants
 import frc.robot.Constants.IntakeConstants as C
 
 object Intake : SubsystemBase() {
 
-    private val limitSwitch = DigitalInput(C.limitSwitchChannel)
+    public val limitSwitch = DigitalInput(C.limitSwitchChannel)
 
     private val TopMotor = CANSparkMax(C.TopMotorID, CANSparkLowLevel.MotorType.kBrushed)
     private val bottomMotor = TalonSRX(C.BottomMotorID)
+
     init {
         TopMotor.setSmartCurrentLimit(C.CurrentLimit)
         TopMotor.restoreFactoryDefaults()
@@ -45,48 +48,15 @@ object Intake : SubsystemBase() {
         bottomMotor.set(ControlMode.PercentOutput, speed)
         TopMotor.set(speed)
     }
-    private val feedingTimer = Timer()
-    var intakeSpeed = C.pickupSpeed
-    var outtakeSpeed = C.reverseSpeed
 
+    fun doIntake() : Command = this.pickup().andThen(this.pullBack().withInterruptBehavior(kCancelIncoming))
 
-    /** Run the intake at intakeSpeed until a limitswitch is pressed,
-     * then runs intake at -pullbackSpeed until limitswitch is no longer pressed */
-    fun doIntake() : Command = this.pickup().andThen(this.pullBack().andThen(loaded()))
+    fun pickup()   : Command = this.run({ runIntake(C.pickupSpeed)  }).onlyWhile({ !limitSwitch.get() }).withName("Pickup")
+    fun pullBack() : Command = this.run({ runIntake(C.pullbackSpeed) }).onlyWhile({ limitSwitch.get() }).withName("Pull Back")
 
-    /** Runs the intake at intakeSpeed speed */
-    fun pickup()   : Command =
-            this.run { runIntake(intakeSpeed) }
-                    .onlyWhile { !limitSwitch.get() }
-                    .withName("PICKUP")
-    /** Runs the intake at -pullbackSpeed speed */
-    fun pullBack() : Command =
-            this.run { runIntake(-C.pullbackSpeed) }
-                    .onlyWhile { limitSwitch.get() }
-                    .withName("PULL_BACK")
-    /** Runs the intake at feedingSpeed speed for feedingTime seconds */
-    fun feed()   : Command =
-            this.run { runIntake(C.feedingSpeed) }
-                    .beforeStarting( {feedingTimer.reset(); feedingTimer.start()} )
-                    .onlyWhile { !feedingTimer.hasElapsed(C.feedingTime) }
-                    .andThen(idle())
-                    .withName("FEEDING")
-                    .withInterruptBehavior(kCancelIncoming)
-    /** Runs the intake at outtakeSpeed speed */
-    fun outtake()   : Command =
-            this.run { runIntake(-outtakeSpeed) }
-                    .beforeStarting( {feedingTimer.reset(); feedingTimer.start()} )
-                    .withName("OUTTAKE")
-    /** Stops the intake motors */
-    fun idle() : Command =
-            this.run { stop() }.withName("IDLE")
-    /** Stops the intake motors, stops intake command in Teleop */
-    fun loaded() : Command =
-            this.run { stop() }.withName("LOADED")
-
-
+    fun feed() : Command = this.run({ runIntake(C.feedingSpeed) }).withName("Feed to Shooter")
 
     init {
-        defaultCommand = idle()
+        defaultCommand = this.run({ stop() }).withName("Idle")
     }
 }
