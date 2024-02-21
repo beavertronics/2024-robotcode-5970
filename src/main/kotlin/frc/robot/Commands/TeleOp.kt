@@ -42,11 +42,11 @@ object TeleOp : Command() {
         Shooter.setSpeedRaw(OI.shooterSpeed)
 
         if (OI.manualIntakeSpeed != 0.0) {
-            Intake.run({})
+            Intake.run {}
             Intake.runIntake(OI.manualIntakeSpeed);
         }
 
-        if (Intake.limitSwitch.get()) {
+        if (!Intake.limitSwitch.get()) {
             OI.Rumble.set(0.25,1.0)
         }
 
@@ -82,8 +82,8 @@ object TeleOp : Command() {
         val shoot  get() = operatorController.trigger
         val shooterSpeed get() = operatorController.getRawAxis(1).processInput(deadzone = 0.2,squared = true, readjust = false)
         */
-        val shooterSpeed get() =  abs(operatorController.getLeftY())
-        val manualIntakeSpeed get() = operatorController.getRightY().processInput(readjust = false)
+        val shooterSpeed get() =  abs(operatorController.leftY).processInput()
+        val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.2, readjust = false)
 
         init {
             operatorController.b().whileTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
@@ -94,7 +94,7 @@ object TeleOp : Command() {
             private val rumbleTimer = Timer()
             private var rumbleTime = 0.0
 
-            private val xboxHID = operatorController.getHID()
+            private val xboxHID = operatorController.hid
 
             //Time in seconds
             fun set(time : Double, power : Double, side : GenericHID.RumbleType = GenericHID.RumbleType.kBothRumble) {

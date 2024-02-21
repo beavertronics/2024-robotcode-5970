@@ -15,7 +15,7 @@ import frc.robot.Constants.IntakeConstants as C
 
 object Intake : SubsystemBase() {
 
-    public val limitSwitch = DigitalInput(C.limitSwitchChannel)
+    val limitSwitch = DigitalInput(C.limitSwitchChannel)
 
     private val TopMotor = CANSparkMax(C.TopMotorID, CANSparkLowLevel.MotorType.kBrushed)
     private val bottomMotor = TalonSRX(C.BottomMotorID)
@@ -51,12 +51,12 @@ object Intake : SubsystemBase() {
 
     fun doIntake() : Command = this.pickup().andThen(this.pullBack().withInterruptBehavior(kCancelIncoming))
 
-    fun pickup()   : Command = this.run({ runIntake(C.pickupSpeed)  }).onlyWhile({ !limitSwitch.get() }).withName("Pickup")
-    fun pullBack() : Command = this.run({ runIntake(C.pullbackSpeed) }).onlyWhile({ limitSwitch.get() }).withName("Pull Back")
+    fun pickup()   : Command = this.run { runIntake(C.pickupSpeed) }.onlyWhile { !limitSwitch.get() }.withName("Pickup")
+    fun pullBack() : Command = this.run { runIntake(C.pullbackSpeed) }.onlyWhile { limitSwitch.get() }.withName("Pull Back")
 
-    fun feed() : Command = this.run({ runIntake(C.feedingSpeed) }).withName("Feed to Shooter")
+    fun feed() : Command = this.run { runIntake(C.feedingSpeed) }.withName("Feed to Shooter")
 
     init {
-        defaultCommand = this.run({ stop() }).withName("Idle")
+        defaultCommand = this.run { stop() }.withName("Idle")
     }
 }
