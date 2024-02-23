@@ -1,5 +1,5 @@
-package frc.robot.Commands
-/*
+package frc.robot.Commands.Basic
+
 import com.pathplanner.lib.commands.FollowPathRamsete
 import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.util.ReplanningConfig
@@ -11,7 +11,7 @@ import frc.robot.subsystems.Odometry
 
 
 fun followPathCommand(pathName: String) : Command {
-    val path = PathPlannerPath.fromPathFile(pathName);
+    val path = PathPlannerPath.fromPathFile("../../../../pathplanner/paths/${pathName}");
     val getAllianceLambda : () -> Boolean =
         {
             // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -29,4 +29,4 @@ fun followPathCommand(pathName: String) : Command {
         getAllianceLambda,
         Drivetrain // Reference to this subsystem to set requirements
     )
-}*/
+}

@@ -1,4 +1,4 @@
-package frc.robot.Commands
+package frc.robot.Commands.SysID
 
 import edu.wpi.first.units.Distance
 import edu.wpi.first.units.MutableMeasure
