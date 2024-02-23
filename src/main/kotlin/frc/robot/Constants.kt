@@ -9,6 +9,8 @@ import java.util.Currency
 import frc.engine.utils.Polynomial
 
 import edu.wpi.first.math.Num
+import frc.engine.utils.RPM
+
 /* Constants for tuning the robot code.
 
 This should NOT include hardware constants (ie CAN bus IDs, wheel diameter and gear ratios); 
@@ -99,8 +101,8 @@ object Constants {
         const val CurrentLimit = 20 //amps, per motor controller
         val SpeakerPoly = Polynomial() //TODO Desmos this
 
-        const val SpeakerSpeed = 0 //Todo
-        const val AmpSpeed = 0 //Todo
+        val SpeakerSpeed = 0.RPM //Todo
+        val AmpSpeed = 0.RPM //Todo
 
     }
     object OdometryConstants {

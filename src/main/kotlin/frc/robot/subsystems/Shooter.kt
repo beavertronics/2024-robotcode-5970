@@ -107,8 +107,8 @@ object Shooter : SubsystemBase() {
         shooterMode = ShooterMode.OPEN_LOOP
         rawShooterSpeed = speed
     }
-    private fun shootSpeaker(){ setSpeed(C.SpeakerSpeed.RPM) }
-    fun shootAmp(){ setSpeed(C.AmpSpeed.RPM) }
+    private fun shootSpeaker(){ setSpeed(C.SpeakerSpeed) }
+    fun shootAmp(){ setSpeed(C.AmpSpeed) }
     fun shootSpeakerCommand() : Command = this.run { shootSpeaker(); runClosedLoop() }
     fun shootAmpCommand() : Command = this.run { shootAmp(); runClosedLoop() }
     fun spinup(speed: RPM) : Command =

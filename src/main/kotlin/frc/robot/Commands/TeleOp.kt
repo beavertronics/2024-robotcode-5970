@@ -39,9 +39,6 @@ object TeleOp : Command() {
 
         Drivetrain.rawDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
 
-          
-        Shooter.setSpeedRaw(OI.shooterSpeed)
-
         /*if (OI.manualIntakeSpeed != 0.0) {
             Intake.run {}
             Intake.runIntake(OI.manualIntakeSpeed);
@@ -69,8 +66,8 @@ object TeleOp : Command() {
         public val reverseDrive get() = driverControllerL.trigger
         val manualShooterSpeed get() =  abs(operatorController.leftY).processInput()
         val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.1, readjust = false)
-        val getManualIntakeSpeed: () -> Double = { -manualIntakeSpeed }
-        val getManualShooterSpeed: () -> Double = { manualShooterSpeed }
+        private val getManualIntakeSpeed: () -> Double = { -manualIntakeSpeed }
+        private val getManualShooterSpeed: () -> Double = { manualShooterSpeed }
 
 
         init {

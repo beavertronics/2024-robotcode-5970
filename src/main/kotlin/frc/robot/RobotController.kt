@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RunCommand
 import frc.robot.Commands.Autos.OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto
+import frc.robot.Commands.Autos.`Preload+BottomNote`
+import frc.robot.Commands.Autos.`Preload+Mobility`
 
 import frc.robot.commands.TeleOp
 import frc.robot.subsystems.Drivetrain
@@ -27,7 +29,9 @@ object RobotController : TimedRobot() {
         //TODO: Autos go here!
         //ie 
         //"Description of auto" to TaxiAuto
-        "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto()
+        "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
+        "Bottom_Preload+Mobility" to `Preload+Mobility`(),
+        "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
     )
 
     private var autoChooser : SendableChooser<Command> = SendableChooser()
