@@ -74,6 +74,7 @@ object Constants {
     object ShooterConstants {
         const val leftFlywheel   = 25
         const val rightFlywheel = 26
+
         /** Proportional to the error (if it's bad, fix it. If it's really bad, fix it harder based on how bad it is)*/
         const val KP            = 1.0 // tune later
 
@@ -97,6 +98,9 @@ object Constants {
 
         const val CurrentLimit = 20 //amps, per motor controller
         val SpeakerPoly = Polynomial() //TODO Desmos this
+
+        const val SpeakerSpeed = 0 //Todo
+        const val AmpSpeed = 0 //Todo
 
     }
     object OdometryConstants {
