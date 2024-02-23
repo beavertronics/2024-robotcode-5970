@@ -67,22 +67,38 @@ object TeleOp : Command() {
 
         public val speedBoost get() = driverControllerR.trigger
         public val reverseDrive get() = driverControllerL.trigger
-        val shooterSpeed get() =  abs(operatorController.leftY).processInput()
+        val manualShooterSpeed get() =  abs(operatorController.leftY).processInput()
         val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.1, readjust = false)
         val getManualIntakeSpeed: () -> Double = { -manualIntakeSpeed }
+        val getManualShooterSpeed: () -> Double = { manualShooterSpeed }
+
 
         init {
-
+            // Feed
             operatorController
                 .axisGreaterThan(XboxController.Axis.kRightTrigger.value,0.1)
                 .onTrue(Intake.feed())
+            // Outtake
             operatorController
                 .axisGreaterThan(XboxController.Axis.kRightY.value,0.1)
                 .onTrue(Intake.outtake(getManualIntakeSpeed))
+            // Intake
             operatorController
                 .axisLessThan(XboxController.Axis.kRightY.value,-0.1)
                 .onTrue(Intake.doIntake(getManualIntakeSpeed))
                 .onFalse(Intake.idle())
+            // Manual ShooterSpeeds
+            operatorController
+                .axisGreaterThan(XboxController.Axis.kLeftY.value,0.1)
+                .whileTrue(Shooter.manualSpeedCommand(getManualShooterSpeed))
+            // Shooting Speaker Speeds
+            operatorController
+                .y()
+                .whileTrue(Shooter.shootSpeakerCommand())
+            // Shooting Amp Speeds
+            operatorController
+                .a()
+                .whileTrue(Shooter.shootAmpCommand())
             //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
             //operatorController.rightBumper().whileTrue(Intake.feed())
         }

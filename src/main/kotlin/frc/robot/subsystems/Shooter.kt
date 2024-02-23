@@ -7,9 +7,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.units.*
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.Controller
 import frc.engine.utils.RPM
+import frc.engine.utils.Sugar.within
 import frc.robot.Constants.ShooterConstants as C
 
 object Shooter : SubsystemBase() {
@@ -44,6 +46,7 @@ object Shooter : SubsystemBase() {
 
         leftFlywheel.inverted = false
         rightFlywheel.inverted = true
+        defaultCommand = idle()
     }
 
     data class ShooterSpeeds(val leftSpeeds:RPM = 0.RPM, val rightSpeeds:RPM = 0.RPM)
@@ -83,10 +86,50 @@ object Shooter : SubsystemBase() {
     fun shootSpeaker(distToSpeaker: Double){
         setSpeed(C.SpeakerPoly.calculate(distToSpeaker))
     }
+    private fun runClosedLoop(){
+        val leftpid = leftPid.calculate(leftEncoder.velocity)
+        val rightpid = leftPid.calculate(rightEncoder.velocity)
+        val leftFF = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
+        val rightFF = feedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
+
+        leftFlywheel.setVoltage(leftpid+leftFF)
+        rightFlywheel.setVoltage(rightpid+rightFF)
+    }
+    private fun runOpenLoop(){
+        leftFlywheel.set(rawShooterSpeed)
+        rightFlywheel.set(rawShooterSpeed)
+    }
+    private fun runStop(){
+        leftFlywheel.set(0.0)
+        rightFlywheel.set(0.0)
+    }
     fun setSpeedRaw(speed: Double) {
         shooterMode = ShooterMode.OPEN_LOOP
         rawShooterSpeed = speed
     }
+    private fun shootSpeaker(){ setSpeed(C.SpeakerSpeed.RPM) }
+    fun shootAmp(){ setSpeed(C.AmpSpeed.RPM) }
+    fun shootSpeakerCommand() : Command = this.run { shootSpeaker(); runClosedLoop() }
+    fun shootAmpCommand() : Command = this.run { shootAmp(); runClosedLoop() }
+    fun spinup(speed: RPM) : Command =
+        this.run { runClosedLoop() }
+        .beforeStarting ({ setSpeed(speed) })
+    fun runatspeed(speed: RPM) : Command =
+        this.run { runClosedLoop() }
+            .beforeStarting ({ setSpeed(speed) })
+    fun manualSpeedCommand(speed:Double= 0.0) : Command = this.run { setSpeed(speed); runClosedLoop() }
+    fun manualSpeedCommand(speed:() -> Double) : Command = this.run { setSpeed(speed()); runClosedLoop() }
+    fun idle() : Command = this.run { runStop() }
+
+
+    fun isAtSpeed() : Boolean{
+        if(shooterMode==ShooterMode.OPEN_LOOP || shooterMode==ShooterMode.STOP) return false
+        return (leftEncoder.velocity.within(10.0, targetSpeed.leftSpeeds.value) &&
+            rightEncoder.velocity.within(10.0, targetSpeed.rightSpeeds.value))
+    }
+
+
+
 
 
     /**
@@ -98,17 +141,10 @@ object Shooter : SubsystemBase() {
         rightFlywheel.setVoltage(it.`in`(Units.Volts))
     }
 
-
-    override fun periodic() {
+    /*override fun periodic() {
         when(shooterMode) {
             ShooterMode.CLOSED_LOOP -> {
-                val leftpid = leftPid.calculate(leftEncoder.velocity)
-                val rightpid = leftPid.calculate(rightEncoder.velocity)
-                val leftFF = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
-                val rightFF = feedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
-
-                leftFlywheel.setVoltage(leftpid+leftFF)
-                rightFlywheel.setVoltage(rightpid+rightFF)
+                runClosedLoop()
             }
             ShooterMode.OPEN_LOOP -> {
                 leftFlywheel.set(rawShooterSpeed)
@@ -120,7 +156,7 @@ object Shooter : SubsystemBase() {
             }
         }
 
-    }
+    }*/
     private val m_appliedVoltage: MutableMeasure<Voltage> = MutableMeasure.mutable(Units.Volts.of(0.0))
     private val m_distance: MutableMeasure<Distance> = MutableMeasure.mutable(Units.Meters.of(0.0))
     private val m_velocity: MutableMeasure<Velocity<Distance>> = MutableMeasure.mutable(Units.MetersPerSecond.of(0.0))
