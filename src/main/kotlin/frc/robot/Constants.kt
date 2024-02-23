@@ -124,6 +124,35 @@ object Constants {
         //    FeetPerSecond(16.5).metersPerSecondValue()
         //    (also import utils/Units.kt)
     }
+    object ClimbConstants {
+
+        enum class ClimbPos {
+            Extend,
+            Retract
+        }
+
+        const val MotorRID = 999 //TODO: Get CAN IDs from electrical
+        const val MotorLID = 999 //TODO: Get CAN IDs from electrical
+
+        const val CurrentLimit = 30 //amps, per side. See drivetrain current limit.
+
+        const val MotorRevsToRetract = (7/1) * (7/1) * 10.0 //TODO: DANGER! Rough estimate; based off of CAD but makes assumptions about winch cord stacking.
+        //How many revolutions of the motor does it take to fully contract the lifter?
+
+        const val extendVoltage = 1.0 //TODO: Tune!
+        const val retractVoltage = 1.0 //TODO: Tune!
+
+        const val leftBottomLimitSwitchID = 2
+        const val leftTopLimitSwitchID = 3
+
+        const val rightBottomLimitSwitchID = 4
+        const val rightTopLimitSwitchID = 5
+
+
+        //Note: May require profiling to prevent slamming down on chain- test!
+
+        //NOTE: Feedforwards control would normally be required in order to fight gravity, but the climber is actually spring loaded to be in the extended position
+    }
 
 
 }

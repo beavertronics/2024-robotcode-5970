@@ -12,6 +12,7 @@ import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
 import frc.robot.Constants.IntakeConstants
+import frc.robot.subsystems.Climber
 import kotlin.math.*
 
 import frc.robot.subsystems.Drivetrain
@@ -44,9 +45,9 @@ object TeleOp : Command() {
             Intake.runIntake(OI.manualIntakeSpeed);
         }*/
 
-        if (!Intake.limitSwitch.get()) {
-            OI.Rumble.set(0.25,1.0)
-        }
+        if (!Intake.limitSwitch.get()) OI.Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
+        if (Shooter.isAtSpeed()) OI.Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
+
 
         OI.Rumble.update()
 
@@ -59,8 +60,8 @@ object TeleOp : Command() {
 
         
         //New joystick tank drive code
-        public val leftThrottle  get() = driverControllerL.getY().processInput(0.1,SquareMode.SQUARED,false)
-        public val rightThrottle get() = driverControllerR.getY().processInput(0.1,SquareMode.SQUARED,false)
+        public val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.SQUARED,false)
+        public val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.SQUARED,false)
 
         public val speedBoost get() = driverControllerR.trigger
         public val reverseDrive get() = driverControllerL.trigger
@@ -96,6 +97,10 @@ object TeleOp : Command() {
             operatorController
                 .a()
                 .whileTrue(Shooter.shootAmpCommand())
+            operatorController.povDown()
+                .whileTrue(Climber.doRetract())
+            operatorController.povUp()
+                .whileTrue(Climber.doExtend())
             //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
             //operatorController.rightBumper().whileTrue(Intake.feed())
         }
