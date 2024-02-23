@@ -10,8 +10,8 @@ import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Odometry
 
 
-fun followPathCommand(pathName: String) : Command {
-    val path = PathPlannerPath.fromPathFile("../../../../pathplanner/paths/${pathName}");
+fun followPathCommand(pathName: String, resetOdometry : Boolean = false) : Command {
+    val path = PathPlannerPath.fromPathFile("../../../../pathplanner/deploy/pathplanner/paths/${pathName}.path");
     val getAllianceLambda : () -> Boolean =
         {
             // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -20,7 +20,7 @@ fun followPathCommand(pathName: String) : Command {
             getAlliance()
 
         }
-    return FollowPathRamsete(
+    val pathFollow: FollowPathRamsete = FollowPathRamsete(
         path,
         Odometry.getPose, // Robot pose supplier
         Odometry.getChassesSpeeds, // Current ChassisSpeeds supplier
@@ -29,4 +29,6 @@ fun followPathCommand(pathName: String) : Command {
         getAllianceLambda,
         Drivetrain // Reference to this subsystem to set requirements
     )
+    if(resetOdometry) pathFollow.beforeStarting({ Odometry.reset(path.startingDifferentialPose)})
+    return pathFollow
 }
