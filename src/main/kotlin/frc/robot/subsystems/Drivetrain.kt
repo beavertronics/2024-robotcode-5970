@@ -3,15 +3,20 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
-import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
+import edu.wpi.first.math.trajectory.Trajectory
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.engine.controls.Controller
+import frc.engine.controls.Ramsete
+import frc.engine.controls.TrajectoryMaker
 import frc.engine.utils.`M/s`
-import frc.robot.Constants
+import frc.engine.utils.initMotorControllers
+import frc.engine.utils.*
 import frc.robot.Constants.DriveConstants
 //import frc.robot.subsystems.Odometry.chassisSpeeds
 
@@ -27,9 +32,26 @@ object Drivetrain : SubsystemBase() {
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 
-    private val leftPid = PIDController(DriveConstants.KP, 0.0, DriveConstants.KD)
-    private val rightPid = PIDController(DriveConstants.KP, 0.0, DriveConstants.KD)
-    private val FeedForward = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
+    private val leftPid = Controller.PID(DriveConstants.KP, DriveConstants.KD)
+    private val rightPid = Controller.PID(DriveConstants.KP, DriveConstants.KD)
+    private val leftFeedForward = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
+    private val rightFeedForward = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
+
+
+    val trajectoryMaker = TrajectoryMaker(DriveConstants.MaxVelocity, DriveConstants.MaxAcceleration)
+    var trajectory : Trajectory? = null
+    private var trajectoryStartTime = 0.seconds
+
+    private val ramsete: Ramsete = Ramsete(
+        DriveConstants.TrackWidth.toMeters(),
+        Odometry,
+        leftPid,
+        rightPid,
+        leftFeedForward,
+        rightFeedForward,
+        DriveConstants.DRIVETRAIN_RAMSETE_B,
+        DriveConstants.DRIVETRAIN_RAMSETE_Z
+    )
 
     private fun allMotors(code: CANSparkMax.() -> Unit) { //Run a piece of code for each drive motor controller.
         for (motor in listOf(leftMain, rightMain, leftSecondary, rightSecondary)) {
@@ -40,12 +62,12 @@ object Drivetrain : SubsystemBase() {
     init {
         leftSecondary.follow(leftMain)
         rightSecondary.follow(rightMain)
-
-        allMotors {
+        initMotorControllers(DriveConstants.CurrentLimit, leftMain, rightMain, leftSecondary, rightSecondary)
+        /*allMotors {
             restoreFactoryDefaults()
             setSmartCurrentLimit(DriveConstants.CurrentLimit) //Todo: there's a fancy version of this function that may be worth using
             //TODO: finish initialize spark maxes
-        }
+        }*/
 
         drive.setDeadband(0.0)
 
@@ -69,6 +91,8 @@ object Drivetrain : SubsystemBase() {
         rightMain.setVoltage(right)
         drive.feed()
     }
+    fun rawDrive(voltages: Ramsete.WheelVoltages) = rawDrive(voltages.left.value, voltages.right.value)
+
     fun stop(){
         rawDrive(0.0,0.0)
     }
@@ -83,11 +107,36 @@ object Drivetrain : SubsystemBase() {
         val lPidCalculated = leftPid.calculate(leftEncoder.velocity)
         val rPidCalculated = rightPid.calculate(rightEncoder.velocity)
 
-        val lFFCalculated = FeedForward.calculate(leftPid.setpoint)
-        val rFFCalculated = FeedForward.calculate(rightPid.setpoint)
+        val lFFCalculated = leftFeedForward.calculate(leftPid.setpoint)
+        val rFFCalculated = rightFeedForward.calculate(rightPid.setpoint)
 
         rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
     }
+
+    fun followPath(traj : Trajectory? = null){
+        if(traj != null) {
+            trajectoryStartTime = Timer.getFPGATimestamp().seconds
+            trajectory = traj
+        }
+        if (trajectory == null) {
+            rawDrive(0.0, 0.0)
+            return
+        }
+        Odometry.field.getObject("trajectory").setTrajectory(traj)
+
+        rawDrive(
+            ramsete.voltages(
+                trajectory!!,
+                Timer.getFPGATimestamp().seconds - trajectoryStartTime,
+                Odometry.vels
+            )
+        )
+    }
+
+    private fun rawDrive(left: Double) {
+
+    }
+
     /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
      * @param left Desired speed for the left motors, in M/s
      * @param right Desired speed for the right motors, in M/s

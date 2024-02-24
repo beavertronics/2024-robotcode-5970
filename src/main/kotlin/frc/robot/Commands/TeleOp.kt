@@ -1,6 +1,8 @@
 package frc.robot.commands
 
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
@@ -12,12 +14,8 @@ import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
 import frc.robot.Constants.IntakeConstants
-import frc.robot.subsystems.Climber
+import frc.robot.subsystems.*
 import kotlin.math.*
-
-import frc.robot.subsystems.Drivetrain
-import frc.robot.subsystems.Intake
-import frc.robot.subsystems.Shooter
 
 
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
@@ -27,6 +25,12 @@ object TeleOp : Command() {
     override fun initialize() {
         addRequirements(Drivetrain,Intake,Shooter)
         
+    }
+    fun generatePath(dst: Pose2d): Trajectory {
+        return Drivetrain.trajectoryMaker.builder()
+            .start(Odometry.pose)
+            .end(dst)
+            .build()
     }
 
     override fun execute() {
@@ -39,6 +43,8 @@ object TeleOp : Command() {
         val rightSpeed = baseSpeed * OI.rightThrottle
 
         Drivetrain.rawDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
+
+
 
         /*if (OI.manualIntakeSpeed != 0.0) {
             Intake.run {}

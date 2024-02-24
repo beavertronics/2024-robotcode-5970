@@ -3,13 +3,10 @@ package frc.robot
 import edu.wpi.first.math.MatBuilder
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
-import frc.engine.utils.Inches
-import frc.engine.utils.Meters
 import java.util.Currency
-import frc.engine.utils.Polynomial
 
 import edu.wpi.first.math.Num
-import frc.engine.utils.RPM
+import frc.engine.utils.*
 
 /* Constants for tuning the robot code.
 
@@ -21,11 +18,19 @@ be located in RobotHardware.kt instead.
 
 object Constants {
     object DriveConstants {
+        // Yoinked from 2898 charged up code.
+        // Ramsete parameters, see [https://file.tavsys.net/control/controls-engineering-in-frc.pdf] page 81
+        // **DO NOT CHANGE THESE PARAMETERS**
+        const val DRIVETRAIN_RAMSETE_B = 5.0  // Higher values make it more aggressively stick to the trajectory. 0 < B
+        const val DRIVETRAIN_RAMSETE_Z = 0.7  // Higher values give it more dampening. 0 < Z < 1
 
         const val MotorLMainID = 21
         const val MotorLSubID  = 22
         const val MotorRMainID = 23
         const val MotorRSubID  = 24
+
+        val MaxVelocity = `M/s`(2.0)
+        val MaxAcceleration = MetersPerSecondSquared(0.5)
 
         const val MotorRevsPerWheelRev = (50/14) * (48/16) //~10:1 As taken from CAD- should verify after drivetrain is built in the real world
         val WheelDiameter = Inches(6.0).meterValue()
@@ -59,7 +64,7 @@ object Constants {
          */
     }
     object IntakeConstants {
-        const val TopMotorID = 29
+        const val TopMotorID = 28
         const val BottomMotorID = 27
 
         const val CurrentLimit = 12 //Current limit 12 amps?
