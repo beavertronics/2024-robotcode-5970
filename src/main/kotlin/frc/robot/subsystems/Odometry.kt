@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.subsystems.Drivetrain
 import frc.engine.odometry.Vision
+import frc.engine.odometry.aprilTagFieldLayout
 import frc.robot.Constants
 import frc.robot.Constants.DriveConstants as D
 
@@ -28,7 +29,7 @@ object Odometry : SubsystemBase(), PoseProvider {
 
 
     var navx = NAVX()
-    private val vision = Vision("testCamera")
+    private val vision = Vision("Wyatt", aprilTagFieldLayout)
 
     private val visionProvider = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
     private val encoderOnly = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())

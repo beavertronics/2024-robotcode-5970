@@ -47,6 +47,7 @@ object RobotController : TimedRobot() {
     
     override fun robotInit() {
         //Initialize the robot!
+        TeleOp.OI.Rumble.set(0.0, 0.0)
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi? Should we?
 
     }

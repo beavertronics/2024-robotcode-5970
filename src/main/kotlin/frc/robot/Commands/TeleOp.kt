@@ -44,25 +44,22 @@ object TeleOp : Command() {
 
         Drivetrain.rawDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
 
-
-
         /*if (OI.manualIntakeSpeed != 0.0) {
             Intake.run {}
-            Intake.runIntake(OI.manualIntakeSpeed);
+            Intake.runIntake(OI.manualIntakeSpeed*IntakeConstants.pickupSpeed );
         }*/
 
         if (!Intake.limitSwitch.get()) OI.Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
         if (Shooter.isAtSpeed()) OI.Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
-
 
         OI.Rumble.update()
 
     }
 
     object OI {
-        private val operatorController = CommandXboxController(0)
-        private val driverControllerL = Joystick(1) //TODO: Fix!
-        private val driverControllerR = Joystick(2)
+        private val operatorController = CommandXboxController(2)
+        private val driverControllerL = Joystick(0) //TODO: Fix!
+        private val driverControllerR = Joystick(1)
 
         
         //New joystick tank drive code
@@ -85,11 +82,11 @@ object TeleOp : Command() {
             // Outtake
             operatorController
                 .axisGreaterThan(XboxController.Axis.kRightY.value,0.1)
-                .onTrue(Intake.outtake(getManualIntakeSpeed))
+                .onTrue(Intake.outtake(/*getManualIntakeSpeed*/))
             // Intake
             operatorController
                 .axisLessThan(XboxController.Axis.kRightY.value,-0.1)
-                .onTrue(Intake.doIntake(getManualIntakeSpeed))
+                .whileTrue(Intake.doIntake(/*getManualIntakeSpeed*/))
                 .onFalse(Intake.idle())
             // Manual ShooterSpeeds
             operatorController
@@ -103,10 +100,10 @@ object TeleOp : Command() {
             operatorController
                 .a()
                 .whileTrue(Shooter.shootAmpCommand())
-            operatorController.povDown()
+            /*operatorController.povDown()
                 .whileTrue(Climber.doRetract())
             operatorController.povUp()
-                .whileTrue(Climber.doExtend())
+                .whileTrue(Climber.doExtend())*/
             //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
             //operatorController.rightBumper().whileTrue(Intake.feed())
         }

@@ -57,7 +57,7 @@ object Intake : SubsystemBase() {
     fun pushForward() : Command = this.run { runIntake(C.pushforwardSpeed) }.onlyWhile { limitSwitch.get() }.withName("Pull Back")
     fun outtake(speed : () -> Double) : Command = this.run { runIntake(speed()) }.withName("Pickup")
 
-    fun outtake() : Command = this.run { runIntake(-C.reverseSpeed) }.onlyWhile { !limitSwitch.get() }.withName("Pickup")
+    fun outtake() : Command = this.run { runIntake(-C.reverseSpeed) }.withName("Pickup")
 
     val feedingTimer = Timer()
     fun feed() : Command = this.run { runIntake(C.feedingSpeed) }
