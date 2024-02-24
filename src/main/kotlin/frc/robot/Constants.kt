@@ -1,11 +1,8 @@
 package frc.robot
 
 import edu.wpi.first.math.MatBuilder
-import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
-import java.util.Currency
 
-import edu.wpi.first.math.Num
 import frc.engine.utils.*
 
 /* Constants for tuning the robot code.
@@ -71,7 +68,7 @@ object Constants {
         const val limitSwitchChannel = 1
 
         const val pickupSpeed = 0.5 //TODO set intake speed.
-        const val pullbackSpeed = 0.3 //TODO set pullback speed. Multiplied by -1
+        const val pushforwardSpeed = 0.3 //TODO set pullback speed. Multiplied by -1
         const val reverseSpeed = 0.5 //TODO set outtake Speed.
         const val feedingSpeed = 0.7 //TODO set feeding speed.
 

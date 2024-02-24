@@ -2,16 +2,12 @@ package frc.robot.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.revrobotics.CANSparkLowLevel
-import com.revrobotics.CANSparkMax
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior.*
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.util.sendable.SendableBuilder
 import frc.engine.utils.initMotorControllers
-import frc.robot.Constants
 import frc.robot.Constants.IntakeConstants as C
 
 object Intake : SubsystemBase() {
@@ -52,13 +48,13 @@ object Intake : SubsystemBase() {
         //bottomMotor.set(ControlMode.PercentOutput, speed)
         TopMotor.set(ControlMode.PercentOutput, speed)
     }
-    fun doIntake(speed : () -> Double) : Command = this.pickup(speed).andThen(this.pullBack().withInterruptBehavior(kCancelIncoming))
-    fun doIntake() : Command = this.pickup().andThen(this.pullBack())
+    fun doIntake(speed : () -> Double) : Command = this.pickup(speed).andThen(this.pushForward().withInterruptBehavior(kCancelIncoming))
+    fun doIntake() : Command = this.pickup().andThen(this.pushForward())
 
     fun pickup(speed : () -> Double)   : Command = this.run { runIntake(speed()) }.onlyWhile { !limitSwitch.get() }.withName("Pickup")
     fun pickup()   : Command = this.run { runIntake(C.pickupSpeed) }.onlyWhile { !limitSwitch.get() }.withName("Pickup")
 
-    fun pullBack() : Command = this.run { runIntake(C.pullbackSpeed) }.onlyWhile { limitSwitch.get() }.withName("Pull Back")
+    fun pushForward() : Command = this.run { runIntake(C.pushforwardSpeed) }.onlyWhile { limitSwitch.get() }.withName("Pull Back")
     fun outtake(speed : () -> Double) : Command = this.run { runIntake(speed()) }.withName("Pickup")
 
     fun outtake() : Command = this.run { runIntake(-C.reverseSpeed) }.onlyWhile { !limitSwitch.get() }.withName("Pickup")
