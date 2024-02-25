@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.button.Trigger
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.Sugar.within
 
@@ -68,31 +69,45 @@ object TeleOp : Command() {
 
         public val speedBoost get() = driverControllerR.trigger
         public val reverseDrive get() = driverControllerL.trigger
-        val manualShooterSpeed get() =  abs(operatorController.leftY).processInput()
+        /* 
         val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.1, readjust = false)
         private val getManualIntakeSpeed: () -> Double = { -manualIntakeSpeed }
-        private val getManualShooterSpeed: () -> Double = { manualShooterSpeed }
+        */
+        val manualShooterSpeed get() =  abs(operatorController.leftY).processInput()
+        //private val getManualShooterSpeed: () -> Double = { manualShooterSpeed }
+
+        val feedToShoot : Trigger = operatorController.leftBumper()
+        val      pickup : Trigger = operatorController.axisGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
+        val       eject : Trigger = operatorController.axisLessThan   (XboxController.Axis.kLeftY.value, -0.1)
 
 
         init {
-            // Feed
-            operatorController
-                .axisGreaterThan(XboxController.Axis.kRightTrigger.value,0.1)
-                .onTrue(Intake.feed())
-            // Outtake
+            /*
+            Left stick y = Digital intake control (-70 or 70 percent). If left bumper is not pressed, will stop after limit switch has been unpressed
+
+            Left bumper = Shoot control- Allows shoot when pressed
+            */
+            pickup.and(feedToShoot.negate())
+                .whileTrue(Intake.doIntake()) //Don't repeat; will stop when limit switch is done being triggered
+
+            eject.and(feedToShoot.negate())
+                .whileTrue(Intake.doEject().repeatedly()) //Yes repeat; keep reversing note as long as driver says so
+            
+            feedToShoot.whileTrue(Intake.doFeed().repeatedly()) //Yes feed repeatedly
+
+            /*
+            Y = run shooter at speaker speeds
+            A = run shooter at amp speeds
+            
+            Right stick y = manually control shooter, absolute value
+            */
+
+            // Right stick y = manual shooter control
             operatorController
                 .axisGreaterThan(XboxController.Axis.kRightY.value,0.1)
-                .onTrue(Intake.outtake(/*getManualIntakeSpeed*/))
-            // Intake
-            operatorController
-                .axisLessThan(XboxController.Axis.kRightY.value,-0.1)
-                .whileTrue(Intake.doIntake(/*getManualIntakeSpeed*/))
-                .onFalse(Intake.idle())
-            // Manual ShooterSpeeds
-            operatorController
-                .axisGreaterThan(XboxController.Axis.kLeftY.value,0.1)
-                .whileTrue(Shooter.manualSpeedCommand(getManualShooterSpeed))
-            // Shooting Speaker Speeds
+                .whileTrue(Shooter.manualSpeedCommand(manualShooterSpeed)) //Looks like shooter speed is only passed once, but manualShooterSpeed is actually a callback so it's fine :/
+            
+            // Y = shoot for speaker
             operatorController
                 .y()
                 .whileTrue(Shooter.shootSpeakerCommand())
@@ -100,10 +115,13 @@ object TeleOp : Command() {
             operatorController
                 .a()
                 .whileTrue(Shooter.shootAmpCommand())
-            /*operatorController.povDown()
+
+            operatorController.povDown()
                 .whileTrue(Climber.doRetract())
+                
             operatorController.povUp()
-                .whileTrue(Climber.doExtend())*/
+                .whileTrue(Climber.doExtend())
+                
             //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
             //operatorController.rightBumper().whileTrue(Intake.feed())
         }

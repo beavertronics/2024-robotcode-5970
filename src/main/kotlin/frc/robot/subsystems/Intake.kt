@@ -48,26 +48,21 @@ object Intake : SubsystemBase() {
         //bottomMotor.set(ControlMode.PercentOutput, speed)
         TopMotor.set(ControlMode.PercentOutput, speed)
     }
-    fun doIntake(speed : () -> Double) : Command = this.pickup(speed).andThen(this.pushForward().withInterruptBehavior(kCancelIncoming))
-    fun doIntake() : Command = this.pickup().andThen(this.pushForward())
 
-    fun pickup(speed : () -> Double)   : Command = this.run { runIntake(speed()) }.onlyWhile { !limitSwitch.get() }.withName("Pickup")
-    fun pickup()   : Command = this.run { runIntake(C.pickupSpeed) }.onlyWhile { !limitSwitch.get() }.withName("Pickup")
 
-    fun pushForward() : Command = this.run { runIntake(C.pushforwardSpeed) }.onlyWhile { limitSwitch.get() }.withName("Pull Back")
-    fun outtake(speed : () -> Double) : Command = this.run { runIntake(speed()) }.withName("Pickup")
+    fun doIntake() : Command = 
+        this.run {runIntake(C.pickupSpeed)}
+        .onlyWhile{!limitSwitch.get()}
+        .andThen(this.run{runIntake(C.pickupSpeed)})
+        .onlyWhile{limitSwitch.get()}
 
-    fun outtake() : Command = this.run { runIntake(-C.reverseSpeed) }.withName("Pickup")
+    fun doFeed() : Command = this.run{runIntake(C.feedingSpeed)}
 
-    val feedingTimer = Timer()
-    fun feed() : Command = this.run { runIntake(C.feedingSpeed) }
-        .beforeStarting( {feedingTimer.reset(); feedingTimer.start()} )
-        .onlyWhile { !feedingTimer.hasElapsed(C.feedingTime) }
-        .withName("FEEDING")
-        .withInterruptBehavior(kCancelIncoming)
+    fun doEject()  : Command = this.run { runIntake(-C.reverseSpeed) }
+
     fun idle() : Command = this.run { stop() }.withName("Idle")
 
     init {
-        defaultCommand = this.run { stop() }.withName("Idle")
+        defaultCommand = idle()
     }
 }

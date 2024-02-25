@@ -26,12 +26,13 @@ object Shooter : SubsystemBase() {
     private val rightPid    = Controller.PID(C.KP, C.KD)
     private val feedForward = SimpleMotorFeedforward(C.KS, C.KV, C.KA)
 
+    /* 
     private var rawShooterSpeed = 0.0;
-
     enum class ShooterMode {
         CLOSED_LOOP, OPEN_LOOP, STOP
     }
     var shooterMode = ShooterMode.OPEN_LOOP
+    */
 
     var targetSpeed = ShooterSpeeds()
 
@@ -65,7 +66,7 @@ object Shooter : SubsystemBase() {
         targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
         leftPid.setpoint = leftSpeeds.rotationsPerMinute()
         rightPid.setpoint = rightSpeeds.rotationsPerMinute()
-        shooterMode = ShooterMode.CLOSED_LOOP
+        //shooterMode = ShooterMode.CLOSED_LOOP
     }
 
     /**
@@ -78,14 +79,17 @@ object Shooter : SubsystemBase() {
      * @param speed Desired speed of the motor in RPM
      */
     fun setSpeed(speed : RPM) = setSpeed(speed, speed)
-    fun stop() {
+    /*fun stop() {
         shooterMode=ShooterMode.STOP
 
-    }
+    }*/
 
+    /*     
     fun shootSpeaker(distToSpeaker: Double){
         setSpeed(C.SpeakerPoly.calculate(distToSpeaker))
     }
+    */
+
     private fun runClosedLoop(){
         val leftpid = leftPid.calculate(leftEncoder.velocity)
         val rightpid = leftPid.calculate(rightEncoder.velocity)
@@ -95,35 +99,32 @@ object Shooter : SubsystemBase() {
         leftFlywheel.setVoltage(leftpid+leftFF)
         rightFlywheel.setVoltage(rightpid+rightFF)
     }
-    private fun runOpenLoop(){
+    private fun runOpenLoop(rawShooterSpeed : Double){
         leftFlywheel.set(rawShooterSpeed)
         rightFlywheel.set(rawShooterSpeed)
     }
-    private fun runStop(){
+    private fun stop(){
         leftFlywheel.set(0.0)
         rightFlywheel.set(0.0)
     }
-    fun setSpeedRaw(speed: Double) {
-        shooterMode = ShooterMode.OPEN_LOOP
-        rawShooterSpeed = speed
-    }
-    private fun shootSpeaker(){ setSpeed(C.SpeakerSpeed) }
-    fun shootAmp(){ setSpeed(C.AmpSpeed) }
-    fun shootSpeakerCommand() : Command = this.run { shootSpeaker(); runClosedLoop() }
-    fun shootAmpCommand() : Command = this.run { shootAmp(); runClosedLoop() }
+    fun shootSpeakerCommand() : Command = this.run { setSpeed(C.SpeakerSpeed); runClosedLoop() }
+    fun shootAmpCommand()     : Command = this.run { setSpeed(C.AmpSpeed);     runClosedLoop() }
+
     fun spinup(speed: RPM) : Command =
         this.run { runClosedLoop() }
         .beforeStarting ({ setSpeed(speed) })
+
     fun runatspeed(speed: RPM) : Command =
         this.run { runClosedLoop() }
             .beforeStarting ({ setSpeed(speed) })
-    fun manualSpeedCommand(speed:Double= 0.0) : Command = this.run { setSpeed(speed); runClosedLoop() }
+
+    fun manualSpeedCommand(speed:Double = 0.0) : Command = this.run { setSpeed(speed); runClosedLoop() }
     fun manualSpeedCommand(speed:() -> Double) : Command = this.run { setSpeed(speed()); runClosedLoop() }
-    fun idle() : Command = this.run { runStop() }
+    fun idle() : Command = this.run { stop() }
 
 
     fun isAtSpeed() : Boolean{
-        if(shooterMode==ShooterMode.OPEN_LOOP || shooterMode==ShooterMode.STOP) return false
+        //if(shooterMode==ShooterMode.OPEN_LOOP || shooterMode==ShooterMode.STOP) return false
         return (leftEncoder.velocity.within(10.0, targetSpeed.leftSpeeds.value) &&
             rightEncoder.velocity.within(10.0, targetSpeed.rightSpeeds.value))
     }
