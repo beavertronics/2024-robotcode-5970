@@ -68,8 +68,13 @@ object Climber : SubsystemBase() {
     fun climb(pos : ClimbConstants.ClimbPos) {
         when (pos) {
             ClimbPos.Retract -> {
+                /*
                 if(!isAtRetractLimitL) motorL.setVoltage( -ClimbConstants.retractVoltage )
                 if(!isAtRetractLimitR) motorR.setVoltage( -ClimbConstants.retractVoltage )
+                 */
+                motorL.setVoltage( -ClimbConstants.retractVoltage )
+                motorR.setVoltage( -ClimbConstants.retractVoltage )
+                //YAY DANGER!! Make sure smart current limits are in place!
             }
             ClimbPos.Extend -> {
                 motorR.setVoltage( ClimbConstants.extendVoltage )
