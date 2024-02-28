@@ -3,6 +3,7 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkLowLevel.MotorType
 import com.revrobotics.CANSparkMax
+import edu.wpi.first.math.filter.LinearFilter.singlePoleIIR
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.ClimbConstants
@@ -25,8 +26,15 @@ object Climber : SubsystemBase() {
 
     private val pdp = PowerDistribution(0, PowerDistribution.ModuleType.kCTRE)
 
-    fun isAtRetractLimitLeft() : Boolean {
-        if (leftRetractLimitSwitch.get() || pdp.getCurrent(3) > ClimbConstants.DetectLimitCurrent)
+    private val currentLFilter = singlePoleIIR(0.1, 0.02)
+    private val currentRFilter = singlePoleIIR(0.1, 0.02)
+
+    private var isAtRetractLimitL  = false
+    private var isAtRetractLimitR  = false
+
+    override fun periodic() {
+        isAtRetractLimitL = currentLFilter.calculate(pdp.getCurrent(ClimbConstants.leftPDPSlot)) > ClimbConstants.DetectLimitCurrent
+        isAtRetractLimitR = currentRFilter.calculate(pdp.getCurrent(ClimbConstants.rightPDPSlot)) > ClimbConstants.DetectLimitCurrent
     }
 
     fun PrintLimitSwitches(){
@@ -36,7 +44,7 @@ object Climber : SubsystemBase() {
     init {
         initMotorControllers(ClimbConstants.CurrentLimit, motorL, motorR)
         //TODO: finish initialize spark maxes
-        motorR.follow(motorL)
+        //motorR.follow(motorL)
         motorL.idleMode = CANSparkBase.IdleMode.kBrake
         motorR.idleMode = CANSparkBase.IdleMode.kBrake
         /* TODO: set motor inversion correctly
@@ -60,16 +68,14 @@ object Climber : SubsystemBase() {
     fun climb(pos : ClimbConstants.ClimbPos) {
         when (pos) {
             ClimbPos.Retract -> {
-                if(!leftRetractLimitSwitch.get() || !rightRetractLimitSwitch.get()) {
-                    motorL.setVoltage( -ClimbConstants.retractVoltage )
-                    //motorR.setVoltage( -ClimbConstants.retractVoltage )
-                } else {
-                }
+                if(!isAtRetractLimitL) motorL.setVoltage( -ClimbConstants.retractVoltage )
+                if(!isAtRetractLimitR) motorR.setVoltage( -ClimbConstants.retractVoltage )
             }
             ClimbPos.Extend -> {
-                if(!leftExtendLimitSwitch.get()) motorL.setVoltage( ClimbConstants.extendVoltage )
-                if(!rightExtendLimitSwitch.get()) motorR.setVoltage( ClimbConstants.extendVoltage )
+                motorR.setVoltage( ClimbConstants.extendVoltage )
+                motorL.setVoltage( ClimbConstants.extendVoltage )
             }
         }
+        //TODO: does not make outo happy
     }
 }

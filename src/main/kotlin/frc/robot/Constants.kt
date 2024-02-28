@@ -133,11 +133,14 @@ object Constants {
             Retract
         }
 
-        const val MotorRID = 999 //TODO: Get CAN IDs from electrical
-        const val MotorLID = 999 //TODO: Get CAN IDs from electrical
+        const val MotorRID = 29 //TODO: Get CAN IDs from electrical
+        const val MotorLID = 30 //TODO: Get CAN IDs from electrical
+
+        const val leftPDPSlot = 3
+        const val rightPDPSlot = 2
 
         const val CurrentLimit = 30 //amps, per side. See drivetrain current limit.
-        const val DetectCurrentLimit = 15 // If motor draws 15 amps, will assume is fully retracted
+        const val DetectLimitCurrent = 20 // If motor draws 20 amps, will assume is fully retracted
 
         const val MotorRevsToRetract = (7/1) * (7/1) * 10.0 //TODO: DANGER! Rough estimate; based off of CAD but makes assumptions about winch cord stacking.
         //How many revolutions of the motor does it take to fully contract the lifter?

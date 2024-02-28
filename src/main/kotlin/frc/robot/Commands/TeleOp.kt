@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
+import frc.robot.Constants
 import frc.robot.subsystems.*
 import kotlin.math.*
 
@@ -114,12 +115,12 @@ object TeleOp : Command() {
                 .a()
                 .whileTrue(Shooter.shootAmpCommand())
 
-            /*operatorController.povDown()
-                .whileTrue(Climber.doRetract())
+            operatorController.povDown()
+                .whileTrue(Climber.run{Climber.climb(Constants.ClimbConstants.ClimbPos.Retract)})
                 
             operatorController.povUp()
-                .whileTrue(Climber.doExtend())
-               */
+                .whileTrue(Climber.run{Climber.climb(Constants.ClimbConstants.ClimbPos.Extend)})
+
             //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
             //operatorController.rightBumper().whileTrue(Intake.feed())
         }
