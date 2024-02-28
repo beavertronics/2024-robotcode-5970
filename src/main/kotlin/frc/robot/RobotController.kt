@@ -10,8 +10,11 @@ import edu.wpi.first.wpilibj2.command.RunCommand
 import frc.robot.Commands.Autos.OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto
 import frc.robot.Commands.Autos.`Preload+BottomNote`
 import frc.robot.Commands.Autos.`Preload+Mobility`
+import frc.robot.Commands.SysID.SysID
+import frc.robot.Commands.SysID.drivetrainSys
+import frc.robot.Commands.SysID.shooterSys
+import frc.robot.Commands.TeleOp
 
-import frc.robot.commands.TeleOp
 import frc.robot.subsystems.Drivetrain
 
 /* Main code for controlling the robot. Mainly just links everything together.
@@ -47,7 +50,6 @@ object RobotController : TimedRobot() {
     
     override fun robotInit() {
         //Initialize the robot!
-        TeleOp.OI.Rumble.set(0.0, 0.0)
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi? Should we?
 
     }
@@ -73,12 +75,35 @@ object RobotController : TimedRobot() {
 
     override fun disabledInit() {
         //Runs as soon as the robot is disabled, use to deactivate motors safely, etc
+        TeleOp.Rumble.set(0.0, 0.0)
     }
     override fun disabledPeriodic() {
         //Runs only while robot is disabled- Use to hold motors in position for safety reasons.
         // Try to avoid putting code here- often unsafe.
     }
+    var tests: Map<String,Command> = mapOf(
+            //TODO: Tests go here!
+            //ie
+            //"Description of test" to TaxiTest
+            "Shooter SysID" to SysID(shooterSys),
+            "Drivetrain SysID" to SysID(drivetrainSys)
+    )
 
-    override fun testInit() {}
-    override fun testPeriodic() {}
+    private var testChooser : SendableChooser<Command> = SendableChooser()
+    private var selectedTest : Command = noAuto
+    init {
+        testChooser.setDefaultOption("No Auto", noAuto)
+        for (test in tests) {
+            testChooser.addOption(test.key, test.value);
+        }
+
+        SmartDashboard.putData(testChooser)
+    }
+
+    override fun testInit() {
+        TeleOp.OI.operatorController.a().whileTrue(selectedTest)
+    }
+    override fun testPeriodic() {
+        //Yay!
+    }
 }

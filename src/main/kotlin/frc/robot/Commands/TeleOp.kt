@@ -1,20 +1,17 @@
-package frc.robot.commands
+package frc.robot.Commands
 
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
-import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
-import frc.robot.Constants.IntakeConstants
 import frc.robot.subsystems.*
 import kotlin.math.*
 
@@ -50,17 +47,17 @@ object TeleOp : Command() {
             Intake.runIntake(OI.manualIntakeSpeed*IntakeConstants.pickupSpeed );
         }*/
 
-        if (!Intake.limitSwitch.get()) OI.Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
-        if (Shooter.isAtSpeed()) OI.Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
+        if (!Intake.limitSwitch.get()) Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
+        if (Shooter.isAtSpeed()) Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
 
-        OI.Rumble.update()
+        Rumble.update()
 
     }
 
     object OI {
-        private val operatorController = CommandXboxController(2)
-        private val driverControllerL = Joystick(0) //TODO: Fix!
-        private val driverControllerR = Joystick(1)
+        val operatorController = CommandXboxController(2)
+        val driverControllerL = Joystick(0) //TODO: Fix!
+        val driverControllerR = Joystick(1)
 
         
         //New joystick tank drive code
@@ -105,8 +102,9 @@ object TeleOp : Command() {
             // Right stick y = manual shooter control
             operatorController
                 .axisGreaterThan(XboxController.Axis.kRightY.value,0.1)
-                .whileTrue(Shooter.manualSpeedCommand(manualShooterSpeed)) //Looks like shooter speed is only passed once, but manualShooterSpeed is actually a callback so it's fine :/
-            
+                    .or(operatorController.axisLessThan(XboxController.Axis.kRightY.value, -0.1))
+                .whileTrue(Shooter.run {Shooter.runOpenLoop(operatorController.rightY.absoluteValue)} )//Looks like shooter speed is only passed once, but manualShooterSpeed is actually a callback so it's fine :/
+
             // Y = shoot for speaker
             operatorController
                 .y()
@@ -116,35 +114,14 @@ object TeleOp : Command() {
                 .a()
                 .whileTrue(Shooter.shootAmpCommand())
 
-            operatorController.povDown()
+            /*operatorController.povDown()
                 .whileTrue(Climber.doRetract())
                 
             operatorController.povUp()
                 .whileTrue(Climber.doExtend())
-                
+               */
             //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
             //operatorController.rightBumper().whileTrue(Intake.feed())
-        }
-
-        object Rumble {
-            private val rumbleTimer = Timer()
-            private var rumbleTime = 0.0
-
-            private val xboxHID = operatorController.hid
-
-            //Time in seconds
-            fun set(time : Double, power : Double, side : GenericHID.RumbleType = GenericHID.RumbleType.kBothRumble) {
-                rumbleTime = time;
-                xboxHID.setRumble(side, power)
-                rumbleTimer.reset();
-                rumbleTimer.start();
-            }
-
-            fun update() {
-                if (rumbleTimer.hasElapsed(rumbleTime)) {
-                    xboxHID.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
-                }
-            }
         }
 
         enum class SquareMode {
@@ -181,6 +158,26 @@ object TeleOp : Command() {
             if(this == 45 || this == 0 || this == 315) return DirectionalPOV.UP
             if(this == 135 || this == 180 || this == 225) return DirectionalPOV.DOWN
             return DirectionalPOV.NEUTRAL
+        }
+    }
+    object Rumble {
+        private val rumbleTimer = Timer()
+        private var rumbleTime = 0.0
+
+        private val xboxHID = OI.operatorController.hid
+
+        //Time in seconds
+        fun set(time : Double, power : Double, side : GenericHID.RumbleType = GenericHID.RumbleType.kBothRumble) {
+            rumbleTime = time;
+            xboxHID.setRumble(side, power)
+            rumbleTimer.reset();
+            rumbleTimer.start();
+        }
+
+        fun update() {
+            if (rumbleTimer.hasElapsed(rumbleTime)) {
+                xboxHID.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
+            }
         }
     }
 }

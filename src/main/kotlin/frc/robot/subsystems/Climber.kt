@@ -7,9 +7,8 @@ import com.revrobotics.CANSparkMax
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.ClimbConstants
 import frc.robot.Constants.ClimbConstants.ClimbPos
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.PowerDistribution
 
 import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.initMotorControllers
@@ -18,14 +17,21 @@ object Climber : SubsystemBase() {
     private val motorL = CANSparkMax(ClimbConstants.MotorLID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
     private val motorR = CANSparkMax(ClimbConstants.MotorRID, MotorType.kBrushed)
 
-    private val leftBottomLimitSwitch =  DigitalInput(ClimbConstants.leftBottomLimitSwitchID)
-    private val leftTopLimitSwitch =     DigitalInput(ClimbConstants.leftTopLimitSwitchID)
+    private val leftRetractLimitSwitch =  DigitalInput(ClimbConstants.leftRetractLimitSwitchID)
+    private val leftExtendLimitSwitch =     DigitalInput(ClimbConstants.leftExtendLimitSwitchID)
 
-    private val rightBottomLimitSwitch = DigitalInput(ClimbConstants.rightBottomLimitSwitchID)
-    private val rightTopLimitSwitch =    DigitalInput(ClimbConstants.rightTopLimitSwitchID)
+    private val rightRetractLimitSwitch = DigitalInput(ClimbConstants.rightRetractLimitSwitchID)
+    private val rightExtendLimitSwitch =    DigitalInput(ClimbConstants.rightExtendLimitSwitchID)
+
+    private val pdp = PowerDistribution(0, PowerDistribution.ModuleType.kCTRE)
+
+    fun isAtRetractLimitLeft() : Boolean {
+        if (leftRetractLimitSwitch.get() || pdp.getCurrent(3) > ClimbConstants.DetectLimitCurrent)
+    }
+
     fun PrintLimitSwitches(){
-        println("leftBottom: ${leftBottomLimitSwitch}, leftTop: ${leftTopLimitSwitch}, \n " +
-                "rightBottom ${rightBottomLimitSwitch}, rightTop: ${rightTopLimitSwitch}")
+        println("leftBottom: ${leftRetractLimitSwitch}, leftTop: ${leftExtendLimitSwitch}, \n " +
+                "rightBottom ${rightRetractLimitSwitch}, rightTop: ${rightExtendLimitSwitch}")
     }
     init {
         initMotorControllers(ClimbConstants.CurrentLimit, motorL, motorR)
@@ -41,6 +47,12 @@ object Climber : SubsystemBase() {
         */
     }
 
+    fun setVoltage(leftVolts: Double, rightVolts: Double) {
+        motorL.setVoltage(leftVolts)
+        motorR.setVoltage(rightVolts)
+    }
+
+
     fun doRetract(): Command = this.run { climb(ClimbPos.Retract) }
     fun doExtend():  Command = this.run { climb(ClimbPos.Extend) }
 
@@ -48,15 +60,15 @@ object Climber : SubsystemBase() {
     fun climb(pos : ClimbConstants.ClimbPos) {
         when (pos) {
             ClimbPos.Retract -> {
-                if(!leftBottomLimitSwitch.get() || !rightBottomLimitSwitch.get()) {
+                if(!leftRetractLimitSwitch.get() || !rightRetractLimitSwitch.get()) {
                     motorL.setVoltage( -ClimbConstants.retractVoltage )
                     //motorR.setVoltage( -ClimbConstants.retractVoltage )
                 } else {
                 }
             }
             ClimbPos.Extend -> {
-                if(!leftTopLimitSwitch.get()) motorL.setVoltage( ClimbConstants.extendVoltage )
-                if(!rightTopLimitSwitch.get()) motorR.setVoltage( ClimbConstants.extendVoltage )
+                if(!leftExtendLimitSwitch.get()) motorL.setVoltage( ClimbConstants.extendVoltage )
+                if(!rightExtendLimitSwitch.get()) motorR.setVoltage( ClimbConstants.extendVoltage )
             }
         }
     }

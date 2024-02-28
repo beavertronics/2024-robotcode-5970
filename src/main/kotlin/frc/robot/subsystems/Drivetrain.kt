@@ -8,8 +8,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.math.trajectory.Trajectory
+import edu.wpi.first.units.*
+import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.Controller
 import frc.engine.controls.Ramsete
@@ -150,4 +153,41 @@ object Drivetrain : SubsystemBase() {
     val consumeDrive: (ChassisSpeeds) -> Unit = {
         closedLoopDrive(it)
     }
+
+    /** Drive by setting left and right voltage (-12v to 12v)
+     * @param volts Voltage for motors motors
+     * */
+    val rawDrive: (Measure<Voltage>) -> Unit =  {
+        //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
+        leftMain.setVoltage(it.`in`(Units.Volts))
+        rightMain.setVoltage(it.`in`(Units.Volts))
+    }
+
+    private val m_appliedVoltage: MutableMeasure<Voltage> = MutableMeasure.mutable(Units.Volts.of(0.0))
+    private val m_distance: MutableMeasure<Distance> = MutableMeasure.mutable(Units.Meters.of(0.0))
+    private val m_velocity: MutableMeasure<Velocity<Distance>> = MutableMeasure.mutable(Units.MetersPerSecond.of(0.0))
+
+    val logger: (SysIdRoutineLog) -> Unit =  {
+        // Record a frame for the left motors.  Since these share an encoder, we consider
+        // the entire group to be one motor.
+        it.motor("drive-left")
+                .voltage(
+                        m_appliedVoltage.mut_replace(
+                                leftMain.get() * RobotController.getBatteryVoltage(), Units.Volts
+                        ))
+                .linearPosition(m_distance.mut_replace(leftEncoder.position, Units.Meters))
+                .linearVelocity(
+                        m_velocity.mut_replace(leftEncoder.velocity, Units.MetersPerSecond));
+        // Record a frame for the right motors.  Since these share an encoder, we consider
+        // the entire group to be one motor.
+        it.motor("drive-right")
+                .voltage(
+                        m_appliedVoltage.mut_replace(
+                                rightMain.get() * RobotController.getBatteryVoltage(), Units.Volts
+                        ))
+                .linearPosition(m_distance.mut_replace(rightEncoder.position, Units.Meters))
+                .linearVelocity(
+                        m_velocity.mut_replace(rightEncoder.velocity, Units.MetersPerSecond));
+    }
+
 }

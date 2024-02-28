@@ -13,7 +13,7 @@ class ShootNote(
     override fun initialize() {
         autoCommandGroup = SequentialCommandGroup (
             Shooter.spinup(speed),
-            Intake.feed()
+            Intake.doFeed()
         )
         autoCommandGroup.schedule()
     }

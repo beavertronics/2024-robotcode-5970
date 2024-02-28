@@ -99,7 +99,7 @@ object Shooter : SubsystemBase() {
         leftFlywheel.setVoltage(leftpid+leftFF)
         rightFlywheel.setVoltage(rightpid+rightFF)
     }
-    private fun runOpenLoop(rawShooterSpeed : Double){
+    fun runOpenLoop(rawShooterSpeed : Double){
         leftFlywheel.set(rawShooterSpeed)
         rightFlywheel.set(rawShooterSpeed)
     }
@@ -118,8 +118,15 @@ object Shooter : SubsystemBase() {
         this.run { runClosedLoop() }
             .beforeStarting ({ setSpeed(speed) })
 
-    fun manualSpeedCommand(speed:Double = 0.0) : Command = this.run { setSpeed(speed); runClosedLoop() }
-    fun manualSpeedCommand(speed:() -> Double) : Command = this.run { setSpeed(speed()); runClosedLoop() }
+    fun voltageCommand(volts:Double = 0.0) : Command = this.run {
+        leftFlywheel.setVoltage(volts)
+        rightFlywheel.setVoltage(volts)
+    }
+    fun voltageCommand(volts:() -> Double) : Command = this.run {
+        leftFlywheel.setVoltage(volts())
+        rightFlywheel.setVoltage(volts())
+    }
+
     fun idle() : Command = this.run { stop() }
 
 
