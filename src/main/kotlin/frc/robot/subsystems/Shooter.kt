@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.Controller
 import frc.engine.utils.RPM
 import frc.engine.utils.Sugar.within
+import frc.engine.utils.initMotorControllers
 import frc.robot.Constants.ShooterConstants as C
 
 object Shooter : SubsystemBase() {
@@ -26,24 +27,10 @@ object Shooter : SubsystemBase() {
     private val rightPid    = Controller.PID(C.KP, C.KD)
     private val feedForward = SimpleMotorFeedforward(C.KS, C.KV, C.KA)
 
-    /* 
-    private var rawShooterSpeed = 0.0;
-    enum class ShooterMode {
-        CLOSED_LOOP, OPEN_LOOP, STOP
-    }
-    var shooterMode = ShooterMode.OPEN_LOOP
-    */
-
     var targetSpeed = ShooterSpeeds()
 
     init {
-
-        leftFlywheel.restoreFactoryDefaults()
-        leftFlywheel.setSmartCurrentLimit(C.CurrentLimit) //Todo: there's a fancy version of this function that may be worth using
-        rightFlywheel.restoreFactoryDefaults()
-        rightFlywheel.setSmartCurrentLimit(C.CurrentLimit) //Todo: there's a fancy version of this function that may be worth using
-            //TODO: finish initialize spark maxes
-
+        initMotorControllers(C.CurrentLimit, leftFlywheel, rightFlywheel)
 
         leftFlywheel.inverted = false
         rightFlywheel.inverted = true
@@ -91,13 +78,13 @@ object Shooter : SubsystemBase() {
     */
 
     private fun runClosedLoop(){
-        val leftpid = leftPid.calculate(leftEncoder.velocity)
-        val rightpid = leftPid.calculate(rightEncoder.velocity)
-        val leftFF = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
-        val rightFF = feedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
+        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity)
+        val rightPidCalculated = leftPid.calculate(rightEncoder.velocity)
+        val leftFFCalculated   = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
+        val rightFFCalculated  = feedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
 
-        leftFlywheel.setVoltage(leftpid+leftFF)
-        rightFlywheel.setVoltage(rightpid+rightFF)
+        leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
+        rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
     }
     fun runOpenLoop(rawShooterSpeed : Double){
         leftFlywheel.set(rawShooterSpeed)
@@ -107,22 +94,22 @@ object Shooter : SubsystemBase() {
         leftFlywheel.set(0.0)
         rightFlywheel.set(0.0)
     }
-    fun shootSpeakerCommand() : Command = this.run { setSpeed(C.SpeakerSpeed); runClosedLoop() }
-    fun shootAmpCommand()     : Command = this.run { setSpeed(C.AmpSpeed);     runClosedLoop() }
+    fun doSpinupToSpeaker() : Command = doSpinup(C.SpeakerSpeed)
+    fun doSpinupToAmp()     : Command = doSpinup(C.AmpSpeed)
 
-    fun spinup(speed: RPM) : Command =
+    fun doSpinup(speed: RPM) : Command =
         this.run { runClosedLoop() }
         .beforeStarting ({ setSpeed(speed) })
-
-    fun runatspeed(speed: RPM) : Command =
+    fun doSpinupAndStop(speed: RPM) : Command =
         this.run { runClosedLoop() }
             .beforeStarting ({ setSpeed(speed) })
+            .until { isAtSpeed }
 
-    fun voltageCommand(volts:Double = 0.0) : Command = this.run {
+    fun doRunAtVoltage(volts:Double = 0.0) : Command = this.run {
         leftFlywheel.setVoltage(volts)
         rightFlywheel.setVoltage(volts)
     }
-    fun voltageCommand(volts:() -> Double) : Command = this.run {
+    fun doRunAtVoltage(volts:() -> Double) : Command = this.run {
         leftFlywheel.setVoltage(volts())
         rightFlywheel.setVoltage(volts())
     }
@@ -130,11 +117,8 @@ object Shooter : SubsystemBase() {
     fun idle() : Command = this.run { stop() }
 
 
-    fun isAtSpeed() : Boolean{
-        //if(shooterMode==ShooterMode.OPEN_LOOP || shooterMode==ShooterMode.STOP) return false
-        return (leftEncoder.velocity.within(10.0, targetSpeed.leftSpeeds.value) &&
+    val isAtSpeed get() = (leftEncoder.velocity.within(10.0, targetSpeed.leftSpeeds.value) &&
             rightEncoder.velocity.within(10.0, targetSpeed.rightSpeeds.value))
-    }
 
 
 

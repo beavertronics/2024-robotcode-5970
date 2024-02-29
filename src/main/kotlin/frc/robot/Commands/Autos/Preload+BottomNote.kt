@@ -19,6 +19,7 @@ class `Preload+BottomNote` : Command() {
                 Intake.doIntake()
             ),
             followPathCommand("BottomNoteToBottomSpeaker"),
+            ShootNote(Constants.ShooterConstants.SpeakerSpeed)
         )
         autoCommandGroup.schedule()
     }

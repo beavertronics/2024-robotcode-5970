@@ -3,22 +3,19 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkLowLevel.MotorType
 import com.revrobotics.CANSparkMax
-import edu.wpi.first.math.filter.LinearFilter.singlePoleIIR
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.ClimbConstants
 import frc.robot.Constants.ClimbConstants.ClimbPos
-import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj.PowerDistribution
 
 import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.initMotorControllers
 
 object Climber : SubsystemBase() {
-    private val motorL = CANSparkMax(ClimbConstants.MotorLID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
-    private val motorR = CANSparkMax(ClimbConstants.MotorRID, MotorType.kBrushed)
+    private val leftMotor  = CANSparkMax(ClimbConstants.MotorLID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
+    private val rightMotor = CANSparkMax(ClimbConstants.MotorRID, MotorType.kBrushed)
 
-    private val leftRetractLimitSwitch =  DigitalInput(ClimbConstants.leftRetractLimitSwitchID)
+    /*private val retractLimitSwitchL =  DigitalInput(ClimbConstants.leftRetractLimitSwitchID)
     private val leftExtendLimitSwitch =     DigitalInput(ClimbConstants.leftExtendLimitSwitchID)
 
     private val rightRetractLimitSwitch = DigitalInput(ClimbConstants.rightRetractLimitSwitchID)
@@ -38,15 +35,15 @@ object Climber : SubsystemBase() {
     }
 
     fun PrintLimitSwitches(){
-        println("leftBottom: ${leftRetractLimitSwitch}, leftTop: ${leftExtendLimitSwitch}, \n " +
+        println("leftBottom: ${retractLimitSwitchL}, leftTop: ${leftExtendLimitSwitch}, \n " +
                 "rightBottom ${rightRetractLimitSwitch}, rightTop: ${rightExtendLimitSwitch}")
-    }
+    }*/
     init {
-        initMotorControllers(ClimbConstants.CurrentLimit, motorL, motorR)
+        initMotorControllers(ClimbConstants.CurrentLimit, leftMotor, rightMotor)
         //TODO: finish initialize spark maxes
         //motorR.follow(motorL)
-        motorL.idleMode = CANSparkBase.IdleMode.kBrake
-        motorR.idleMode = CANSparkBase.IdleMode.kBrake
+        leftMotor.idleMode = CANSparkBase.IdleMode.kBrake
+        rightMotor.idleMode = CANSparkBase.IdleMode.kBrake
         /* TODO: set motor inversion correctly
         leftMain.inverted = false
         leftSecondary.inverted = false
@@ -56,8 +53,8 @@ object Climber : SubsystemBase() {
     }
 
     fun setVoltage(leftVolts: Double, rightVolts: Double) {
-        motorL.setVoltage(leftVolts)
-        motorR.setVoltage(rightVolts)
+        leftMotor.setVoltage(leftVolts)
+        rightMotor.setVoltage(rightVolts)
     }
 
 
@@ -72,13 +69,13 @@ object Climber : SubsystemBase() {
                 if(!isAtRetractLimitL) motorL.setVoltage( -ClimbConstants.retractVoltage )
                 if(!isAtRetractLimitR) motorR.setVoltage( -ClimbConstants.retractVoltage )
                  */
-                motorL.setVoltage( -ClimbConstants.retractVoltage )
-                motorR.setVoltage( -ClimbConstants.retractVoltage )
+                leftMotor.setVoltage( -ClimbConstants.retractVoltage )
+                rightMotor.setVoltage( -ClimbConstants.retractVoltage )
                 //YAY DANGER!! Make sure smart current limits are in place!
             }
             ClimbPos.Extend -> {
-                motorR.setVoltage( ClimbConstants.extendVoltage )
-                motorL.setVoltage( ClimbConstants.extendVoltage )
+                rightMotor.setVoltage( ClimbConstants.extendVoltage )
+                leftMotor.setVoltage( ClimbConstants.extendVoltage )
             }
         }
         //TODO: does not make outo happy

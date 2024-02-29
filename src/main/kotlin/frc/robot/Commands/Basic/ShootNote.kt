@@ -12,7 +12,7 @@ class ShootNote(
     private lateinit var autoCommandGroup : SequentialCommandGroup
     override fun initialize() {
         autoCommandGroup = SequentialCommandGroup (
-            Shooter.spinup(speed),
+            Shooter.doSpinupAndStop(speed),
             Intake.doFeed()
         )
         autoCommandGroup.schedule()

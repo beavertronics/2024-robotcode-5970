@@ -49,7 +49,7 @@ object TeleOp : Command() {
         }*/
 
         if (!Intake.limitSwitch.get()) Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
-        if (Shooter.isAtSpeed()) Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
+        if (Shooter.isAtSpeed) Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
 
         Rumble.update()
 
@@ -109,17 +109,17 @@ object TeleOp : Command() {
             // Y = shoot for speaker
             operatorController
                 .y()
-                .whileTrue(Shooter.shootSpeakerCommand())
+                .whileTrue(Shooter.doSpinupToSpeaker())
             // Shooting Amp Speeds
             operatorController
                 .a()
-                .whileTrue(Shooter.shootAmpCommand())
+                .whileTrue(Shooter.doSpinupToAmp())
 
             operatorController.povDown()
-                .whileTrue(Climber.run{Climber.climb(Constants.ClimbConstants.ClimbPos.Retract)})
+                .whileTrue(Climber.doRetract())
                 
             operatorController.povUp()
-                .whileTrue(Climber.run{Climber.climb(Constants.ClimbConstants.ClimbPos.Extend)})
+                .whileTrue(Climber.doExtend())
 
             //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
             //operatorController.rightBumper().whileTrue(Intake.feed())
