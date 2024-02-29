@@ -52,11 +52,20 @@ object Climber : SubsystemBase() {
         */
     }
 
+    /**
+     * Runs the climber motors at left and right voltages, respectively
+     * @param leftVolts The voltage to run the left motors at
+     * @param rightVolts The voltage to run the right motors at
+     */
     fun setVoltage(leftVolts: Double, rightVolts: Double) {
         leftMotor.setVoltage(leftVolts)
         rightMotor.setVoltage(rightVolts)
     }
-
+    /**
+     * Runs the climber motors at left and right voltages, respectively
+     * @param voltage The voltage to run both the left & right motors at
+     */
+    fun setVoltage(voltage: Double) = setVoltage(voltage, voltage)
 
     fun doRetract(): Command = this.run { climb(ClimbPos.Retract) }
     fun doExtend():  Command = this.run { climb(ClimbPos.Extend) }
@@ -65,17 +74,16 @@ object Climber : SubsystemBase() {
     fun climb(pos : ClimbConstants.ClimbPos) {
         when (pos) {
             ClimbPos.Retract -> {
+                setVoltage(-ClimbConstants.retractVoltage)
                 /*
                 if(!isAtRetractLimitL) motorL.setVoltage( -ClimbConstants.retractVoltage )
                 if(!isAtRetractLimitR) motorR.setVoltage( -ClimbConstants.retractVoltage )
                  */
-                leftMotor.setVoltage( -ClimbConstants.retractVoltage )
-                rightMotor.setVoltage( -ClimbConstants.retractVoltage )
+
                 //YAY DANGER!! Make sure smart current limits are in place!
             }
             ClimbPos.Extend -> {
-                rightMotor.setVoltage( ClimbConstants.extendVoltage )
-                leftMotor.setVoltage( ClimbConstants.extendVoltage )
+                setVoltage(ClimbConstants.retractVoltage)
             }
         }
         //TODO: does not make outo happy
