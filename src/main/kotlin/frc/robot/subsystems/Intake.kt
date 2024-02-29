@@ -22,7 +22,7 @@ object Intake : SubsystemBase() {
         bottomMotor.configContinuousCurrentLimit(C.CurrentLimit)
         bottomMotor.configFactoryDefault()*/
         bottomMotor.inverted = true
-        topMotor.inverted = false
+        topMotor.inverted = true
 
         bottomMotor.follow(topMotor)
 
@@ -46,7 +46,7 @@ object Intake : SubsystemBase() {
 
     fun doIntake() : Command = 
         this.run {runIntake(C.pickupSpeed)}
-        .onlyWhile{!limitSwitch.get()}
+        .until{!limitSwitch.get()}
         //.andThen(this.run{runIntake(C.pickupSpeed)})
         //.onlyWhile{limitSwitch.get()}
 

@@ -44,12 +44,8 @@ object Climber : SubsystemBase() {
         //motorR.follow(motorL)
         leftMotor.idleMode = CANSparkBase.IdleMode.kBrake
         rightMotor.idleMode = CANSparkBase.IdleMode.kBrake
-        /* TODO: set motor inversion correctly
-        leftMain.inverted = false
-        leftSecondary.inverted = false
-        rightMain.inverted = true
-        rightSecondary.inverted = true
-        */
+        rightMotor.inverted = true
+        leftMotor.inverted = false
     }
 
     /**
