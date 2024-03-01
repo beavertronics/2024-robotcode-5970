@@ -47,7 +47,7 @@ object TeleOp : Command() {
             Intake.runIntake(OI.manualIntakeSpeed*IntakeConstants.pickupSpeed );
         }*/
 
-        if (!Intake.limitSwitch.get()) Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
+        //if (!Intake.limitSwitch.get()) Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
         if (Shooter.isAtSpeed) Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
 
         Rumble.update()
@@ -61,8 +61,8 @@ object TeleOp : Command() {
 
         
         //New joystick tank drive code
-        public val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.SQUARED,false)
-        public val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.SQUARED,false)
+        public val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.NORMAL,false)
+        public val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.NORMAL,false)
 
         public val speedLower get() = !driverControllerR.trigger
         public val reverseDrive get() = driverControllerL.trigger

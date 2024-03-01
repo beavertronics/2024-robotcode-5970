@@ -46,7 +46,7 @@ object Intake : SubsystemBase() {
 
     fun doIntake() : Command = 
         this.run {runIntake(C.pickupSpeed)}
-        .until{!limitSwitch.get()}
+        //.until{!limitSwitch.get()}
         //.andThen(this.run{runIntake(C.pickupSpeed)})
         //.onlyWhile{limitSwitch.get()}
 
