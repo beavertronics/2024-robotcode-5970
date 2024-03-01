@@ -5,7 +5,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.Timer
 import frc.engine.utils.initMotorControllers
+import frc.robot.Constants.IntakeConstants.unfeedTime
 import frc.robot.Constants.IntakeConstants as C
 
 object Intake : SubsystemBase() {
@@ -14,6 +16,8 @@ object Intake : SubsystemBase() {
 
     private val topMotor = TalonSRX(C.TopMotorID)
     private val bottomMotor = TalonSRX(C.BottomMotorID)
+
+    private val unfeedTimer = Timer()
 
     init {
         initMotorControllers(C.CurrentLimit, topMotor, bottomMotor)
@@ -53,6 +57,17 @@ object Intake : SubsystemBase() {
     fun doFeed() : Command = this.run{runIntake(C.feedingSpeed)}
 
     fun doEject()  : Command = this.run { runIntake(-C.reverseSpeed) }
+
+    /**
+     * Slightly pulls the note back for shooting after intake
+     */
+    fun doUnFeed()  : Command = this.run { runIntake(-C.pushforwardSpeed) }
+            .beforeStarting ( {
+                unfeedTimer.reset()
+                unfeedTimer.start()
+            } )
+            .until { unfeedTimer.hasElapsed(unfeedTime)}
+
 
     fun idle() : Command = this.run { stop() }.withName("Idle")
 

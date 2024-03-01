@@ -73,6 +73,8 @@ object Constants {
         const val feedingSpeed = 0.7 //TODO set feeding speed.
 
         const val feedingTime = 0.5 //TODO set feedingTime. In seconds
+        const val unfeedTime = 0.5 //TODO set feedingTime. In seconds
+
 
     }
     object ShooterConstants {
