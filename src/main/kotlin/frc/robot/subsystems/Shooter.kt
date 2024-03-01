@@ -32,8 +32,8 @@ object Shooter : SubsystemBase() {
     init {
         initMotorControllers(C.CurrentLimit, leftFlywheel, rightFlywheel)
 
-        leftFlywheel.inverted = false
-        rightFlywheel.inverted = true
+        leftFlywheel.inverted = true
+        rightFlywheel.inverted = false
         defaultCommand = idle()
     }
 

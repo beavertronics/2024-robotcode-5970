@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
-import frc.robot.Constants
 import frc.robot.subsystems.*
 import kotlin.math.*
 
@@ -34,7 +33,7 @@ object TeleOp : Command() {
 
     override fun execute() {
     
-        var baseSpeed = if (OI.speedBoost) C.speedBoostSpeed else C.driveSpeed
+        var baseSpeed = if (OI.speedLower) C.slowSpeed else C.driveSpeed
 
         if (OI.reverseDrive) baseSpeed *= -1
 
@@ -65,7 +64,7 @@ object TeleOp : Command() {
         public val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.SQUARED,false)
         public val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.SQUARED,false)
 
-        public val speedBoost get() = driverControllerR.trigger
+        public val speedLower get() = !driverControllerR.trigger
         public val reverseDrive get() = driverControllerL.trigger
         /* 
         val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.1, readjust = false)

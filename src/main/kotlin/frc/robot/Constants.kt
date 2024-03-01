@@ -64,10 +64,10 @@ object Constants {
         const val TopMotorID = 28
         const val BottomMotorID = 27
 
-        const val CurrentLimit = 12 //Current limit 12 amps?
+        const val CurrentLimit = 20 //Current limit 12 amps?
         const val limitSwitchChannel = 1
 
-        const val pickupSpeed = 0.5 //TODO set intake speed.
+        const val pickupSpeed = 0.7 //TODO set intake speed.
         const val pushforwardSpeed = 0.3 //TODO set pullback speed. Multiplied by -1
         const val reverseSpeed = 0.5 //TODO set outtake Speed.
         const val feedingSpeed = 0.7 //TODO set feeding speed.
@@ -114,9 +114,9 @@ object Constants {
 
     object TeleopConstants {
         const val MaxIntakeSpeed = 0.5
-        const val MaxVoltage = 12.0
-        const val driveSpeed = 0.7 //TODO set drive speed
-        const val speedBoostSpeed = 1.0 //TODO set speed boost speed
+        const val MaxVoltage = 12
+        const val driveSpeed = 1.0 //TODO set drive speed
+        const val slowSpeed = 0.7 //TODO set speed boost speed
         const val quickTurnDeadzone = 0.1 //TODO set quick turn dead zone
         const val quickTurnSpeed = 0.7 //TODO set quick turn speed.
 
@@ -130,7 +130,8 @@ object Constants {
 
         enum class ClimbPos {
             Extend,
-            Retract
+            Retract,
+            Chill
         }
 
         const val MotorRID = 29 //TODO: Get CAN IDs from electrical
@@ -143,8 +144,8 @@ object Constants {
         const val MotorRevsToRetract = (7/1) * (7/1) * 10.0 //TODO: DANGER! Rough estimate; based off of CAD but makes assumptions about winch cord stacking.
         //How many revolutions of the motor does it take to fully contract the lifter?
 
-        const val extendVoltage = 1.0 //TODO: Tune!
-        const val retractVoltage = 1.0 //TODO: Tune!
+        const val extendVoltage = 10.0 //TODO: Tune!
+        const val retractVoltage = 10.0 //TODO: Tune!
 
         /*const val leftRetractLimitSwitchID = 2
         const val leftExtendLimitSwitchID = 3

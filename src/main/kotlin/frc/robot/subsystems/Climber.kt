@@ -46,6 +46,8 @@ object Climber : SubsystemBase() {
         rightMotor.idleMode = CANSparkBase.IdleMode.kBrake
         rightMotor.inverted = true
         leftMotor.inverted = false
+
+        defaultCommand = this.run {climb(ClimbPos.Chill)}
     }
 
     /**
@@ -80,6 +82,9 @@ object Climber : SubsystemBase() {
             }
             ClimbPos.Extend -> {
                 setVoltage(ClimbConstants.retractVoltage)
+            }
+            ClimbPos.Chill -> {
+                setVoltage(0.0)
             }
         }
         //TODO: does not make outo happy
