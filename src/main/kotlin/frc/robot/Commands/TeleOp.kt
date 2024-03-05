@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import frc.engine.utils.RPM
 import frc.engine.utils.Sugar.within
 
 import frc.robot.Constants.TeleopConstants as C
@@ -42,16 +43,9 @@ object TeleOp : Command() {
 
         Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
 
-        /*if (OI.manualIntakeSpeed != 0.0) {
-            Intake.run {}
-            Intake.runIntake(OI.manualIntakeSpeed*IntakeConstants.pickupSpeed );
-        }*/
-
-        //if (!Intake.limitSwitch.get()) Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
-       // if (Shooter.isAtSpeed) Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
+       if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RPM) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
 
         Rumble.update()
-
     }
 
     object OI {
@@ -61,67 +55,52 @@ object TeleOp : Command() {
 
         
         //New joystick tank drive code
-        public val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.NORMAL,false)
-        public val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.NORMAL,false)
+        val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.NORMAL,false)
+        val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.NORMAL,false)
 
-        public val speedLower get() = !driverControllerR.trigger
-        public val reverseDrive get() = driverControllerL.trigger
-        /* 
-        val manualIntakeSpeed get() = operatorController.rightY.processInput(deadzone = 0.1, readjust = false)
-        private val getManualIntakeSpeed: () -> Double = { -manualIntakeSpeed }
-        */
+        val speedLower get() = !driverControllerR.trigger
+        val reverseDrive get() = driverControllerL.trigger
         val manualShooterSpeed get() =  abs(operatorController.leftY).processInput()
-        //private val getManualShooterSpeed: () -> Double = { manualShooterSpeed }
 
-        val feedToShoot : Trigger = operatorController.leftBumper()
-        val      pickup : Trigger = operatorController.axisGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
-        val       eject : Trigger = operatorController.axisLessThan   (XboxController.Axis.kLeftY.value, -0.1)
+        private val   feedToShoot : Trigger = operatorController.leftBumper()
+        private val        pickup : Trigger = operatorController.axisGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
+        private val         eject : Trigger = operatorController.axisLessThan   (XboxController.Axis.kLeftY.value, -0.1)
+        private val spinupShooter : Trigger = operatorController.axisGreaterThan(XboxController.Axis.kRightY.value,0.1)
+                                                        .or(operatorController.axisLessThan(XboxController.Axis.kRightY.value, -0.1))
+        private val spinupToSpeaker : Trigger = operatorController.y()
+        private val     spinupToAmp : Trigger = operatorController.a()
+        private val  retractClimber : Trigger = operatorController.povDown()
+        private val   extendClimber : Trigger = operatorController.povUp()
+
+
 
 
         init {
-            /*
-            Left stick y = Digital intake control (-70 or 70 percent). If left bumper is not pressed, will stop after limit switch has been unpressed
-
-            Left bumper = Shoot control- Allows shoot when pressed
-            */
+            // Left stick y = Digital intake control (-70 or 70 percent). If left bumper is not pressed, will stop after limit switch has been unpressed
             pickup.and(feedToShoot.negate())
                 .whileTrue(Intake.doIntake()) //Don't repeat; will stop when limit switch is done being triggered
-
             eject.and(feedToShoot.negate())
                 .whileTrue(Intake.doEject().repeatedly()) //Yes repeat; keep reversing note as long as driver says so
-            
+
+            // Left bumper = Shoot control- Allows shoot when pressed
             feedToShoot.whileTrue(Intake.doFeed().repeatedly()) //Yes feed repeatedly
 
-            /*
-            Y = run shooter at speaker speeds
-            A = run shooter at amp speeds
-            
-            Right stick y = manually control shooter, absolute value
-            */
-
             // Right stick y = manual shooter control
-            operatorController
-                .axisGreaterThan(XboxController.Axis.kRightY.value,0.1)
-                    .or(operatorController.axisLessThan(XboxController.Axis.kRightY.value, -0.1))
-                .whileTrue(Shooter.run {Shooter.runOpenLoop(operatorController.rightY.absoluteValue)} )//Looks like shooter speed is only passed once, but manualShooterSpeed is actually a callback so it's fine :/
+            spinupShooter
+                .whileTrue(Shooter.run {Shooter.runOpenLoop(operatorController.rightY.absoluteValue)} )
 
             // Y = shoot for speaker
-            operatorController
-                .y()
+            spinupToSpeaker
                 .whileTrue(Shooter.doSpinupToSpeaker())
-            // Shooting Amp Speeds
-            operatorController
-                .a()
+            // A = run shooter at amp speeds
+            spinupToAmp
                 .whileTrue(Shooter.doSpinupToAmp())
-
-            operatorController.povDown()
-                .whileTrue(Climber.doRetract())
-                
-            operatorController.povUp()
+            // DPad up = Climber extend
+            extendClimber
                 .whileTrue(Climber.doExtend())
-
-            //operatorController.b().onTrue(Intake.doIntake()) //WhileTrue does not repeat trying to intake once intaking finishes, but will stop if the button is let go.
-            //operatorController.rightBumper().whileTrue(Intake.feed())
+            // DPad up = Climber retract
+            retractClimber
+                .whileTrue(Climber.doRetract())
         }
 
         enum class SquareMode {
