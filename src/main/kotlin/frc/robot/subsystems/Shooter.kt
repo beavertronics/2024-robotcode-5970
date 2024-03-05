@@ -30,10 +30,14 @@ object Shooter : SubsystemBase() {
     var targetSpeed = ShooterSpeeds()
 
     init {
+        // Reset motor controllers & set current limits
         initMotorControllers(C.CurrentLimit, leftFlywheel, rightFlywheel)
 
+        // Invert the left flywheel
         leftFlywheel.inverted = true
         rightFlywheel.inverted = false
+
+        // Set the default command to idle
         defaultCommand = idle()
     }
 
@@ -61,22 +65,14 @@ object Shooter : SubsystemBase() {
      * @param speed Desired speed of the motor in RPM
      */
     fun setSpeed(speed : Double) = Shooter.setSpeed(speed, speed)
+
     /**
      * Set the speed of the flywheels using closed loop control
      * @param speed Desired speed of the motor in RPM
      */
     fun setSpeed(speed : RPM) = setSpeed(speed, speed)
-    /*fun stop() {
-        shooterMode=ShooterMode.STOP
 
-    }*/
-
-    /*     
-    fun shootSpeaker(distToSpeaker: Double){
-        setSpeed(C.SpeakerPoly.calculate(distToSpeaker))
-    }
-    */
-
+    /** Calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     private fun runClosedLoop(){
         val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity)
         val rightPidCalculated = leftPid.calculate(rightEncoder.velocity)
@@ -86,37 +82,60 @@ object Shooter : SubsystemBase() {
         leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
         rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
     }
-    fun runOpenLoop(rawShooterSpeed : Double){
-        leftFlywheel.set(rawShooterSpeed)
-        rightFlywheel.set(rawShooterSpeed)
+
+    /** Runs the flywheels at percentShooterSpeed
+     * @param percentShooterSpeed The percent at which to run the flywheel */
+    fun runOpenLoop(percentShooterSpeed : Double){
+        leftFlywheel.set(percentShooterSpeed)
+        rightFlywheel.set(percentShooterSpeed)
+        runClosedLoop()
     }
+    /** Runs the flywheels at 0% stopping them from continuing to run */
     private fun stop(){
         leftFlywheel.set(0.0)
         rightFlywheel.set(0.0)
     }
+
+    /** Run closed loop to reach the speed required to shoot into the speaker */
     fun doSpinupToSpeaker() : Command = doSpinup(C.SpeakerSpeed)
+
+    /** Run closed loop to reach the speed required to shoot into the amp */
     fun doSpinupToAmp()     : Command = doSpinup(C.AmpSpeed)
 
+    /** Run closed loop to reach speed
+     * @param speed Desired speed in RPM */
     fun doSpinup(speed: RPM) : Command =
         this.run { runClosedLoop() }
         .beforeStarting ({ setSpeed(speed) })
+
+    /** Run closed loop to reach speed, then end as soon as it reaches speed
+     * @param speed Desired speed in RPM */
     fun doSpinupAndStop(speed: RPM) : Command =
         this.run { runClosedLoop() }
             .beforeStarting ({ setSpeed(speed) })
             .until { isAtSpeed }
 
-    fun doRunAtVoltage(volts:Double = 0.0) : Command = this.run {
-        leftFlywheel.setVoltage(volts)
-        rightFlywheel.setVoltage(volts)
+    /**
+     * Runs the shooter at voltage
+     * @param voltages Voltages to run the robot on
+     */
+    fun doRunAtVoltage(voltages:Double = 0.0) : Command = this.run {
+        leftFlywheel.setVoltage(voltages)
+        rightFlywheel.setVoltage(voltages)
     }
-    fun doRunAtVoltage(volts:() -> Double) : Command = this.run {
-        leftFlywheel.setVoltage(volts())
-        rightFlywheel.setVoltage(volts())
+    /**
+     * Runs the shooter at voltage
+     * @param voltages Voltage getter function, called each frame to set the shooter
+     */
+    fun doRunAtVoltage(voltages:() -> Double) : Command = this.run {
+        leftFlywheel.setVoltage(voltages())
+        rightFlywheel.setVoltage(voltages())
     }
 
+    /** Stops the shooter */
     fun idle() : Command = this.run { stop() }
 
-
+    /** Returns true if the encoder velocity is equal to the desired speed */
     val isAtSpeed get() = (leftEncoder.velocity.within(10.0, targetSpeed.leftSpeeds.value) &&
             rightEncoder.velocity.within(10.0, targetSpeed.rightSpeeds.value))
 
@@ -124,35 +143,18 @@ object Shooter : SubsystemBase() {
 
 
 
-    /**
-     * Charactarization only DON'T USE
-     */
+    /** Charactarization only DON'T USE */
     val rawDrive: (Measure<Voltage>) -> Unit =  {
         //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
         leftFlywheel.setVoltage(it.`in`(Units.Volts))
         rightFlywheel.setVoltage(it.`in`(Units.Volts))
     }
 
-    /*override fun periodic() {
-        when(shooterMode) {
-            ShooterMode.CLOSED_LOOP -> {
-                runClosedLoop()
-            }
-            ShooterMode.OPEN_LOOP -> {
-                leftFlywheel.set(rawShooterSpeed)
-                rightFlywheel.set(rawShooterSpeed)
-            }
-            else -> {
-                leftFlywheel.set(0.0)
-                rightFlywheel.set(0.0)
-            }
-        }
-
-    }*/
     private val m_appliedVoltage: MutableMeasure<Voltage> = MutableMeasure.mutable(Units.Volts.of(0.0))
     private val m_distance: MutableMeasure<Distance> = MutableMeasure.mutable(Units.Meters.of(0.0))
     private val m_velocity: MutableMeasure<Velocity<Distance>> = MutableMeasure.mutable(Units.MetersPerSecond.of(0.0))
 
+    /** Used for logging motor information, allowing information to be recorded for SysID */
     val logger: (SysIdRoutineLog) -> Unit =  {
         // Record a frame for the left motors.  Since these share an encoder, we consider
         // the entire group to be one motor.
@@ -163,7 +165,7 @@ object Shooter : SubsystemBase() {
                 ))
             .linearPosition(m_distance.mut_replace(leftEncoder.position, Units.Meters))
             .linearVelocity(
-                m_velocity.mut_replace(leftEncoder.velocity, Units.MetersPerSecond));
+                m_velocity.mut_replace(leftEncoder.velocity, Units.MetersPerSecond))
         // Record a frame for the right motors.  Since these share an encoder, we consider
         // the entire group to be one motor.
         it.motor("shoot-right")
@@ -173,7 +175,7 @@ object Shooter : SubsystemBase() {
                 ))
             .linearPosition(m_distance.mut_replace(rightEncoder.position, Units.Meters))
             .linearVelocity(
-                m_velocity.mut_replace(rightEncoder.velocity, Units.MetersPerSecond));
+                m_velocity.mut_replace(rightEncoder.velocity, Units.MetersPerSecond))
     }
 
 
