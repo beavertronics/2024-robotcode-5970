@@ -30,7 +30,8 @@ object Intake : SubsystemBase() {
         bottomMotor.inverted = true
         topMotor.inverted = true
 
-
+        // Sets the default command to idle
+        defaultCommand = idle()
 
     }
 
@@ -68,10 +69,5 @@ object Intake : SubsystemBase() {
             .until { unFeedTimer.hasElapsed(unfeedTime)}
 
     /** Stops the intake */
-
     fun idle() : Command = this.run { stop() }.withName("Idle")
-
-    init {
-        defaultCommand = idle()
-    }
 }
