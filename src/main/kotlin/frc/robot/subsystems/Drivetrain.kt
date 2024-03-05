@@ -35,9 +35,9 @@ object Drivetrain : SubsystemBase() {
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 
-    private val leftPid = Controller.PID(DriveConstants.KP, DriveConstants.KD)
+    private val leftPid  = Controller.PID(DriveConstants.KP, DriveConstants.KD)
     private val rightPid = Controller.PID(DriveConstants.KP, DriveConstants.KD)
-    private val leftFeedForward = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
+    private val leftFeedForward  = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
     private val rightFeedForward = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
 
 
@@ -63,14 +63,10 @@ object Drivetrain : SubsystemBase() {
     }
 
     init {
+        initMotorControllers(DriveConstants.CurrentLimit, leftMain, rightMain, leftSecondary, rightSecondary)
+
         leftSecondary.follow(leftMain)
         rightSecondary.follow(rightMain)
-        initMotorControllers(DriveConstants.CurrentLimit, leftMain, rightMain, leftSecondary, rightSecondary)
-        /*allMotors {
-            restoreFactoryDefaults()
-            setSmartCurrentLimit(DriveConstants.CurrentLimit) //Todo: there's a fancy version of this function that may be worth using
-            //TODO: finish initialize spark maxes
-        }*/
 
         drive.setDeadband(0.0)
 
