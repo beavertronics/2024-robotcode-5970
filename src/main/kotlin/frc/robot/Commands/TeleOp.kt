@@ -48,7 +48,7 @@ object TeleOp : Command() {
         }*/
 
         //if (!Intake.limitSwitch.get()) Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
-        if (Shooter.isAtSpeed) Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
+       // if (Shooter.isAtSpeed) Rumble.set(0.1,0.5, GenericHID.RumbleType.kLeftRumble)
 
         Rumble.update()
 
