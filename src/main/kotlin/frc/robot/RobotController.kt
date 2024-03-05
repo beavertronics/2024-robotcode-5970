@@ -27,7 +27,7 @@ import frc.robot.subsystems.Drivetrain
 
 object RobotController : TimedRobot() {
 
-    val noAuto = RunCommand({Drivetrain.rawDrive(0.0, 0.0)})
+    val noAuto = RunCommand({Drivetrain.voltageDrive(0.0, 0.0)})
     var autos: Map<String,Command> = mapOf(
         //TODO: Autos go here!
         //ie 

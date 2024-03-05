@@ -12,7 +12,7 @@ class OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto : Command() {
     }
 
     override fun execute() {
-        Drivetrain.rawDrive(5.0,5.0)
+        Drivetrain.voltageDrive(5.0,5.0)
     }
 
     override fun isFinished(): Boolean {

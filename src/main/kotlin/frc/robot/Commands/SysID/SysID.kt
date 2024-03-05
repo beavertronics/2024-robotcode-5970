@@ -18,7 +18,7 @@ val shooterSys = SysIdRoutine(
 val drivetrainSys = SysIdRoutine(
     SysIdRoutine.Config(),
     SysIdRoutine.Mechanism(
-        Drivetrain.rawDrive,
+        Drivetrain.voltageDrive,
         Drivetrain.logger,
         Drivetrain
     )

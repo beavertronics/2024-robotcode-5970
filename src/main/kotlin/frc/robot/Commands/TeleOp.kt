@@ -40,7 +40,7 @@ object TeleOp : Command() {
         val leftSpeed  = baseSpeed * OI.leftThrottle
         val rightSpeed = baseSpeed * OI.rightThrottle
 
-        Drivetrain.rawDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
+        Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
 
         /*if (OI.manualIntakeSpeed != 0.0) {
             Intake.run {}
