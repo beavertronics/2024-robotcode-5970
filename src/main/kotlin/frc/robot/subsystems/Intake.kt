@@ -17,18 +17,19 @@ object Intake : SubsystemBase() {
     private val topMotor = TalonSRX(C.TopMotorID)
     private val bottomMotor = TalonSRX(C.BottomMotorID)
 
-    private val unfeedTimer = Timer()
+    private val unFeedTimer = Timer()
 
     init {
+        // Reset motor controllers & set current limits
         initMotorControllers(C.CurrentLimit, topMotor, bottomMotor)
-        /*TopMotor.setSmartCurrentLimit(C.CurrentLimit)
-        TopMotor.restoreFactoryDefaults()
-        bottomMotor.configContinuousCurrentLimit(C.CurrentLimit)
-        bottomMotor.configFactoryDefault()*/
+
+        // Sets the bottom motor to follow the top (as they should never be running seperatly)
+        bottomMotor.follow(topMotor)
+
+        // Invert the top & bottom controlers
         bottomMotor.inverted = true
         topMotor.inverted = true
 
-        bottomMotor.follow(topMotor)
 
 
     }
@@ -37,37 +38,36 @@ object Intake : SubsystemBase() {
      * @param speed The voltage to run the motor at. Positive is intake, Negative is outake
      */
     fun runIntake(speed:Double) {
-        //bottomMotor.set(ControlMode.PercentOutput, speed)
         topMotor.set(ControlMode.PercentOutput, speed)
     }
     /** Runs the intake motor at 0%, stopping it */
     fun stop() {
-        //bottomMotor.set(ControlMode.PercentOutput, 0.0)
         topMotor.set(ControlMode.PercentOutput, 0.0)
     }
 
 
-
+    /** Runs the intake at pickup speed */
     fun doIntake() : Command = 
         this.run {runIntake(C.pickupSpeed)}
         //.until{!limitSwitch.get()}
         //.andThen(this.run{runIntake(C.pickupSpeed)})
         //.onlyWhile{limitSwitch.get()}
 
+    /** Run the intake at feeding speed */
     fun doFeed() : Command = this.run{runIntake(C.feedingSpeed)}
+    /** Runs the intake backwards at reverseSpeed */
 
     fun doEject()  : Command = this.run { runIntake(-C.reverseSpeed) }
 
-    /**
-     * Slightly pulls the note back for shooting after intake
-     */
+    /** Slightly pulls the note back for shooting after intake */
     fun doUnFeed()  : Command = this.run { runIntake(-C.pushforwardSpeed) }
             .beforeStarting ( {
-                unfeedTimer.reset()
-                unfeedTimer.start()
+                unFeedTimer.reset()
+                unFeedTimer.start()
             } )
-            .until { unfeedTimer.hasElapsed(unfeedTime)}
+            .until { unFeedTimer.hasElapsed(unfeedTime)}
 
+    /** Stops the intake */
 
     fun idle() : Command = this.run { stop() }.withName("Idle")
 
