@@ -16,8 +16,8 @@ import frc.engine.utils.initMotorControllers
 import frc.robot.Constants.ShooterConstants as C
 
 object Shooter : SubsystemBase() {
-    private val leftFlywheel = CANSparkMax(C.leftFlywheel, CANSparkLowLevel.MotorType.kBrushless)
-    private val rightFlywheel = CANSparkMax(C.rightFlywheel, CANSparkLowLevel.MotorType.kBrushless)
+    private val leftFlywheel = CANSparkMax(C.LeftFlywheelMotorID, CANSparkLowLevel.MotorType.kBrushless)
+    private val rightFlywheel = CANSparkMax(C.RightFlywheelMotorID, CANSparkLowLevel.MotorType.kBrushless)
 
     private val    leftEncoder: RelativeEncoder = leftFlywheel.encoder
     private val   rightEncoder: RelativeEncoder = rightFlywheel.encoder

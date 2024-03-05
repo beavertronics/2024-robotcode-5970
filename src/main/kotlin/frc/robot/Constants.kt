@@ -21,10 +21,10 @@ object Constants {
         const val DRIVETRAIN_RAMSETE_B = 5.0  // Higher values make it more aggressively stick to the trajectory. 0 < B
         const val DRIVETRAIN_RAMSETE_Z = 0.7  // Higher values give it more dampening. 0 < Z < 1
 
-        const val MotorLMainID = 21
-        const val MotorLSubID  = 22
-        const val MotorRMainID = 23
-        const val MotorRSubID  = 24
+        const val LeftMotorMainID = 21
+        const val LeftMotorSubID  = 22
+        const val RightMotorMainID = 23
+        const val RightMotorSubID  = 24
 
         val MaxVelocity = `M/s`(2.0)
         val MaxAcceleration = MetersPerSecondSquared(0.5)
@@ -78,8 +78,8 @@ object Constants {
 
     }
     object ShooterConstants {
-        const val leftFlywheel   = 25
-        const val rightFlywheel = 26
+        const val LeftFlywheelMotorID  = 25
+        const val RightFlywheelMotorID = 26
 
         /** Proportional to the error (if it's bad, fix it. If it's really bad, fix it harder based on how bad it is)*/
         const val KP            = 1.0 // tune later
@@ -117,10 +117,10 @@ object Constants {
     object TeleopConstants {
         const val MaxIntakeSpeed = 0.5
         const val MaxVoltage = 12.0
-        const val driveSpeed = 1.0 //TODO set drive speed
-        const val slowSpeed = 0.7 //TODO set speed boost speed
-        const val quickTurnDeadzone = 0.1 //TODO set quick turn dead zone
-        const val quickTurnSpeed = 0.7 //TODO set quick turn speed.
+        const val DriveSpeed = 1.0 //TODO set drive speed
+        const val SlowSpeed = 0.7 //TODO set speed boost speed
+        const val QuickTurnDeadzone = 0.1 //TODO set quick turn dead zone
+        const val QuickTurnSpeed = 0.7 //TODO set quick turn speed.
 
         //const val MaxSpeed = 5.0 //M/s
         //TODO: Maybe change to feet per second? Metric is Good, but many teams communicate drivetrain speed in feet per second so for communicating quickly it could be worth leaving in fps.
@@ -136,8 +136,8 @@ object Constants {
             Chill
         }
 
-        const val MotorRID = 29 //TODO: Get CAN IDs from electrical
-        const val MotorLID = 30 //TODO: Get CAN IDs from electrical
+        const val RightMotorID = 29
+        const val LeftMotorID = 30
 
 
 
@@ -146,20 +146,8 @@ object Constants {
         const val MotorRevsToRetract = (7/1) * (7/1) * 10.0 //TODO: DANGER! Rough estimate; based off of CAD but makes assumptions about winch cord stacking.
         //How many revolutions of the motor does it take to fully contract the lifter?
 
-        const val extendVoltage = 10.0 //TODO: Tune!
-        const val retractVoltage = 10.0 //TODO: Tune!
-
-        /*const val leftRetractLimitSwitchID = 2
-        const val leftExtendLimitSwitchID = 3
-
-        const val rightRetractLimitSwitchID = 4
-        const val rightExtendLimitSwitchID = 5
-
-        const val leftPDPSlot = 3
-        const val rightPDPSlot = 2
-        const val DetectLimitCurrent = 20 // If motor draws 20 amps, will assume is fully retracted*/
-
-
+        const val ExtendVoltage = 10.0 //TODO: Tune!
+        const val RetractVoltage = 10.0 //TODO: Tune!
 
         //Note: May require profiling to prevent slamming down on chain- test!
 

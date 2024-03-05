@@ -34,7 +34,7 @@ object TeleOp : Command() {
 
     override fun execute() {
     
-        var baseSpeed = if (OI.speedLower) C.slowSpeed else C.driveSpeed
+        var baseSpeed = if (OI.speedLower) C.SlowSpeed else C.DriveSpeed
 
         if (OI.reverseDrive) baseSpeed *= -1
 

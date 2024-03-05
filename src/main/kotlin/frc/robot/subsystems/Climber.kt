@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.initMotorControllers
 
 object Climber : SubsystemBase() {
-    private val leftMotor  = CANSparkMax(ClimbConstants.MotorLID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
-    private val rightMotor = CANSparkMax(ClimbConstants.MotorRID, MotorType.kBrushed)
+    private val leftMotor  = CANSparkMax(ClimbConstants.LeftMotorID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
+    private val rightMotor = CANSparkMax(ClimbConstants.RightMotorID, MotorType.kBrushed)
 
     /*private val retractLimitSwitchL =  DigitalInput(ClimbConstants.leftRetractLimitSwitchID)
     private val leftExtendLimitSwitch =     DigitalInput(ClimbConstants.leftExtendLimitSwitchID)
@@ -72,7 +72,7 @@ object Climber : SubsystemBase() {
     fun climb(pos : ClimbConstants.ClimbPos) {
         when (pos) {
             ClimbPos.Retract -> {
-                setVoltage(-ClimbConstants.retractVoltage)
+                setVoltage(-ClimbConstants.RetractVoltage)
                 /*
                 if(!isAtRetractLimitL) motorL.setVoltage( -ClimbConstants.retractVoltage )
                 if(!isAtRetractLimitR) motorR.setVoltage( -ClimbConstants.retractVoltage )
@@ -81,7 +81,7 @@ object Climber : SubsystemBase() {
                 //YAY DANGER!! Make sure smart current limits are in place!
             }
             ClimbPos.Extend -> {
-                setVoltage(ClimbConstants.retractVoltage)
+                setVoltage(ClimbConstants.ExtendVoltage)
             }
             ClimbPos.Chill -> {
                 setVoltage(0.0)

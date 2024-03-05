@@ -25,10 +25,10 @@ import frc.robot.Constants.DriveConstants
 
 
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = CANSparkMax(DriveConstants.MotorLMainID, CANSparkLowLevel.MotorType.kBrushless)
-    private val  leftSecondary = CANSparkMax(DriveConstants.MotorLSubID,  CANSparkLowLevel.MotorType.kBrushless)
-    private val      rightMain = CANSparkMax(DriveConstants.MotorRMainID, CANSparkLowLevel.MotorType.kBrushless)
-    private val rightSecondary = CANSparkMax(DriveConstants.MotorRSubID,  CANSparkLowLevel.MotorType.kBrushless)
+    private val       leftMain = CANSparkMax(DriveConstants.LeftMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
+    private val  leftSecondary = CANSparkMax(DriveConstants.LeftMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
+    private val      rightMain = CANSparkMax(DriveConstants.RightMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
+    private val rightSecondary = CANSparkMax(DriveConstants.RightMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
 
     val    leftEncoder: RelativeEncoder = leftMain.encoder
     val   rightEncoder: RelativeEncoder = rightMain.encoder
