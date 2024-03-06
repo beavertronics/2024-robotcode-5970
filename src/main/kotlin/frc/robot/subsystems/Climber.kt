@@ -15,39 +15,16 @@ object Climber : SubsystemBase() {
     private val leftMotor  = CANSparkMax(ClimbConstants.LeftMotorID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
     private val rightMotor = CANSparkMax(ClimbConstants.RightMotorID, MotorType.kBrushed)
 
-    /*private val retractLimitSwitchL =  DigitalInput(ClimbConstants.leftRetractLimitSwitchID)
-    private val leftExtendLimitSwitch =     DigitalInput(ClimbConstants.leftExtendLimitSwitchID)
-
-    private val rightRetractLimitSwitch = DigitalInput(ClimbConstants.rightRetractLimitSwitchID)
-    private val rightExtendLimitSwitch =    DigitalInput(ClimbConstants.rightExtendLimitSwitchID)
-
-    private val pdp = PowerDistribution(0, PowerDistribution.ModuleType.kCTRE)
-
-    private val currentLFilter = singlePoleIIR(0.1, 0.02)
-    private val currentRFilter = singlePoleIIR(0.1, 0.02)
-
-    private var isAtRetractLimitL  = false
-    private var isAtRetractLimitR  = false
-
-    override fun periodic() {
-        isAtRetractLimitL = currentLFilter.calculate(pdp.getCurrent(ClimbConstants.leftPDPSlot)) > ClimbConstants.DetectLimitCurrent
-        isAtRetractLimitR = currentRFilter.calculate(pdp.getCurrent(ClimbConstants.rightPDPSlot)) > ClimbConstants.DetectLimitCurrent
-    }
-
-    fun PrintLimitSwitches(){
-        println("leftBottom: ${retractLimitSwitchL}, leftTop: ${leftExtendLimitSwitch}, \n " +
-                "rightBottom ${rightRetractLimitSwitch}, rightTop: ${rightExtendLimitSwitch}")
-    }*/
     init {
-        initMotorControllers(ClimbConstants.CurrentLimit, leftMotor, rightMotor)
-        //TODO: finish initialize spark maxes
-        //motorR.follow(motorL)
-        leftMotor.idleMode = CANSparkBase.IdleMode.kBrake
-        rightMotor.idleMode = CANSparkBase.IdleMode.kBrake
+        // Reset motor controllers, set current limits, and set idle mode to brake
+        initMotorControllers(ClimbConstants.CurrentLimit, CANSparkBase.IdleMode.kBrake, leftMotor, rightMotor)
+
+        // Invert the right motor
         rightMotor.inverted = true
         leftMotor.inverted = false
 
-        defaultCommand = this.run {climb(ClimbPos.Chill)}
+        // Set default command to idle
+        defaultCommand = idle()
     }
 
     /**
@@ -64,28 +41,28 @@ object Climber : SubsystemBase() {
      * @param voltage The voltage to run both the left & right motors at
      */
     fun setVoltage(voltage: Double) = setVoltage(voltage, voltage)
+    /**
+     * Runs the climber backwards to retract, to either climb or stow climbers
+     */
 
     fun doRetract(): Command = this.run { climb(ClimbPos.Retract) }
+    /**
+     * Runs the climber forward to extend, to hook the chain or score amp
+     */
     fun doExtend():  Command = this.run { climb(ClimbPos.Extend) }
+    /**
+     * Sets climber voltage to 0 to stop climber
+     */
+    fun idle(): Command  = this.run { climb(ClimbPos.Chill) }
 
-
-    fun climb(pos : ClimbConstants.ClimbPos) {
+    /**
+     * Runs the climber toward ClimbPos
+     */
+    fun climb(pos : ClimbPos) {
         when (pos) {
-            ClimbPos.Retract -> {
-                setVoltage(-ClimbConstants.RetractVoltage)
-                /*
-                if(!isAtRetractLimitL) motorL.setVoltage( -ClimbConstants.retractVoltage )
-                if(!isAtRetractLimitR) motorR.setVoltage( -ClimbConstants.retractVoltage )
-                 */
-
-                //YAY DANGER!! Make sure smart current limits are in place!
-            }
-            ClimbPos.Extend -> {
-                setVoltage(ClimbConstants.ExtendVoltage)
-            }
-            ClimbPos.Chill -> {
-                setVoltage(0.0)
-            }
+            ClimbPos.Retract -> setVoltage(-ClimbConstants.RetractVoltage)
+            ClimbPos.Extend ->  setVoltage(ClimbConstants.ExtendVoltage)
+            ClimbPos.Chill ->   setVoltage(0.0)
         }
         //TODO: does not make outo happy
     }
