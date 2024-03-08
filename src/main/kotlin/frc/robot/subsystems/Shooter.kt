@@ -36,18 +36,9 @@ object Shooter : SubsystemBase() {
         // Invert the left flywheel
         leftFlywheel.inverted = true
         rightFlywheel.inverted = false
-
-        // Set the default command to idle
-        defaultCommand = idle()
     }
 
     data class ShooterSpeeds(val leftSpeeds:RPM = 0.RPM, val rightSpeeds:RPM = 0.RPM)
-    /**
-     * Set the speed of the flywheels using closed loop control
-     * @param leftSpeeds Desired speed of left the motor in RPM
-     * @param rightSpeeds Desired speed of right the motor in RPM
-     */
-    fun setSpeed(leftSpeeds : Double, rightSpeeds: Double) = setSpeed(leftSpeeds.RPM, rightSpeeds.RPM)
     /**
      * Set the speed of the flywheels using closed loop control
      * @param leftSpeeds Desired speed of left the motor in RPM
@@ -60,20 +51,8 @@ object Shooter : SubsystemBase() {
         //shooterMode = ShooterMode.CLOSED_LOOP
     }
 
-    /**
-     * Set the speed of the flywheels using closed loop control
-     * @param speed Desired speed of the motor in RPM
-     */
-    fun setSpeed(speed : Double) = Shooter.setSpeed(speed, speed)
-
-    /**
-     * Set the speed of the flywheels using closed loop control
-     * @param speed Desired speed of the motor in RPM
-     */
-    fun setSpeed(speed : RPM) = setSpeed(speed, speed)
-
     /** Calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
-    private fun runClosedLoop(){
+    fun runClosedLoop(){
         val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity)
         val rightPidCalculated = leftPid.calculate(rightEncoder.velocity)
         val leftFFCalculated   = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
@@ -90,50 +69,10 @@ object Shooter : SubsystemBase() {
         rightFlywheel.set(percentShooterSpeed)
     }
     /** Runs the flywheels at 0% stopping them from continuing to run */
-    private fun stop(){
+    fun stop(){
         leftFlywheel.set(0.0)
         rightFlywheel.set(0.0)
     }
-
-    /** Run closed loop to reach the speed required to shoot into the speaker */
-    fun doSpinupToSpeaker() : Command = doSpinup(C.SpeakerSpeed)
-
-    /** Run closed loop to reach the speed required to shoot into the amp */
-    fun doSpinupToAmp()     : Command = doSpinup(C.AmpSpeed)
-
-    /** Run closed loop to reach speed
-     * @param speed Desired speed in RPM */
-    fun doSpinup(speed: RPM) : Command =
-        this.run { runClosedLoop() }
-        .beforeStarting ({ setSpeed(speed) })
-
-    /** Run closed loop to reach speed, then end as soon as it reaches speed
-     * @param speed Desired speed in RPM */
-    fun doSpinupAndStop(speed: RPM) : Command =
-        this.run { runClosedLoop() }
-            .beforeStarting ({ setSpeed(speed) })
-            .until { isAtSpeed }
-
-    /**
-     * Runs the shooter at voltage
-     * @param voltages Voltages to run the robot on
-     */
-    fun doRunAtVoltage(voltages:Double = 0.0) : Command = this.run {
-        leftFlywheel.setVoltage(voltages)
-        rightFlywheel.setVoltage(voltages)
-    }
-    /**
-     * Runs the shooter at voltage
-     * @param voltages Voltage getter function, called each frame to set the shooter
-     */
-    fun doRunAtVoltage(voltages:() -> Double) : Command = this.run {
-        leftFlywheel.setVoltage(voltages())
-        rightFlywheel.setVoltage(voltages())
-    }
-
-    /** Stops the shooter */
-    fun idle() : Command = this.run { stop() }
-
     /** Returns true if the encoder velocity is equal to the desired speed */
     val isAtSpeed get() = (leftEncoder.velocity.within(10.0, targetSpeed.leftSpeeds.value) &&
             rightEncoder.velocity.within(10.0, targetSpeed.rightSpeeds.value))
@@ -176,6 +115,34 @@ object Shooter : SubsystemBase() {
             .linearVelocity(
                 m_velocity.mut_replace(rightEncoder.velocity, Units.MetersPerSecond))
     }
+    /**
+     * Set the speed of the flywheels using closed loop control
+     * @param leftSpeeds Desired speed of left the motor in RPM
+     * @param rightSpeeds Desired speed of right the motor in RPM
+     */
+    fun setSpeed(leftSpeeds : Double, rightSpeeds: Double) = setSpeed(leftSpeeds.RPM, rightSpeeds.RPM)
+    /**
+     * Set the speed of the flywheels using closed loop control
+     * @param speed Desired speed of the motor in RPM
+     */
+    fun setSpeed(speed : Double) = Shooter.setSpeed(speed, speed)
 
+    /**
+     * Set the speed of the flywheels using closed loop control
+     * @param speed Desired speed of the motor in RPM
+     */
+    fun setSpeed(speed : RPM) = setSpeed(speed, speed)
+    /** First, sets the desired speed of the shooter
+     * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
+    fun runClosedLoop(speed: Double){
+        setSpeed(speed)
+        runClosedLoop()
+    }
+    /** First, sets the desired speed of the shooter
+     * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
+    fun runClosedLoop(speed: RPM){
+        setSpeed(speed)
+        runClosedLoop()
+    }
 
 }

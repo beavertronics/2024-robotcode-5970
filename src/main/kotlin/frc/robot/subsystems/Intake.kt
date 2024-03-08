@@ -30,9 +30,6 @@ object Intake : SubsystemBase() {
         bottomMotor.inverted = true
         topMotor.inverted = true
 
-        // Sets the default command to idle
-        defaultCommand = idle()
-
     }
 
     /** Runs the intake motor at the given percentage
@@ -46,28 +43,4 @@ object Intake : SubsystemBase() {
         topMotor.set(ControlMode.PercentOutput, 0.0)
     }
 
-
-    /** Runs the intake at pickup speed */
-    fun doIntake() : Command = 
-        this.run {runIntake(C.pickupSpeed)}
-        //.until{!limitSwitch.get()}
-        //.andThen(this.run{runIntake(C.pickupSpeed)})
-        //.onlyWhile{limitSwitch.get()}
-
-    /** Run the intake at feeding speed */
-    fun doFeed() : Command = this.run{runIntake(C.feedingSpeed)}
-    /** Runs the intake backwards at reverseSpeed */
-
-    fun doEject()  : Command = this.run { runIntake(-C.reverseSpeed) }
-
-    /** Slightly pulls the note back for shooting after intake */
-    fun doUnFeed()  : Command = this.run { runIntake(-C.pushforwardSpeed) }
-            .beforeStarting ( {
-                unFeedTimer.reset()
-                unFeedTimer.start()
-            } )
-            .until { unFeedTimer.hasElapsed(unfeedTime)}
-
-    /** Stops the intake */
-    fun idle() : Command = this.run { stop() }.withName("Idle")
 }

@@ -42,19 +42,7 @@ object Climber : SubsystemBase() {
      * @param voltage The voltage to run both the left & right motors at
      */
     fun setVoltage(voltage: Double) = setVoltage(voltage, voltage)
-    /**
-     * Runs the climber backwards to retract, to either climb or stow climbers - ayy lmao u got hacked
-     */
-
-    fun doRetract(): Command = this.run { climb(ClimbPos.Retract) }
-    /**
-     * Runs the climber forward to extend, to hook the chain or score amp
-     */
-    fun doExtend():  Command = this.run { climb(ClimbPos.Extend) }
-    /**
-     * Sets climber voltage to 0 to stop climber
-     */
-    fun idle(): Command  = this.run { climb(ClimbPos.Chill) }
+    fun stop() = setVoltage(0.0)
 
     /**
      * Runs the climber toward ClimbPos
