@@ -54,7 +54,7 @@ object Shooter : SubsystemBase() {
      * @param rightSpeeds Desired speed of right the motor in RPM
      */
     fun setSpeed(leftSpeeds : RPM, rightSpeeds : RPM) {
-        targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
+        //targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
         leftPid.setpoint = leftSpeeds.rotationsPerMinute()
         rightPid.setpoint = rightSpeeds.rotationsPerMinute()
         //shooterMode = ShooterMode.CLOSED_LOOP
@@ -88,7 +88,6 @@ object Shooter : SubsystemBase() {
     fun runOpenLoop(percentShooterSpeed : Double){
         leftFlywheel.set(percentShooterSpeed)
         rightFlywheel.set(percentShooterSpeed)
-        runClosedLoop()
     }
     /** Runs the flywheels at 0% stopping them from continuing to run */
     private fun stop(){

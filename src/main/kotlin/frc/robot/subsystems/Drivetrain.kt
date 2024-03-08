@@ -35,10 +35,10 @@ object Drivetrain : SubsystemBase() {
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 
-    private val leftPid  = Controller.PID(DriveConstants.KP, DriveConstants.KD)
-    private val rightPid = Controller.PID(DriveConstants.KP, DriveConstants.KD)
-    private val leftFeedForward  = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
-    private val rightFeedForward = SimpleMotorFeedforward(DriveConstants.KS, DriveConstants.KV, DriveConstants.KA)
+    private val leftPid  = Controller.PID(DriveConstants.PID_CONSTANTS.P, DriveConstants.PID_CONSTANTS.D)
+    private val rightPid = Controller.PID(DriveConstants.PID_CONSTANTS.P, DriveConstants.PID_CONSTANTS.D)
+    private val leftFeedForward  = SimpleMotorFeedforward(DriveConstants.FF_CONSTANTS.kS, DriveConstants.FF_CONSTANTS.kV, DriveConstants.FF_CONSTANTS.kA)
+    private val rightFeedForward = SimpleMotorFeedforward(DriveConstants.FF_CONSTANTS.kS, DriveConstants.FF_CONSTANTS.kV, DriveConstants.FF_CONSTANTS.kA)
 
 
     val trajectoryMaker = TrajectoryMaker(DriveConstants.MaxVelocity, DriveConstants.MaxAcceleration)

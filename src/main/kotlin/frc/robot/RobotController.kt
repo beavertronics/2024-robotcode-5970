@@ -66,7 +66,7 @@ object RobotController : TimedRobot() {
     override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?
 
     override fun teleopInit() {
-        selectedAuto.cancel() //Stop Auto before running teleop!
+        selectedAuto.cancel() //Stop Auto before running teleop
         TeleOp.schedule()
     }
     override fun teleopPeriodic() {} //TODO: Unnecessary with command-based programming?

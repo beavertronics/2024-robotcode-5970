@@ -41,6 +41,7 @@ object TeleOp : Command() {
         val leftSpeed  = baseSpeed * OI.leftThrottle
         val rightSpeed = baseSpeed * OI.rightThrottle
 
+        //println("Teleop Execute")
         Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
 
        if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RPM) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
@@ -58,7 +59,7 @@ object TeleOp : Command() {
         val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.NORMAL,false)
         val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.NORMAL,false)
 
-        val speedLower get() = !driverControllerR.trigger
+        val speedLower get() = driverControllerR.trigger
         val reverseDrive get() = driverControllerL.trigger
         val manualShooterSpeed get() =  abs(operatorController.leftY).processInput()
 
@@ -76,14 +77,16 @@ object TeleOp : Command() {
 
 
         init {
-            // Left stick y = Digital intake control (-70 or 70 percent). If left bumper is not pressed, will stop after limit switch has been unpressed
+
+
+            /* Left stick y = Digital intake control (-70 or 70 percent). If left bumper is not pressed, will stop after limit switch has been unpressed
             pickup.and(feedToShoot.negate())
                 .whileTrue(Intake.doIntake()) //Don't repeat; will stop when limit switch is done being triggered
-            eject.and(feedToShoot.negate())
-                .whileTrue(Intake.doEject().repeatedly()) //Yes repeat; keep reversing note as long as driver says so
+            */
+            eject.whileTrue(Intake.doEject().repeatedly()) //Yes repeat; keep reversing note as long as driver says so*/
 
             // Left bumper = Shoot control- Allows shoot when pressed
-            feedToShoot.whileTrue(Intake.doFeed().repeatedly()) //Yes feed repeatedly
+            pickup.whileTrue(Intake.doFeed().repeatedly()) //Yes feed repeatedly
 
             // Right stick y = manual shooter control
             spinupShooter
@@ -95,12 +98,12 @@ object TeleOp : Command() {
             // A = run shooter at amp speeds
             spinupToAmp
                 .whileTrue(Shooter.doSpinupToAmp())
-            // DPad up = Climber extend
+            /*// DPad up = Climber extend
             extendClimber
-                .whileTrue(Climber.doExtend())
+                .whileTrue(Climber.doExtend()t
             // DPad up = Climber retract
             retractClimber
-                .whileTrue(Climber.doRetract())
+                .whileTrue(Climber.doRetract())*/
         }
 
         enum class SquareMode {

@@ -57,6 +57,7 @@ class Vision (
         robotToCam
     )
     fun getEstimatedPose(prevEstimatedRobotPose: Pose2d?): EstimatedRobotPose? {
+        return null
         PoseEstimator.setReferencePose(prevEstimatedRobotPose)
         val pose = PoseEstimator.update() ?: return null
         if(pose.isPresent) return pose.get()

@@ -2,6 +2,8 @@ package frc.robot
 
 import edu.wpi.first.math.MatBuilder
 import edu.wpi.first.math.Nat
+import frc.engine.controls.PIDConstants
+import frc.engine.controls.SimpleMotorFeedForwardConstants
 
 import frc.engine.utils.*
 
@@ -33,27 +35,11 @@ object Constants {
         val WheelDiameter = Inches(6.0).meterValue()
         val TrackWidth = Meters(0.0) //TODO Get track width
 
-        /** Proportional to the error (if it's bad, fix it. If it's really bad, fix it harder based on how bad it is)*/
-        const val KP            = 1.0 // tune later
-
-        /** Proportional to the slope (derivative) of the error 
-         * (If it's OK but it's starting to go bad, fix it ahead of time, and if it's bad but it's 
-         * getting close to being good, fix it less hard so it doesn't overshoot)*/
-        const val KD            = 0.0 // tune later
-
-        /** Propotional to the integral of the error
-         * (If it's been bad for a long time, fix it harder.)
-         * Usually very unstable; much safer to leave at 0.0 if possible
-        */
-        const val KI            = 0.0
+        val FF_CONSTANTS = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
+        val PID_CONSTANTS = PIDConstants(1.0,0.0,0.0)
 
 
-        /** (roughly) how much voltage to overcome static friction */
-        const val KS            = 0.0
-        /** How much voltage to maintain a velocity*/
-        const val KV            = 0.0
-        /** How much voltage to accelerate- Can go unused (0) */
-        const val KA            = 0.0
+
         const val CurrentLimit = 30 //amps, per motor controller
         /* See
            https://the-charge.com/uploads/3/5/3/0/35304458/testing_and_analysis_of_first_robotics_batteries__2018_.pdf
@@ -118,7 +104,7 @@ object Constants {
         const val MaxIntakeSpeed = 0.5
         const val MaxVoltage = 12.0
         const val DriveSpeed = 1.0 //TODO set drive speed
-        const val SlowSpeed = 0.7 //TODO set speed boost speed
+        const val SlowSpeed = 0.3 //TODO set speed boost speed
         const val QuickTurnDeadzone = 0.1 //TODO set quick turn dead zone
         const val QuickTurnSpeed = 0.7 //TODO set quick turn speed.
 
