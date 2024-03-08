@@ -14,9 +14,7 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.engine.controls.Controller
-import frc.engine.controls.Ramsete
-import frc.engine.controls.TrajectoryMaker
+import frc.engine.controls.*
 import frc.engine.utils.`M/s`
 import frc.engine.utils.initMotorControllers
 import frc.engine.utils.*
@@ -35,10 +33,10 @@ object Drivetrain : SubsystemBase() {
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 
-    private val leftPid  = Controller.PID(DriveConstants.PID_CONSTANTS.P, DriveConstants.PID_CONSTANTS.D)
-    private val rightPid = Controller.PID(DriveConstants.PID_CONSTANTS.P, DriveConstants.PID_CONSTANTS.D)
-    private val leftFeedForward  = SimpleMotorFeedforward(DriveConstants.FF_CONSTANTS.kS, DriveConstants.FF_CONSTANTS.kV, DriveConstants.FF_CONSTANTS.kA)
-    private val rightFeedForward = SimpleMotorFeedforward(DriveConstants.FF_CONSTANTS.kS, DriveConstants.FF_CONSTANTS.kV, DriveConstants.FF_CONSTANTS.kA)
+    private val leftPid  = DriveConstants.PID_CONSTANTS.toPID()
+    private val rightPid = DriveConstants.PID_CONSTANTS.toPID()
+    private val leftFeedForward  = DriveConstants.FF_CONSTANTS.toFeedForward()
+    private val rightFeedForward = DriveConstants.FF_CONSTANTS.toFeedForward()
 
 
     val trajectoryMaker = TrajectoryMaker(DriveConstants.MaxVelocity, DriveConstants.MaxAcceleration)

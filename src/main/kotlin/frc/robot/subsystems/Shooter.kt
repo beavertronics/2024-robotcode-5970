@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.Controller
+import frc.engine.controls.toFeedForward
+import frc.engine.controls.toPID
 import frc.engine.utils.RPM
 import frc.engine.utils.Sugar.within
 import frc.engine.utils.initMotorControllers
@@ -23,9 +25,9 @@ object Shooter : SubsystemBase() {
     private val   rightEncoder: RelativeEncoder = rightFlywheel.encoder
 
 
-    private val leftPid     = Controller.PID(C.PID_CONSTANTS.P, C.PID_CONSTANTS.D)
-    private val rightPid    = Controller.PID(C.PID_CONSTANTS.P, C.PID_CONSTANTS.D)
-    private val feedForward = SimpleMotorFeedforward(C.FF_CONSTANTS.kS, C.FF_CONSTANTS.kV, C.FF_CONSTANTS.kA)
+    private val leftPid     = C.PID_CONSTANTS.toPID()
+    private val rightPid    = C.PID_CONSTANTS.toPID()
+    private val feedForward = C.FF_CONSTANTS.toFeedForward()
 
     var targetSpeed = ShooterSpeeds()
 

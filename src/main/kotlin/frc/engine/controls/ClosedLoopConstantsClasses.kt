@@ -1,5 +1,7 @@
 package frc.engine.controls
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
+
 /** @property kS (roughly) how much voltage to overcome static friction
  *  @property kV How much voltage to maintain a velocity
  *  @property kA How much voltage to accelerate- Can go unused (0) */
@@ -18,3 +20,10 @@ data class SimpleMotorFeedForwardConstants(val kS: Double, val kV: Double, val k
  */
 
 data class PIDConstants(val P: Double, val I: Double, val D: Double)
+
+fun SimpleMotorFeedForwardConstants.toFeedForward() : SimpleMotorFeedforward {
+    return SimpleMotorFeedforward(this.kS, this.kV, this.kA)
+}
+fun PIDConstants.toPID() : Controller.PID {
+    return Controller.PID(this.P, this.I, this.D)
+}
