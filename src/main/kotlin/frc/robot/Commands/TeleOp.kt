@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.RPM
 import frc.engine.utils.Sugar.clamp
 import frc.engine.utils.Sugar.within
@@ -78,6 +79,7 @@ object TeleOp : Command() {
 
     object OI {
         val operatorController = XboxController(2)
+        val commandOperatorController = CommandXboxController(2)
         val driverControllerL = Joystick(0) //TODO: Fix!
         val driverControllerR = Joystick(1)
 

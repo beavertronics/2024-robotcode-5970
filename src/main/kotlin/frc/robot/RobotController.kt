@@ -101,7 +101,7 @@ object RobotController : TimedRobot() {
     }
 
     override fun testInit() {
-        TeleOp.OI.operatorController.a().whileTrue(selectedTest)
+        TeleOp.OI.commandOperatorController.a().whileTrue(selectedTest)
     }
     override fun testPeriodic() {
         //Yay!
