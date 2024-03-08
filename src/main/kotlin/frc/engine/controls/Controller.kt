@@ -1,6 +1,8 @@
 package frc.engine.controls
 // File adapted from 2898's bpsrobotics engine
 import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
+
 
 /**
  * A closed-loop controller controlling a one-dimensional output,
@@ -14,6 +16,7 @@ interface Controller {
     class PID(private val wpiPID: PIDController) : Controller {
         constructor(kP: Double, kI: Double, kD: Double) : this(PIDController(kP, kI, kD))
         constructor(kP: Double, kD: Double) : this(kP, 0.0, kD)
+        constructor(pid: PIDConstants) : this(pid.P, pid.I, pid.D)
 
         override var setpoint: Double
             get() = wpiPID.setpoint
@@ -23,4 +26,7 @@ interface Controller {
             return wpiPID.calculate(current, setpoint)
         }
     }
+
+
+
 }

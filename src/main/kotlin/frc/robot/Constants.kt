@@ -67,26 +67,8 @@ object Constants {
         const val LeftFlywheelMotorID  = 25
         const val RightFlywheelMotorID = 26
 
-        /** Proportional to the error (if it's bad, fix it. If it's really bad, fix it harder based on how bad it is)*/
-        const val KP            = 1.0 // tune later
-
-        /** Proportional to the slope (derivative) of the error
-         * (If it's OK but it's starting to go bad, fix it ahead of time, and if it's bad but it's
-         * getting close to being good, fix it less hard so it doesn't overshoot)*/
-        const val KD            = 0.0 // tune later
-
-        /** Propotional to the integral of the error
-         * (If it's been bad for a long time, fix it harder.)
-         * Usually very unstable; much safer to leave at 0.0 if possible
-         */
-        const val KI            = 0.0
-
-        /** (roughly) how much voltage to overcome static friction */
-        const val KS            = 0.0
-        /** How much voltage to maintain a velocity*/
-        const val KV            = 0.0
-        /** How much voltage to accelerate- Can go unused (0) */
-        const val KA            = 0.0
+        val FF_CONSTANTS = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
+        val PID_CONSTANTS = PIDConstants(1.0,0.0,0.0)
 
         const val CurrentLimit = 20 //amps, per motor controller
         val SpeakerPoly = Polynomial() //TODO Desmos this

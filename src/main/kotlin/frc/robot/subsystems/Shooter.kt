@@ -23,9 +23,9 @@ object Shooter : SubsystemBase() {
     private val   rightEncoder: RelativeEncoder = rightFlywheel.encoder
 
 
-    private val leftPid     = Controller.PID(C.KP, C.KD)
-    private val rightPid    = Controller.PID(C.KP, C.KD)
-    private val feedForward = SimpleMotorFeedforward(C.KS, C.KV, C.KA)
+    private val leftPid     = Controller.PID(C.PID_CONSTANTS.P, C.PID_CONSTANTS.D)
+    private val rightPid    = Controller.PID(C.PID_CONSTANTS.P, C.PID_CONSTANTS.D)
+    private val feedForward = SimpleMotorFeedforward(C.FF_CONSTANTS.kS, C.FF_CONSTANTS.kV, C.FF_CONSTANTS.kA)
 
     var targetSpeed = ShooterSpeeds()
 
@@ -125,7 +125,7 @@ object Shooter : SubsystemBase() {
      * Set the speed of the flywheels using closed loop control
      * @param speed Desired speed of the motor in RPM
      */
-    fun setSpeed(speed : Double) = Shooter.setSpeed(speed, speed)
+    fun setSpeed(speed : Double) = setSpeed(speed, speed)
 
     /**
      * Set the speed of the flywheels using closed loop control
