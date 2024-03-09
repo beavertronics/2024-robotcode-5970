@@ -54,7 +54,8 @@ object TeleOp : Command() {
         val leftSpeed  = baseSpeed * OI.leftThrottle
         val rightSpeed = baseSpeed * OI.rightThrottle
 
-        Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
+        if(!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
+        else Drivetrain.voltageDrive(rightSpeed * C.MaxVoltage, leftSpeed * C.MaxVoltage)
     }
     private fun handleIntake() = when {
         OI.feedToShoot -> Intake.runIntake(Constants.IntakeConstants.feedingSpeed)
@@ -79,19 +80,19 @@ object TeleOp : Command() {
 
     object OI {
         val operatorController = XboxController(2)
-        val commandOperatorController = CommandXboxController(2)
+        //val commandOperatorController = CommandXboxController(2)
         val driverControllerL = Joystick(0) //TODO: Fix!
         val driverControllerR = Joystick(1)
 
         
         //New joystick tank drive code
-        val leftThrottle  get() = driverControllerL.y.processInput(0.1,SquareMode.NORMAL,false)
-        val rightThrottle get() = driverControllerR.y.processInput(0.1,SquareMode.NORMAL,false)
+        val leftThrottle  get() = driverControllerL.y.processInput(0.08,SquareMode.NORMAL,true)
+        val rightThrottle get() = driverControllerR.y.processInput(0.08,SquareMode.NORMAL,true)
 
         val speedLower get() = driverControllerR.trigger
         val reverseDrive get() = driverControllerL.trigger
         val intakeThrottle get() = operatorController.leftY.processInput(readjust = false)
-        val feedToShoot get() = operatorController.leftTriggerAxis.absGreaterThan(0.1)
+        val feedToShoot get() = operatorController.rightTriggerAxis.absGreaterThan(0.1)
         val shooterThrottle get() = operatorController.rightY.processInput(readjust = false).absoluteValue
         val shooterToAmp get() = operatorController.aButton
         val shooterToSpeaker get() = operatorController.yButton
