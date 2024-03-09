@@ -7,10 +7,12 @@ import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RunCommand
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.Commands.Autos.OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto
 import frc.robot.Commands.Autos.`Preload+BottomNote`
 import frc.robot.Commands.Autos.`Preload+Mobility`
 import frc.robot.Commands.SysID.SysID
+import frc.robot.Commands.SysID.SysIDShooter
 import frc.robot.Commands.SysID.drivetrainSys
 import frc.robot.Commands.SysID.shooterSys
 import frc.robot.Commands.TeleOp
@@ -36,6 +38,13 @@ object RobotController : TimedRobot() {
         "Bottom_Preload+Mobility" to `Preload+Mobility`(),
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
     )
+    var tests: Map<String,Command> = mapOf(
+            //TODO: Tests go here!
+            //ie
+            //"Description of test" to TaxiTest
+            "Shooter SysID" to SysIDShooter(),
+            "Drivetrain SysID" to SysID(drivetrainSys)
+    )
 
     private var autoChooser : SendableChooser<Command> = SendableChooser()
     private var selectedAuto : Command = noAuto
@@ -43,6 +52,9 @@ object RobotController : TimedRobot() {
         autoChooser.setDefaultOption("No Auto", noAuto)
         for (auto in autos) {
             autoChooser.addOption(auto.key, auto.value);
+        }
+        for (test in tests) {
+            autoChooser.addOption(test.key, test.value);
         }
 
         SmartDashboard.putData(autoChooser)
@@ -81,27 +93,22 @@ object RobotController : TimedRobot() {
         //Runs only while robot is disabled- Use to hold motors in position for safety reasons.
         // Try to avoid putting code here- often unsafe.
     }
-    var tests: Map<String,Command> = mapOf(
-            //TODO: Tests go here!
-            //ie
-            //"Description of test" to TaxiTest
-            "Shooter SysID" to SysID(shooterSys),
-            "Drivetrain SysID" to SysID(drivetrainSys)
-    )
+
 
     private var testChooser : SendableChooser<Command> = SendableChooser()
     private var selectedTest : Command = noAuto
     init {
-        testChooser.setDefaultOption("No Auto", noAuto)
-        for (test in tests) {
-            testChooser.addOption(test.key, test.value);
-        }
+        //testChooser.setDefaultOption("No Auto", noAuto)
 
-        SmartDashboard.putData(testChooser)
+
+        //SmartDashboard.putData(testChooser)
     }
 
     override fun testInit() {
-        TeleOp.OI.commandOperatorController.a().whileTrue(selectedTest)
+        //val commandOperatorController = CommandXboxController(2)
+        //commandOperatorController.a().whileTrue(selectedTest)
+        //TeleOp.OI.commandOperatorController.a().whileTrue(selectedTest)
+        selectedTest.schedule()
     }
     override fun testPeriodic() {
         //Yay!

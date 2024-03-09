@@ -1,5 +1,6 @@
 package frc.robot.subsystems
 
+import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
@@ -38,6 +39,14 @@ object Shooter : SubsystemBase() {
         // Invert the left flywheel
         leftFlywheel.inverted = true
         rightFlywheel.inverted = false
+    }
+    fun breakMotors(){
+        leftFlywheel.idleMode = CANSparkBase.IdleMode.kBrake
+        rightFlywheel.idleMode = CANSparkBase.IdleMode.kBrake
+    }
+    fun unBreakMotors(){
+        leftFlywheel.idleMode = CANSparkBase.IdleMode.kCoast
+        rightFlywheel.idleMode = CANSparkBase.IdleMode.kCoast
     }
 
     data class ShooterSpeeds(val leftSpeeds:RPM = 0.RPM, val rightSpeeds:RPM = 0.RPM)
@@ -91,8 +100,8 @@ object Shooter : SubsystemBase() {
     }
 
     private val m_appliedVoltage: MutableMeasure<Voltage> = MutableMeasure.mutable(Units.Volts.of(0.0))
-    private val m_distance: MutableMeasure<Distance> = MutableMeasure.mutable(Units.Meters.of(0.0))
-    private val m_velocity: MutableMeasure<Velocity<Distance>> = MutableMeasure.mutable(Units.MetersPerSecond.of(0.0))
+    private val m_distance: MutableMeasure<Angle> = MutableMeasure.mutable(Units.Rotations.of(0.0))
+    private val m_velocity: MutableMeasure<Velocity<Angle>> = MutableMeasure.mutable(Units.RotationsPerSecond.of(0.0))
 
     /** Used for logging motor information, allowing information to be recorded for SysID */
     val logger: (SysIdRoutineLog) -> Unit =  {
@@ -103,9 +112,9 @@ object Shooter : SubsystemBase() {
                 m_appliedVoltage.mut_replace(
                     leftFlywheel.get() * RobotController.getBatteryVoltage(), Units.Volts
                 ))
-            .linearPosition(m_distance.mut_replace(leftEncoder.position, Units.Meters))
-            .linearVelocity(
-                m_velocity.mut_replace(leftEncoder.velocity, Units.MetersPerSecond))
+            .angularPosition(m_distance.mut_replace(leftEncoder.position, Units.Rotations))
+            .angularVelocity(
+                m_velocity.mut_replace(leftEncoder.velocity, Units.RPM))
         // Record a frame for the right motors.  Since these share an encoder, we consider
         // the entire group to be one motor.
         it.motor("shoot-right")
@@ -113,9 +122,9 @@ object Shooter : SubsystemBase() {
                 m_appliedVoltage.mut_replace(
                     rightFlywheel.get() * RobotController.getBatteryVoltage(), Units.Volts
                 ))
-            .linearPosition(m_distance.mut_replace(rightEncoder.position, Units.Meters))
-            .linearVelocity(
-                m_velocity.mut_replace(rightEncoder.velocity, Units.MetersPerSecond))
+            .angularPosition(m_distance.mut_replace(rightEncoder.position, Units.Rotations))
+            .angularVelocity(
+                m_velocity.mut_replace(rightEncoder.velocity, Units.RPM))
     }
     /**
      * Set the speed of the flywheels using closed loop control
