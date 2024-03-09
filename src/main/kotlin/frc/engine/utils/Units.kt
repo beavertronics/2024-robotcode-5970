@@ -100,11 +100,18 @@ value class MetersPerSecondSquared(override val value: Double) : AccelerationUni
 // Rotations
 interface Rotations : Unit {
     fun rotationsPerMinute(): Double
+    fun rotationsPerSecond(): Double
 }
 
 @JvmInline
 value class RPM(override val value: Double) : Rotations {
     override fun rotationsPerMinute() = value
+    override fun rotationsPerSecond(): Double = value/60
+}
+@JvmInline
+value class RotationsPerSecond(override val value: Double) : Rotations {
+    override fun rotationsPerMinute() = value*60
+    override fun rotationsPerSecond(): Double = value
 }
 
 // Angles
@@ -265,6 +272,9 @@ inline val Double.hz get() = Hertz(this)
 inline val Int.hz get() = Hertz(toDouble())
 inline val Int.RPM get() = RPM(toDouble())
 inline val Double.RPM get() = RPM(this)
+inline val Int.RotationsPerSecond get() = RotationsPerSecond(toDouble())
+inline val Double.RotationsPerSecond get() = RotationsPerSecond(this)
+
 
 operator fun Volts.plus(other: Volts) = (value + other.value).volts
 

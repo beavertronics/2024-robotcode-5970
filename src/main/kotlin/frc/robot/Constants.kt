@@ -67,8 +67,13 @@ object Constants {
         const val LeftFlywheelMotorID  = 25
         const val RightFlywheelMotorID = 26
 
-        val FF_CONSTANTS = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
-        val PID_CONSTANTS = PIDConstants(1.0,0.0,0.0)
+        val LEFT_FF_CONSTANTS = SimpleMotorFeedForwardConstants(1.6784, 0.13096, 0.0)
+        val LEFT_PID_CONSTANTS = PIDConstants(1.6878,0.0,0.0)
+
+        val RIGHT_FF_CONSTANTS = SimpleMotorFeedForwardConstants(2.4783, 0.13096, 0.0)
+        val RIGHT_PID_CONSTANTS = PIDConstants(1.6878,0.0,0.0)
+
+
 
         const val CurrentLimit = 20 //amps, per motor controller
         val SpeakerPoly = Polynomial() //TODO Desmos this

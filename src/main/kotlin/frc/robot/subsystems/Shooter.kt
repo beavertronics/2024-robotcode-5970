@@ -7,6 +7,7 @@ import com.revrobotics.RelativeEncoder
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.units.*
 import edu.wpi.first.wpilibj.RobotController
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -14,6 +15,8 @@ import frc.engine.controls.Controller
 import frc.engine.controls.toFeedForward
 import frc.engine.controls.toPID
 import frc.engine.utils.RPM
+import frc.engine.utils.Rotations
+import frc.engine.utils.RotationsPerSecond
 import frc.engine.utils.Sugar.within
 import frc.engine.utils.initMotorControllers
 import frc.robot.Constants.ShooterConstants as C
@@ -26,11 +29,15 @@ object Shooter : SubsystemBase() {
     private val   rightEncoder: RelativeEncoder = rightFlywheel.encoder
 
 
-    private val leftPid     = C.PID_CONSTANTS.toPID()
-    private val rightPid    = C.PID_CONSTANTS.toPID()
-    private val feedForward = C.FF_CONSTANTS.toFeedForward()
+    private val leftPid     = C.LEFT_PID_CONSTANTS.toPID()
+    private val rightPid    = C.RIGHT_PID_CONSTANTS.toPID()
+    private val leftFeedForward = C.LEFT_FF_CONSTANTS.toFeedForward()
+    private val rightFeedForward = C.RIGHT_FF_CONSTANTS.toFeedForward()
+
 
     var targetSpeed = ShooterSpeeds()
+
+    var testAmpSpeed = 0.RPM
 
     init {
         // Reset motor controllers & set current limits
@@ -39,6 +46,13 @@ object Shooter : SubsystemBase() {
         // Invert the left flywheel
         leftFlywheel.inverted = true
         rightFlywheel.inverted = false
+
+        SmartDashboard.putNumber("testAmpSpeed",0.0)
+
+    }
+
+    override fun periodic() {
+        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeed",0.0).RPM
     }
     fun breakMotors(){
         leftFlywheel.idleMode = CANSparkBase.IdleMode.kBrake
@@ -49,25 +63,25 @@ object Shooter : SubsystemBase() {
         rightFlywheel.idleMode = CANSparkBase.IdleMode.kCoast
     }
 
-    data class ShooterSpeeds(val leftSpeeds:RPM = 0.RPM, val rightSpeeds:RPM = 0.RPM)
+    data class ShooterSpeeds(val leftSpeeds:Rotations = 0.RotationsPerSecond, val rightSpeeds:Rotations = 0.RotationsPerSecond)
     /**
      * Set the speed of the flywheels using closed loop control
      * @param leftSpeeds Desired speed of left the motor in RPM
      * @param rightSpeeds Desired speed of right the motor in RPM
      */
-    fun setSpeed(leftSpeeds : RPM, rightSpeeds : RPM) {
+    fun setSpeed(leftSpeeds : Rotations, rightSpeeds : Rotations) {
         //targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
-        leftPid.setpoint = leftSpeeds.rotationsPerMinute()
-        rightPid.setpoint = rightSpeeds.rotationsPerMinute()
+        leftPid.setpoint = leftSpeeds.rotationsPerSecond()
+        rightPid.setpoint = rightSpeeds.rotationsPerSecond()
         //shooterMode = ShooterMode.CLOSED_LOOP
     }
 
     /** Calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     fun runClosedLoop(){
-        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity)
-        val rightPidCalculated = leftPid.calculate(rightEncoder.velocity)
-        val leftFFCalculated   = feedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
-        val rightFFCalculated  = feedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
+        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity.RPM.rotationsPerSecond())
+        val rightPidCalculated = leftPid.calculate(rightEncoder.velocity.RPM.rotationsPerSecond())
+        val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.rotationsPerSecond())
+        val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.rotationsPerSecond())
 
         leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
         rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
@@ -95,8 +109,8 @@ object Shooter : SubsystemBase() {
     /** Charactarization only DON'T USE */
     val rawDrive: (Measure<Voltage>) -> Unit =  {
         //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
-        leftFlywheel.setVoltage(it.`in`(Units.Volts))
-        rightFlywheel.setVoltage(it.`in`(Units.Volts))
+        leftFlywheel.set(it.`in`(Units.Volts)/ RobotController.getBatteryVoltage())
+        rightFlywheel.set(it.`in`(Units.Volts)/ RobotController.getBatteryVoltage())
     }
 
     private val m_appliedVoltage: MutableMeasure<Voltage> = MutableMeasure.mutable(Units.Volts.of(0.0))
@@ -142,7 +156,7 @@ object Shooter : SubsystemBase() {
      * Set the speed of the flywheels using closed loop control
      * @param speed Desired speed of the motor in RPM
      */
-    fun setSpeed(speed : RPM) = setSpeed(speed, speed)
+    fun setSpeed(speed : Rotations) = setSpeed(speed, speed)
     /** First, sets the desired speed of the shooter
      * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     fun runClosedLoop(speed: Double){
@@ -151,8 +165,8 @@ object Shooter : SubsystemBase() {
     }
     /** First, sets the desired speed of the shooter
      * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
-    fun runClosedLoop(speed: RPM){
-        setSpeed(speed)
+    fun runClosedLoop(speed: Rotations){
+        setSpeed(speed.rotationsPerSecond())
         runClosedLoop()
     }
 
