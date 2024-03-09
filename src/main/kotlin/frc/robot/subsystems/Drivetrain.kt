@@ -60,7 +60,7 @@ object Drivetrain : SubsystemBase() {
         // Reset motor controllers & set current limits
         initMotorControllers(DriveConstants.CurrentLimit, leftMain, rightMain, leftSecondary, rightSecondary)
 
-        // Set secondary motors to follow the primary ones
+        // Set secondary motors to+ follow the primary ones
         leftSecondary.follow(leftMain)
         rightSecondary.follow(rightMain)
 
