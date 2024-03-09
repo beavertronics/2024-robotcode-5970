@@ -47,12 +47,13 @@ object Shooter : SubsystemBase() {
         leftFlywheel.inverted = true
         rightFlywheel.inverted = false
 
-        SmartDashboard.putNumber("testAmpSpeed",0.0)
+        SmartDashboard.putNumber("testAmpSpeedEEE",0.0)
 
     }
 
     override fun periodic() {
-        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeed",0.0).RPM
+        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeedEEE",0.0).RPM
+        println(testAmpSpeed.rotationsPerMinute())
     }
     fun breakMotors(){
         leftFlywheel.idleMode = CANSparkBase.IdleMode.kBrake
@@ -71,17 +72,17 @@ object Shooter : SubsystemBase() {
      */
     fun setSpeed(leftSpeeds : Rotations, rightSpeeds : Rotations) {
         //targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
-        leftPid.setpoint = leftSpeeds.rotationsPerSecond()
-        rightPid.setpoint = rightSpeeds.rotationsPerSecond()
+        leftPid.setpoint = leftSpeeds.rotationsPerMinute()
+        rightPid.setpoint = rightSpeeds.rotationsPerMinute()
         //shooterMode = ShooterMode.CLOSED_LOOP
     }
 
     /** Calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     fun runClosedLoop(){
-        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity.RPM.rotationsPerSecond())
-        val rightPidCalculated = leftPid.calculate(rightEncoder.velocity.RPM.rotationsPerSecond())
-        val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.rotationsPerSecond())
-        val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.rotationsPerSecond())
+        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity.RPM.rotationsPerMinute())
+        val rightPidCalculated = rightPid.calculate(rightEncoder.velocity.RPM.rotationsPerMinute())
+        val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
+        val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
 
         leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
         rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
