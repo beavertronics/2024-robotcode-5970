@@ -8,12 +8,18 @@ import frc.robot.Constants
 /**
  * Runs shootNoteOpenLoop (Ignore the jank)
  */
-class `TimedPreload+Mobility` : Command() {
+class `TimedPreload+Mobility`(
+    private val backupVoltage : Double = 5.0,
+    private val backupTime : Double = 2.0,
+    private val spinupSpeed : Double = 1.0,
+    private val spinupTime : Double = 1.0
+
+) : Command() {
     private lateinit var autoCommandGroup : SequentialCommandGroup
     override fun initialize() {
         autoCommandGroup = SequentialCommandGroup (
-            ShootNoteOpenLoop(1.0, 1.0),
-            OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto()
+            DrivetrainControl.runDrivetrain(backupVoltage,backupTime),
+            ShootNoteOpenLoop(spinupSpeed, spinupTime),
         )
         autoCommandGroup.schedule()
     }

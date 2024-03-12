@@ -16,7 +16,7 @@ object IntakeControl {
         private val time: Double = Constants.IntakeConstants.feedingTime
     ) : Command() {
         private val timer = Timer()
-        override fun initialize() { timer.restart() }
+        override fun initialize() = timer.restart()
         override fun execute() = Intake.runIntake(speed)
         override fun isFinished(): Boolean { return timer.hasElapsed(time)}
 
