@@ -33,7 +33,6 @@ object RobotController : TimedRobot() {
         //ie 
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
-        "Timed Preload" to TimedPreload(),
         "Timed Preload+Mobility" to `TimedPreload+Mobility`(),
         "Bottom_Preload+Mobility" to `Preload+Mobility`(),
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
