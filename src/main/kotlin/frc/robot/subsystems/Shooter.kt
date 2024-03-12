@@ -47,12 +47,12 @@ object Shooter : SubsystemBase() {
         leftFlywheel.inverted = true
         rightFlywheel.inverted = false
 
-        SmartDashboard.putNumber("testAmpSpeedEEE",0.0)
+
 
     }
 
     override fun periodic() {
-        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeedEEE",0.0).RPM
+        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeed",0.0).RPM
         println(testAmpSpeed.rotationsPerMinute())
     }
     fun breakMotors(){
@@ -71,9 +71,9 @@ object Shooter : SubsystemBase() {
      * @param rightSpeeds Desired speed of right the motor in RPM
      */
     fun setSpeed(leftSpeeds : Rotations, rightSpeeds : Rotations) {
-        //targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
-        leftPid.setpoint = leftSpeeds.rotationsPerMinute()
-        rightPid.setpoint = rightSpeeds.rotationsPerMinute()
+        targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
+        leftPid.setpoint = leftSpeeds.rotationsPerSecond()
+        rightPid.setpoint = rightSpeeds.rotationsPerSecond()
         //shooterMode = ShooterMode.CLOSED_LOOP
     }
 
@@ -84,8 +84,8 @@ object Shooter : SubsystemBase() {
         val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
         val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
 
-        leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
-        rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
+        if(targetSpeed.leftSpeeds.value != 0.0) leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
+        if(targetSpeed.rightSpeeds.value != 0.0) rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
     }
 
     /** Runs the flywheels at percentShooterSpeed
@@ -146,7 +146,7 @@ object Shooter : SubsystemBase() {
      * @param leftSpeeds Desired speed of left the motor in RPM
      * @param rightSpeeds Desired speed of right the motor in RPM
      */
-    fun setSpeed(leftSpeeds : Double, rightSpeeds: Double) = setSpeed(leftSpeeds.RPM, rightSpeeds.RPM)
+    fun setSpeed(leftSpeeds : Double, rightSpeeds: Double) = setSpeed(leftSpeeds.RotationsPerSecond, rightSpeeds.RotationsPerSecond)
     /**
      * Set the speed of the flywheels using closed loop control
      * @param speed Desired speed of the motor in RPM
@@ -167,7 +167,7 @@ object Shooter : SubsystemBase() {
     /** First, sets the desired speed of the shooter
      * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     fun runClosedLoop(speed: Rotations){
-        setSpeed(speed.rotationsPerSecond())
+        setSpeed(speed)
         runClosedLoop()
     }
 
