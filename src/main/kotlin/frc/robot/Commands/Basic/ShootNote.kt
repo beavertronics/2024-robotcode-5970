@@ -27,3 +27,24 @@ class ShootNote(
     }
 
 }
+class ShootNoteOpenLoop(
+    private val speed: Double,
+    private val time: Double
+) : Command() {
+    private lateinit var autoCommandGroup : SequentialCommandGroup
+    override fun initialize() {
+        autoCommandGroup = SequentialCommandGroup (
+            ShooterControl.OpenLoopSpinup(speed, time),
+            ParallelRaceGroup (
+                IntakeControl.Feed(),
+                ShooterControl.RunOpenloop(speed)
+            )
+        )
+        autoCommandGroup.schedule()
+    }
+
+    override fun isFinished(): Boolean {
+        return autoCommandGroup.isFinished
+    }
+
+}

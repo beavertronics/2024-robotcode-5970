@@ -8,9 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
-import frc.robot.Commands.Autos.OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto
-import frc.robot.Commands.Autos.`Preload+BottomNote`
-import frc.robot.Commands.Autos.`Preload+Mobility`
+import frc.robot.Commands.Autos.*
 import frc.robot.Commands.SysID.SysID
 import frc.robot.Commands.SysID.SysIDShooter
 import frc.robot.Commands.SysID.drivetrainSys
@@ -35,6 +33,8 @@ object RobotController : TimedRobot() {
         //ie 
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
+        "Timed Preload" to TimedPreload(),
+        "Timed Preload+Mobility" to `TimedPreload+Mobility`(),
         "Bottom_Preload+Mobility" to `Preload+Mobility`(),
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
     )
