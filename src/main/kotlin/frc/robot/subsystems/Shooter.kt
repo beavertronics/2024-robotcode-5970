@@ -79,10 +79,10 @@ object Shooter : SubsystemBase() {
 
     /** Calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     fun runClosedLoop(){
-        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity.RPM.rotationsPerMinute())
-        val rightPidCalculated = rightPid.calculate(rightEncoder.velocity.RPM.rotationsPerMinute())
-        val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.rotationsPerMinute())
-        val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.rotationsPerMinute())
+        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity.RPM.rotationsPerSecond())
+        val rightPidCalculated = rightPid.calculate(rightEncoder.velocity.RPM.rotationsPerSecond())
+        val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.rotationsPerSecond())
+        val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.rotationsPerSecond())
 
         if(targetSpeed.leftSpeeds.value != 0.0) leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
         if(targetSpeed.rightSpeeds.value != 0.0) rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
@@ -146,16 +146,16 @@ object Shooter : SubsystemBase() {
      * @param leftSpeeds Desired speed of left the motor in RPM
      * @param rightSpeeds Desired speed of right the motor in RPM
      */
-    fun setSpeed(leftSpeeds : Double, rightSpeeds: Double) = setSpeed(leftSpeeds.RotationsPerSecond, rightSpeeds.RotationsPerSecond)
+    fun setSpeed(leftSpeeds : Double, rightSpeeds: Double) = setSpeed(leftSpeeds.RPM, rightSpeeds.RPM)
     /**
      * Set the speed of the flywheels using closed loop control
      * @param speed Desired speed of the motor in RPM
      */
-    fun setSpeed(speed : Double) = setSpeed(speed, speed)
+    fun setSpeed(speed : Double) = setSpeed(speed.RPM, speed.RPM)
 
     /**
      * Set the speed of the flywheels using closed loop control
-     * @param speed Desired speed of the motor in RPM
+     * @param speed Desired speed of the motor
      */
     fun setSpeed(speed : Rotations) = setSpeed(speed, speed)
     /** First, sets the desired speed of the shooter
