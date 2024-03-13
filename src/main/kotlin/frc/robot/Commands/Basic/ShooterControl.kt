@@ -42,4 +42,9 @@ object ShooterControl {
     class RunOpenloop(val percent : Double) : Command() {
         override fun execute() = Shooter.runOpenLoop(percent)
     }
+    class StopShooter() : Command() {
+        override fun initialize() = Shooter.stop()
+        override fun isFinished(): Boolean {return true}
+    }
+
 }

@@ -35,10 +35,8 @@ class ShootNoteOpenLoop(
     override fun initialize() {
         autoCommandGroup = SequentialCommandGroup (
             ShooterControl.OpenLoopSpinup(speed, time),
-            ParallelRaceGroup (
-                IntakeControl.Feed(),
-                ShooterControl.RunOpenloop(speed)
-            )
+            IntakeControl.Feed(),
+            ShooterControl.StopShooter()
         )
         autoCommandGroup.schedule()
     }

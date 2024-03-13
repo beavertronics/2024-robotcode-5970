@@ -36,7 +36,7 @@ object DrivetrainControl {
                         private val time: Double) : Command() {
         private val timer = Timer()
         override fun initialize() = timer.restart()
-        override fun execute() = Drivetrain.voltageDrive(voltage, time)
+        override fun execute() = Drivetrain.voltageDrive(voltage, voltage)
         override fun end(interrupted: Boolean) = Drivetrain.stop()
         override fun isFinished(): Boolean = timer.hasElapsed(time)
 

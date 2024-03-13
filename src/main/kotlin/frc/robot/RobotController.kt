@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.Commands.Autos.*
+import frc.robot.Commands.Basic.BasicControl
 import frc.robot.Commands.SysID.SysID
 import frc.robot.Commands.SysID.SysIDShooter
 import frc.robot.Commands.SysID.drivetrainSys
@@ -29,17 +30,13 @@ object RobotController : TimedRobot() {
 
     val noAuto = RunCommand({Drivetrain.voltageDrive(0.0, 0.0)})
     var autos: Map<String,Command> = mapOf(
-        //TODO: Autos go here!
-        //ie 
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
-        "Timed Preload+Mobility" to `TimedPreload+Mobility`(),
+        "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.4, 1.0,0.5, secondBackupVoltage = -4.0, secondBackupTime = 0.5,),
         "Bottom_Preload+Mobility" to `Preload+Mobility`(),
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
     )
     var tests: Map<String,Command> = mapOf(
-            //TODO: Tests go here!
-            //ie
             //"Description of test" to TaxiTest
             "Shooter SysID" to SysIDShooter(),
             "Drivetrain SysID" to SysID(drivetrainSys)
@@ -73,6 +70,7 @@ object RobotController : TimedRobot() {
 
     override fun autonomousInit() {
         selectedAuto = autoChooser.selected;
+        selectedAuto.andThen(BasicControl.RobotFullStop())
         selectedAuto.schedule();
     }
     override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?
