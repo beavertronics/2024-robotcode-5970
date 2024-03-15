@@ -26,5 +26,29 @@ object IntakeControl {
         private val speed: Double = Constants.IntakeConstants.pickupSpeed
     ) : Command() {
         override fun execute() = Intake.runIntake(speed)
+        override fun end(interrupted: Boolean) = Intake.stop()
+    }
+    class TimedPickup (
+            private val speed: Double = Constants.IntakeConstants.pickupSpeed,
+            private val time: Double = 1.0
+    ) : Command() {
+        private val timer = Timer()
+        override fun initialize() = timer.restart()
+        override fun execute() = Intake.runIntake(speed)
+        override fun end(interrupted: Boolean) = Intake.stop()
+        override fun isFinished(): Boolean { return timer.hasElapsed(time)}
+
+
+    }
+    class Outtake (
+            private val speed: Double = 0.3,
+            private val time: Double = 1.0
+    ) : Command() {
+        private val timer = Timer()
+        override fun initialize() = timer.restart()
+        override fun execute() = Intake.runIntake(-speed)
+        override fun end(interrupted: Boolean) = Intake.stop()
+        override fun isFinished(): Boolean { return timer.hasElapsed(time)}
+
     }
 }

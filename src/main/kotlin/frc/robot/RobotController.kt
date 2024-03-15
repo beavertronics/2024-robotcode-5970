@@ -32,9 +32,11 @@ object RobotController : TimedRobot() {
     var autos: Map<String,Command> = mapOf(
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
-        "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.4, 1.0,0.5, secondBackupVoltage = -4.0, secondBackupTime = 0.5,),
-        "Bottom_Preload+Mobility" to `Preload+Mobility`(),
+        "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.3, 1.0,1.0, secondBackupVoltage = -4.0, secondBackupTime = 0.5,),
+            "Timed Two Note Auto" to TimedTwoNoteAuto(),
+            "Bottom_Preload+Mobility" to `Preload+Mobility`(),
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
+
     )
     var tests: Map<String,Command> = mapOf(
             //"Description of test" to TaxiTest
@@ -58,7 +60,7 @@ object RobotController : TimedRobot() {
     
     override fun robotInit() {
         //Initialize the robot!
-        SmartDashboard.putNumber("testAmpSpeed",0.0)
+        if (SmartDashboard.getNumber("testAmpSpeedFrFr",-1.0) == -1.0) SmartDashboard.putNumber("testAmpSpeedFrFr",0.0)
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi? Should we?
 
     }
@@ -70,7 +72,7 @@ object RobotController : TimedRobot() {
 
     override fun autonomousInit() {
         selectedAuto = autoChooser.selected;
-        selectedAuto.andThen(BasicControl.RobotFullStop())
+        //selectedAuto.andThen(BasicControl.RobotFullStop())
         selectedAuto.schedule();
     }
     override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?

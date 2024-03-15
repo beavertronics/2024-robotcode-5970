@@ -52,7 +52,7 @@ object Shooter : SubsystemBase() {
     }
 
     override fun periodic() {
-        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeed",0.0).RPM
+        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeedFrFr",0.0).RPM
         println(testAmpSpeed.rotationsPerMinute())
     }
     fun breakMotors(){
