@@ -32,9 +32,11 @@ object RobotController : TimedRobot() {
     var autos: Map<String,Command> = mapOf(
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
+            "Timed Preload" to TimedPreload(),
         "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.3, 1.0,1.0, secondBackupVoltage = -4.0, secondBackupTime = 0.5,),
             "Timed Two Note Auto" to TimedTwoNoteAuto(),
             "Bottom_Preload+Mobility" to `Preload+Mobility`(),
+
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
 
     )

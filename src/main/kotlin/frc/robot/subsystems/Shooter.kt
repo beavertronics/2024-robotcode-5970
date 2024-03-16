@@ -53,7 +53,7 @@ object Shooter : SubsystemBase() {
 
     override fun periodic() {
         testAmpSpeed = SmartDashboard.getNumber("testAmpSpeedFrFr",0.0).RPM
-        println(testAmpSpeed.rotationsPerMinute())
+        SmartDashboard.putNumber("Shooter Speed", (leftEncoder.velocity + rightEncoder.velocity)/2)
     }
     fun breakMotors(){
         leftFlywheel.idleMode = CANSparkBase.IdleMode.kBrake

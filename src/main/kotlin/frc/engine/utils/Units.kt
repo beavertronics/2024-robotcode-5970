@@ -99,19 +99,39 @@ value class MetersPerSecondSquared(override val value: Double) : AccelerationUni
 
 // Rotations
 interface Rotations : Unit {
+    //val conversionFactor: Double
     fun rotationsPerMinute(): Double
     fun rotationsPerSecond(): Double
+    fun radiansPerSecond(): Double
 }
 
 @JvmInline
 value class RPM(override val value: Double) : Rotations {
     override fun rotationsPerMinute() = value
     override fun rotationsPerSecond(): Double = value/60
+    override fun radiansPerSecond(): Double = (value/60)*2* PI
+
+    override fun toString(): String {
+        return "$value RPM"
+    }
 }
 @JvmInline
 value class RotationsPerSecond(override val value: Double) : Rotations {
     override fun rotationsPerMinute() = value*60
     override fun rotationsPerSecond(): Double = value
+    override fun radiansPerSecond(): Double = value*2* PI
+    override fun toString(): String {
+        return "$value rotations/s"
+    }
+}
+@JvmInline
+value class RadiansPerSecond(override val value: Double) : Rotations {
+    override fun rotationsPerMinute() = (value*60)/(2*PI)
+    override fun rotationsPerSecond(): Double = value/(2*PI)
+    override fun radiansPerSecond(): Double = value
+    override fun toString(): String {
+        return "$value rad/s"
+    }
 }
 
 // Angles

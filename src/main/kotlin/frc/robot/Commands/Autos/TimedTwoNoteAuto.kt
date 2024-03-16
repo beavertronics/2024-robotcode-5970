@@ -10,14 +10,16 @@ import frc.robot.Constants
  */
 class TimedTwoNoteAuto(
     private val backupVoltage : Double = -4.0,
-    private val backupTime : Double = 0.3,
+    private val backupTime : Double = 0.2,
     private val spinupSpeed : Double = 1.0,
     private val spinupTime : Double = 1.0,
+    private val preIntakeDriveForwardVoltage : Double = 2.0,
+    private val preIntakeDriveForwardTime : Double = 0.1,
     private val intakeSpeed : Double = 0.65,
-    private val intakeTime : Double = 0.8,
+    private val intakeTime : Double = 1.3,
     private val intakeDrivetrainSpeed : Double = -3.0,
     private val driveForwardVoltage : Double = 4.0,
-    private val driveForwardTime : Double = 0.4,
+    private val driveForwardTime : Double = 0.5,
     private val waitTime: Double = 1.0,
 
 
@@ -29,7 +31,10 @@ class TimedTwoNoteAuto(
                 DrivetrainControl.runDrivetrain(backupVoltage,backupTime),
                 ShootNoteOpenLoop(spinupSpeed, spinupTime),
                 BasicControl.Wait(waitTime),
+                DrivetrainControl.runDrivetrain(preIntakeDriveForwardVoltage,preIntakeDriveForwardTime),
+                BasicControl.Wait(waitTime),
                 IntakeNote(intakeSpeed,intakeDrivetrainSpeed,intakeTime),
+                BasicControl.Wait(waitTime),
                 DrivetrainControl.runDrivetrain(driveForwardVoltage,driveForwardTime),
                 ShootNoteOpenLoop(spinupSpeed, spinupTime),
         )
