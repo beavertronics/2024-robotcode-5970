@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Drivetrain
 
 class OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto (
-        private val time: Double = 3.0,
+        private val time: Double = 2.0,
         private val voltage: Double = -4.0
 ): Command() {
     val timer = Timer()

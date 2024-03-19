@@ -67,7 +67,7 @@ object TeleOp : Command() {
     }
     private fun handleShooter() = when {
         OI.shooterThrottle != 0.0 -> Shooter.runOpenLoop(OI.shooterThrottle)
-        OI.shooterToSpeaker       -> Shooter.runClosedLoop(Shooter.testAmpSpeed)
+        OI.shooterToSpeaker       -> Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
         OI.shooterToAmp           -> Shooter.runClosedLoop(Constants.ShooterConstants.SpeakerSpeed)
         else -> Shooter.stop()
     }

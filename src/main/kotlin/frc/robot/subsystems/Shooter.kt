@@ -37,7 +37,9 @@ object Shooter : SubsystemBase() {
 
     var targetSpeed = ShooterSpeeds()
 
-    var testAmpSpeed = 0.RPM
+    var leftTestAmpSpeed = 0.RPM
+    var rightTestAmpSpeed = 0.RPM
+
 
     init {
         // Reset motor controllers & set current limits
@@ -52,7 +54,9 @@ object Shooter : SubsystemBase() {
     }
 
     override fun periodic() {
-        testAmpSpeed = SmartDashboard.getNumber("testAmpSpeedFrFr",0.0).RPM
+        leftTestAmpSpeed = SmartDashboard.getNumber("leftTestAmpSpeed",0.0).RPM
+        rightTestAmpSpeed = SmartDashboard.getNumber("rightTestAmpSpeed",0.0).RPM
+
         SmartDashboard.putNumber("Shooter Speed", (leftEncoder.velocity + rightEncoder.velocity)/2)
     }
     fun breakMotors(){
@@ -100,8 +104,8 @@ object Shooter : SubsystemBase() {
         rightFlywheel.set(0.0)
     }
     /** Returns true if the encoder velocity is equal to the desired speed */
-    val isAtSpeed get() = (leftEncoder.velocity.within(10.0, targetSpeed.leftSpeeds.value) &&
-            rightEncoder.velocity.within(10.0, targetSpeed.rightSpeeds.value))
+    val isAtSpeed get() = (leftEncoder.velocity.within(targetSpeed.rightSpeeds.value*0.05, targetSpeed.leftSpeeds.value) &&
+            rightEncoder.velocity.within(targetSpeed.rightSpeeds.value*0.05, targetSpeed.rightSpeeds.value))
 
 
 
@@ -164,10 +168,17 @@ object Shooter : SubsystemBase() {
         setSpeed(speed)
         runClosedLoop()
     }
+
     /** First, sets the desired speed of the shooter
      * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     fun runClosedLoop(speed: Rotations){
         setSpeed(speed)
+        runClosedLoop()
+    }
+    /** First, sets the desired speed of the shooter
+     * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
+    fun runClosedLoop(leftSpeed: Rotations,rightSpeed: Rotations){
+        setSpeed(leftSpeed, rightSpeed)
         runClosedLoop()
     }
 

@@ -36,3 +36,28 @@ class IntakeNote(
     }
 
 }
+class IntakeNoteNoOutake(
+        private val intakeSpeed: Double,
+        private val drivetrainSpeed: Double,
+        private val time: Double
+) : Command() {
+    private lateinit var autoCommandGroup : SequentialCommandGroup
+    private val timer = Timer()
+    override fun initialize() {
+        timer.restart()
+        autoCommandGroup = SequentialCommandGroup (
+                ParallelDeadlineGroup (
+                        BasicControl.Wait(time),
+                        IntakeControl.TimedPickup(intakeSpeed,time),
+                        DrivetrainControl.runDrivetrain(drivetrainSpeed,time)
+                ),
+        )
+        autoCommandGroup.schedule()
+    }
+
+    override fun isFinished(): Boolean {
+        return autoCommandGroup.isFinished || timer.hasElapsed(time)
+    }
+
+}
+

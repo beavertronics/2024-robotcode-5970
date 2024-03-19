@@ -67,11 +67,11 @@ object Constants {
         const val LeftFlywheelMotorID  = 25
         const val RightFlywheelMotorID = 26
 
-        val LEFT_FF_CONSTANTS = SimpleMotorFeedForwardConstants(1.6784, 0.13096, 0.0)
-        val LEFT_PID_CONSTANTS = PIDConstants(1.6878/60,0.0,0.0)
+        val LEFT_FF_CONSTANTS = SimpleMotorFeedForwardConstants(0.19218, 0.12701, 0.02261)
+        val LEFT_PID_CONSTANTS = PIDConstants(0.0019781,0.0,0.0)
 
-        val RIGHT_FF_CONSTANTS = SimpleMotorFeedForwardConstants(2.4783, 0.13096, 0.0)
-        val RIGHT_PID_CONSTANTS = PIDConstants(1.6878/60,0.0,0.0)
+        val RIGHT_FF_CONSTANTS = SimpleMotorFeedForwardConstants(0.26415, 0.13172, 0.028407)
+        val RIGHT_PID_CONSTANTS = PIDConstants(0.0073073,0.0,0.0)
 
 
 

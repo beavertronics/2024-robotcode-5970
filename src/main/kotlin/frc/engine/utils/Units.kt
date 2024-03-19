@@ -109,7 +109,7 @@ interface Rotations : Unit {
 value class RPM(override val value: Double) : Rotations {
     override fun rotationsPerMinute() = value
     override fun rotationsPerSecond(): Double = value/60
-    override fun radiansPerSecond(): Double = (value/60)*2* PI
+    override fun radiansPerSecond(): Double = (value/60)/(2* PI)
 
     override fun toString(): String {
         return "$value RPM"
@@ -119,7 +119,7 @@ value class RPM(override val value: Double) : Rotations {
 value class RotationsPerSecond(override val value: Double) : Rotations {
     override fun rotationsPerMinute() = value*60
     override fun rotationsPerSecond(): Double = value
-    override fun radiansPerSecond(): Double = value*2* PI
+    override fun radiansPerSecond(): Double = value/(2* PI)
     override fun toString(): String {
         return "$value rotations/s"
     }

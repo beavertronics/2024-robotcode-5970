@@ -34,7 +34,7 @@ object RobotController : TimedRobot() {
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
             "Timed Preload" to TimedPreload(),
         "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.3, 1.0,1.0, secondBackupVoltage = -4.0, secondBackupTime = 0.5,),
-            "Timed Two Note Auto" to TimedTwoNoteAuto(),
+            "Timed Two Note Auto" to TimedTwoNoteAuto(intakeDrivetrainSpeed = -5.0, intakeTime = 0.4, driveForwardTime = 0.7, preIntakeDriveForwardTime = 0.0),
             "Bottom_Preload+Mobility" to `Preload+Mobility`(),
 
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
@@ -62,7 +62,9 @@ object RobotController : TimedRobot() {
     
     override fun robotInit() {
         //Initialize the robot!
-        if (SmartDashboard.getNumber("testAmpSpeedFrFr",-1.0) == -1.0) SmartDashboard.putNumber("testAmpSpeedFrFr",0.0)
+        SmartDashboard.putNumber("leftTestAmpSpeed",0.0)
+        SmartDashboard.putNumber("rightTestAmpSpeed",0.0)
+
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi? Should we?
 
     }
