@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.initMotorControllers
 
 object Climber : SubsystemBase() {
-    /*private val leftMotor  = CANSparkMax(ClimbConstants.LeftMotorID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
+    private val leftMotor  = CANSparkMax(ClimbConstants.LeftMotorID, MotorType.kBrushed) //TODO: Are we going to use NEOs, or 775s with encoders?
     private val rightMotor = CANSparkMax(ClimbConstants.RightMotorID, MotorType.kBrushed)
 
     init {
@@ -22,21 +22,18 @@ object Climber : SubsystemBase() {
         // Invert the right motor
         rightMotor.inverted = true
         leftMotor.inverted = false
-
-        // Set default command to idle
-        defaultCommand = idle()
-    }*/
+    }
 
     /**
      * Runs the climber motors at left and right voltages, respectively
      * @param leftVolts The voltage to run the left motors at
      * @param rightVolts The voltage to run the right motors at
      */
-    fun setVoltage(leftVolts: Double, rightVolts: Double) {} /*{
+    fun setVoltage(leftVolts: Double, rightVolts: Double) {
 
         leftMotor.setVoltage(leftVolts)
         rightMotor.setVoltage(rightVolts)
-    }*/
+    }
     /**
      * Runs the climber motors at left and right voltages, respectively
      * @param voltage The voltage to run both the left & right motors at

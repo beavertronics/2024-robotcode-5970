@@ -42,6 +42,7 @@ object TeleOp : Command() {
         handleDrive()
         handleIntake()
         handleShooter()
+        //handleClimb()
 
        if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
 
@@ -67,7 +68,7 @@ object TeleOp : Command() {
     }
     private fun handleShooter() = when {
         OI.shooterThrottle != 0.0 -> Shooter.runOpenLoop(OI.shooterThrottle)
-        OI.shooterToSpeaker       -> Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
+        OI.shooterToSpeaker       -> Shooter.runClosedLoop(Constants.ShooterConstants.AmpSpeed)//Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
         OI.shooterToAmp           -> Shooter.runClosedLoop(Constants.ShooterConstants.SpeakerSpeed)
         else -> Shooter.stop()
     }
@@ -87,8 +88,8 @@ object TeleOp : Command() {
 
         
         //New joystick tank drive code
-        val leftThrottle  get() = driverControllerL.y.processInput(0.08,SquareMode.NORMAL,true)
-        val rightThrottle get() = driverControllerR.y.processInput(0.08,SquareMode.NORMAL,true)
+        val leftThrottle  get() = driverControllerL.y.processInput(0.08,SquareMode.SQUARED,true)
+        val rightThrottle get() = driverControllerR.y.processInput(0.08,SquareMode.SQUARED,true)
 
         val speedLower get() = driverControllerR.trigger
         val reverseDrive get() = driverControllerL.trigger

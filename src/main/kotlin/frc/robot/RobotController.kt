@@ -62,8 +62,8 @@ object RobotController : TimedRobot() {
     
     override fun robotInit() {
         //Initialize the robot!
-        SmartDashboard.putNumber("leftTestAmpSpeed",0.0)
-        SmartDashboard.putNumber("rightTestAmpSpeed",0.0)
+        //SmartDashboard.putNumber("leftTestAmpSpeed",0.0)
+        //SmartDashboard.putNumber("rightTestAmpSpeed",0.0)
 
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi? Should we?
 
