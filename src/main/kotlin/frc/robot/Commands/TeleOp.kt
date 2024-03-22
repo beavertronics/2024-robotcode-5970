@@ -78,9 +78,15 @@ object TeleOp : Command() {
     }
     private fun handleIntake() = when {
         OI.feedToShoot -> Intake.runIntake(Constants.IntakeConstants.feedingSpeed)
-        OI.intakeThrottle != 0.0 -> Intake.runIntake(OI.intakeThrottle.clamp(
+        OI.intakeThrottle < 0.0 -> Intake.runIntake(OI.intakeThrottle.clamp(
                 -Constants.IntakeConstants.reverseSpeed,
                 Constants.IntakeConstants.pickupSpeed))
+        OI.intakeThrottle > 0.0 -> {
+            val intakeSpeed = OI.intakeThrottle.clamp(
+                    -Constants.IntakeConstants.reverseSpeed,
+                    Constants.IntakeConstants.pickupSpeed)
+            Intake.runIntake(intakeSpeed/2, intakeSpeed)
+        }
         else -> Intake.stop()
     }
     private fun handleShooter() = when {

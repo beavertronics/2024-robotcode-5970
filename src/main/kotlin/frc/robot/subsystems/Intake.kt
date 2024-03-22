@@ -24,7 +24,7 @@ object Intake : SubsystemBase() {
         initMotorControllers(C.CurrentLimit, topMotor, bottomMotor)
 
         // Sets the bottom motor to follow the top (as they should never be running seperatly)
-        bottomMotor.follow(topMotor)
+        //bottomMotor.follow(topMotor)
 
         // Invert the top & bottom controlers
         bottomMotor.inverted = true
@@ -37,10 +37,20 @@ object Intake : SubsystemBase() {
      */
     fun runIntake(speed:Double) {
         topMotor.set(ControlMode.PercentOutput, speed)
+        bottomMotor.set(ControlMode.PercentOutput, speed)
+    }
+    /** Runs the intake motor at the given percentage
+     * @param speed The voltage to run the motor at. Positive is intake, Negative is outake
+     */
+    fun runIntake(topSpeed:Double, bottomSpeed: Double) {
+        topMotor.set(ControlMode.PercentOutput, topSpeed)
+        bottomMotor.set(ControlMode.PercentOutput, bottomSpeed)
     }
     /** Runs the intake motor at 0%, stopping it */
     fun stop() {
         topMotor.set(ControlMode.PercentOutput, 0.0)
+        bottomMotor.set(ControlMode.PercentOutput, 0.0)
+
     }
 
 }
