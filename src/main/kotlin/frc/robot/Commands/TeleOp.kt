@@ -52,9 +52,24 @@ object TeleOp : Command() {
         var baseSpeed = if (OI.speedLower) C.SlowSpeed else C.DriveSpeed
 
         if (OI.reverseDrive) baseSpeed *= -1
+        val avrgThrottle = (OI.leftThrottle + OI.rightThrottle)/2
 
-        val leftSpeed  = baseSpeed * OI.leftThrottle
-        val rightSpeed = baseSpeed * OI.rightThrottle
+        var leftSpeed  = baseSpeed * avrgThrottle
+        var rightSpeed = baseSpeed * avrgThrottle
+
+        val turn = ((OI.leftThrottleRaw - OI.rightThrottleRaw).absoluteValue)/2
+
+        if(OI.leftThrottleRaw < OI.rightThrottleRaw) {
+            leftSpeed -= turn
+            rightSpeed += turn
+        }
+        else {
+            rightSpeed -= turn
+            rightSpeed += turn
+        }
+
+
+
 
         if(!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
         else Drivetrain.voltageDrive(rightSpeed * C.MaxVoltage, leftSpeed * C.MaxVoltage)
@@ -88,6 +103,9 @@ object TeleOp : Command() {
 
         
         //New joystick tank drive code
+        val leftThrottleRaw  get() = driverControllerL.y
+        val rightThrottleRaw  get() = driverControllerL.y
+
         val leftThrottle  get() = driverControllerL.y.processInput(0.08,SquareMode.SQUARED,true)
         val rightThrottle get() = driverControllerR.y.processInput(0.08,SquareMode.SQUARED,true)
 
