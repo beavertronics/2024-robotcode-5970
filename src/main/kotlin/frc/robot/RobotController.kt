@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.Commands.Autos.*
 import frc.robot.Commands.Basic.BasicControl
+import frc.robot.Commands.Basic.IntakeControl
 import frc.robot.Commands.SysID.SysID
 import frc.robot.Commands.SysID.SysIDShooter
 import frc.robot.Commands.SysID.drivetrainSys
@@ -33,11 +34,12 @@ object RobotController : TimedRobot() {
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
             "Timed Preload" to TimedPreload(),
-        "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.3, 1.0,1.0, secondBackupVoltage = -4.0, secondBackupTime = 0.5,),
+        "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.3, 1.0,1.0, secondBackupVoltage = -4.0, secondBackupTime = 1.5,),
             "Timed Two Note Auto" to TimedTwoNoteAuto(intakeDrivetrainSpeed = -5.0, intakeTime = 0.4, driveForwardTime = 0.7, preIntakeDriveForwardTime = 0.0),
             "Bottom_Preload+Mobility" to `Preload+Mobility`(),
+        "Bottom_Preload+BottomNote" to `Preload+BottomNote`(),
+            "Outake" to IntakeControl.Outtake(0.3,0.3)
 
-        "Bottom_Preload+BottomNote" to `Preload+BottomNote`()
 
     )
     var tests: Map<String,Command> = mapOf(

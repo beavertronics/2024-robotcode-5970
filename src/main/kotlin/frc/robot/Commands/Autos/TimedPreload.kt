@@ -9,6 +9,7 @@ import frc.robot.Constants
  * Runs shootNoteOpenLoop (Ignore the jank)
  */
 class TimedPreload(
+
     private val backupVoltage : Double = -4.0,
     private val backupTime : Double = 0.4,
     private val spinupSpeed : Double = 1.0,
@@ -19,6 +20,7 @@ class TimedPreload(
     private lateinit var autoCommandGroup : SequentialCommandGroup
     override fun initialize() {
         autoCommandGroup = SequentialCommandGroup (
+                IntakeControl.Outtake(0.3,0.3),
             DrivetrainControl.runDrivetrain(backupVoltage,backupTime),
             ShootNoteOpenLoop(spinupSpeed, spinupTime),
         )

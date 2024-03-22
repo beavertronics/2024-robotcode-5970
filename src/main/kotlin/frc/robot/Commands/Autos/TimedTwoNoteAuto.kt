@@ -42,6 +42,7 @@ class TimedTwoNoteAuto(
     private lateinit var autoCommandGroup : SequentialCommandGroup
     override fun initialize() {
         autoCommandGroup = SequentialCommandGroup (
+                IntakeControl.Outtake(0.3,0.3),
                 DrivetrainControl.runDrivetrain(backupVoltage,backupTime),
                 ShootNoteOpenLoop(spinupSpeed, spinupTime),
                 BasicControl.Wait(waitTime),
