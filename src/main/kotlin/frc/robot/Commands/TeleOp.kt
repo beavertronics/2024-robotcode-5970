@@ -52,12 +52,13 @@ object TeleOp : Command() {
         var baseSpeed = if (OI.speedLower) C.SlowSpeed else C.DriveSpeed
 
         if (OI.reverseDrive) baseSpeed *= -1
-        val avrgThrottle = (OI.leftThrottle + OI.rightThrottle)/2
+        //val avrgThrottle = (OI.leftThrottle + OI.rightThrottle)/2
 
-        var leftSpeed  = baseSpeed * avrgThrottle
-        var rightSpeed = baseSpeed * avrgThrottle
+        var leftSpeed  = baseSpeed * OI.leftThrottle//avrgThrottle
+        var rightSpeed = baseSpeed * OI.rightThrottle//avrgThrottle
 
-        val turn = ((OI.leftThrottleRaw - OI.rightThrottleRaw).absoluteValue)/2
+        /*val turn = ((OI.leftThrottleRaw - OI.rightThrottleRaw).absoluteValue)/2
+        println(turn)
 
         if(OI.leftThrottleRaw < OI.rightThrottleRaw) {
             leftSpeed -= turn
@@ -67,7 +68,8 @@ object TeleOp : Command() {
             rightSpeed -= turn
             rightSpeed += turn
         }
-
+        leftSpeed = leftSpeed.clamp(-1.0,1.0)
+        rightSpeed = rightSpeed.clamp(-1.0,1.0)*/
 
 
 
@@ -106,8 +108,8 @@ object TeleOp : Command() {
         val leftThrottleRaw  get() = driverControllerL.y
         val rightThrottleRaw  get() = driverControllerL.y
 
-        val leftThrottle  get() = driverControllerL.y.processInput(0.08,SquareMode.SQUARED,true)
-        val rightThrottle get() = driverControllerR.y.processInput(0.08,SquareMode.SQUARED,true)
+        val leftThrottle  get() = driverControllerL.y.processInput(0.08,SquareMode.NORMAL,true)
+        val rightThrottle get() = driverControllerR.y.processInput(0.08,SquareMode.NORMAL,true)
 
         val speedLower get() = driverControllerR.trigger
         val reverseDrive get() = driverControllerL.trigger
