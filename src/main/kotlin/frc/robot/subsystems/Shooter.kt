@@ -52,7 +52,15 @@ object Shooter : SubsystemBase() {
 
 
     }
-
+    fun avrgVelocity() : Double{
+        return (leftEncoder.velocity + rightEncoder.velocity)/2
+    }
+    var lastVelocity = 0.0
+    fun openLoopIsAtSpeed() : Boolean {
+        val acceleration = (avrgVelocity() - lastVelocity)/0.02
+        lastVelocity = avrgVelocity()
+        return acceleration < 0.1
+    }
     /*override fun periodic() {
         leftTestAmpSpeed = SmartDashboard.getNumber("leftTestAmpSpeed",0.0).RPM
         rightTestAmpSpeed = SmartDashboard.getNumber("rightTestAmpSpeed",0.0).RPM

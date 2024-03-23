@@ -44,7 +44,6 @@ object TeleOp : Command() {
         handleShooter()
         //handleClimb()
 
-       if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
 
         Rumble.update()
     }
@@ -90,9 +89,18 @@ object TeleOp : Command() {
         else -> Intake.stop()
     }
     private fun handleShooter() = when {
-        OI.shooterThrottle != 0.0 -> Shooter.runOpenLoop(OI.shooterThrottle)
-        OI.shooterToSpeaker       -> Shooter.runClosedLoop(Constants.ShooterConstants.AmpSpeed)//Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
-        OI.shooterToAmp           -> Shooter.runClosedLoop(Constants.ShooterConstants.SpeakerSpeed)
+        OI.shooterThrottle != 0.0 -> {
+            if (Shooter.openLoopIsAtSpeed()) {Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)}
+            Shooter.runOpenLoop(OI.shooterThrottle)
+        }
+        OI.shooterToSpeaker       -> {
+            if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
+            Shooter.runClosedLoop(Constants.ShooterConstants.AmpSpeed)
+        }//Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
+        OI.shooterToAmp           -> {
+            if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
+            Shooter.runClosedLoop(Constants.ShooterConstants.SpeakerSpeed)
+        }
         else -> Shooter.stop()
     }
 

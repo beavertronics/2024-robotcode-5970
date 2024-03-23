@@ -78,7 +78,7 @@ object Constants {
         const val CurrentLimit = 20 //amps, per motor controller
         val SpeakerPoly = Polynomial() //TODO Desmos this
 
-        val SpeakerSpeed = 0.RPM //Todo
+        val SpeakerSpeed = 5000.RPM //Todo
         val AmpSpeed = 0.RPM //Todo
 
     }
