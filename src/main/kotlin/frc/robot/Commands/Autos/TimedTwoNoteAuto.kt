@@ -26,7 +26,7 @@ class TimedTwoNoteAuto(
     private val backupVoltage : Double = -4.0,
     private val backupTime : Double = 0.2,
     private val spinupSpeed : Double = 1.0,
-    private val spinupTime : Double = 1.0,
+    private val spinupTime : Double = 2.0,
     private val preIntakeDriveForwardVoltage : Double = 2.0,
     private val preIntakeDriveForwardTime : Double = 0.1,
     private val intakeSpeed : Double = 0.65,
@@ -42,6 +42,7 @@ class TimedTwoNoteAuto(
     private lateinit var autoCommandGroup : SequentialCommandGroup
     override fun initialize() {
         autoCommandGroup = SequentialCommandGroup (
+                BasicControl.Wait(0.5),
                 IntakeControl.Outtake(0.3,0.3),
                 DrivetrainControl.runDrivetrain(backupVoltage,backupTime),
                 ShootNoteOpenLoop(spinupSpeed, spinupTime),

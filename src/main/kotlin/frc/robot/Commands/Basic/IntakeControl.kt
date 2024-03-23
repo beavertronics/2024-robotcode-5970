@@ -34,7 +34,7 @@ object IntakeControl {
     ) : Command() {
         private val timer = Timer()
         override fun initialize() = timer.restart()
-        override fun execute() = Intake.runIntake(speed/2,speed)
+        override fun execute() = Intake.runIntake(speed/4,speed)
         override fun end(interrupted: Boolean) = Intake.stop()
         override fun isFinished(): Boolean { return timer.hasElapsed(time)}
 

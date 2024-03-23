@@ -18,6 +18,8 @@ import frc.robot.Commands.SysID.shooterSys
 import frc.robot.Commands.TeleOp
 
 import frc.robot.subsystems.Drivetrain
+import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Shooter
 
 /* Main code for controlling the robot. Mainly just links everything together.
 
@@ -33,8 +35,8 @@ object RobotController : TimedRobot() {
     var autos: Map<String,Command> = mapOf(
         //"Description of auto" to TaxiAuto
         "Timed Mobility" to OHGODTHEYGAVEUS2MINUTESTOTESTATCOMP_auto(),
-            "Timed Preload" to TimedPreload(),
-        "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.3, 1.0,1.0, secondBackupVoltage = -4.0, secondBackupTime = 1.5,),
+            "Timed Preload" to TimedPreload(backupVoltage = -4.03,backupTime = 0.25),
+        "Timed Preload+Mobility" to `TimedPreload+Mobility`(-4.0,0.25, 1.0,1.0, secondBackupVoltage = -4.0, secondBackupTime = 1.5,),
             "Timed Two Note Auto" to TimedTwoNoteAuto(intakeDrivetrainSpeed = -5.0, intakeTime = 0.4, driveForwardTime = 0.7, preIntakeDriveForwardTime = 0.0),
             "Bottom_Preload+Mobility" to `Preload+Mobility`(),
         "Bottom_Preload+BottomNote" to `Preload+BottomNote`(),
@@ -66,7 +68,9 @@ object RobotController : TimedRobot() {
         //Initialize the robot!
         //SmartDashboard.putNumber("leftTestAmpSpeed",0.0)
         //SmartDashboard.putNumber("rightTestAmpSpeed",0.0)
-
+        Intake
+        Drivetrain
+        Shooter
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi? Should we?
 
     }

@@ -58,7 +58,7 @@ object Constants {
         const val reverseSpeed = 0.5 //TODO set outtake Speed.
         const val feedingSpeed = 0.7 //TODO set feeding speed.
 
-        const val feedingTime = 0.5 //TODO set feedingTime. In seconds
+        const val feedingTime = 1.0 //TODO set feedingTime. In seconds
         const val unfeedTime = 0.5 //TODO set feedingTime. In seconds
 
 
