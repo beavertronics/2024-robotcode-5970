@@ -8,6 +8,7 @@
 package frc.engine.utils
 // File adapted from 2898's bpsrobotics engine
 
+import edu.wpi.first.networktables.DoubleEntry
 import frc.engine.utils.Sugar.radiansToDegrees
 import kotlin.math.PI
 interface Unit {
@@ -15,36 +16,6 @@ interface Unit {
 }
 
 // Distance
-interface DistanceUnit : Unit {
-    fun meterValue(): Double
-}
-
-@JvmInline
-value class Meters(override val value: Double) : DistanceUnit {
-    override fun meterValue() = value
-
-    override fun toString(): String {
-        return "$value m"
-    }
-}
-
-@JvmInline
-value class Feet(override val value: Double) : DistanceUnit {
-    override fun meterValue() = value * 0.3048
-
-    override fun toString(): String {
-        return "$value ft"
-    }
-}
-
-@JvmInline
-value class Inches(override val value: Double) : DistanceUnit {
-    override fun meterValue() = value * 0.0254
-
-    override fun toString(): String {
-        return "$value in"
-    }
-}
 
 // Velocity
 interface VelocityUnit : Unit {
