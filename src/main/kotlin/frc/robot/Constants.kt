@@ -94,7 +94,7 @@ object Constants {
         const val SlowSpeed = 0.3 //TODO set speed boost speed
         const val QuickTurnDeadzone = 0.1 //TODO set quick turn dead zone
         const val QuickTurnSpeed = 0.7 //TODO set quick turn speed.
-
+        const val ChildSpeedMultiplier = 0.3
         //const val MaxSpeed = 5.0 //M/s
         //TODO: Maybe change to feet per second? Metric is Good, but many teams communicate drivetrain speed in feet per second so for communicating quickly it could be worth leaving in fps.
         //  Possible implementation:

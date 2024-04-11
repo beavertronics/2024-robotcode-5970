@@ -13,6 +13,7 @@ import frc.engine.utils.RotationsPerSecond
 import frc.engine.utils.Sugar.clamp
 import frc.engine.utils.Sugar.within
 import frc.robot.Constants
+import frc.robot.Constants.TeleopConstants.ChildSpeedMultiplier
 
 import frc.robot.Constants.TeleopConstants as C
 import frc.robot.subsystems.*
@@ -22,6 +23,7 @@ import kotlin.math.*
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
 
 object TeleOp : Command() {
+    const val CHILDMODE = true
 
     override fun initialize() {
         addRequirements(Drivetrain,Intake,Shooter)
@@ -40,10 +42,6 @@ object TeleOp : Command() {
 
     override fun execute() {
         handleDrive()
-        handleIntake()
-        handleShooter()
-        //handleClimb()
-
 
         Rumble.update()
     }
@@ -56,21 +54,15 @@ object TeleOp : Command() {
         var leftSpeed  = baseSpeed * OI.leftThrottle//avrgThrottle
         var rightSpeed = baseSpeed * OI.rightThrottle//avrgThrottle
 
-        /*val turn = ((OI.leftThrottleRaw - OI.rightThrottleRaw).absoluteValue)/2
-        println(turn)
-
-        if(OI.leftThrottleRaw < OI.rightThrottleRaw) {
-            leftSpeed -= turn
-            rightSpeed += turn
+        if (CHILDMODE) {
+            if (OI.childCanGO > 0.8) {
+                leftSpeed *= ChildSpeedMultiplier * OI.childCanGO
+                rightSpeed *= ChildSpeedMultiplier * OI.childCanGO
+            }
+            else {
+                return
+            }
         }
-        else {
-            rightSpeed -= turn
-            rightSpeed += turn
-        }
-        leftSpeed = leftSpeed.clamp(-1.0,1.0)
-        rightSpeed = rightSpeed.clamp(-1.0,1.0)*/
-
-
 
         if(!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
         else Drivetrain.voltageDrive(rightSpeed * C.MaxVoltage, leftSpeed * C.MaxVoltage)
@@ -133,6 +125,7 @@ object TeleOp : Command() {
         val shooterToAmp get() = operatorController.aButton
         val shooterToSpeaker get() = operatorController.yButton
         val climb get() = operatorController.pov.DirectionY()
+        val childCanGO get() = operatorController.rightTriggerAxis
 
         enum class SquareMode {
             NORMAL,
