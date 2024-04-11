@@ -21,9 +21,16 @@ data class SimpleMotorFeedForwardConstants(val kS: Double, val kV: Double, val k
 
 data class PIDConstants(val P: Double, val I: Double, val D: Double)
 
+/**
+ * @return A WPILib SimpleMotorFeedForward using the feedforward constants in the class
+ */
 fun SimpleMotorFeedForwardConstants.toFeedForward() : SimpleMotorFeedforward {
     return SimpleMotorFeedforward(this.kS, this.kV, this.kA)
 }
+
+/**
+ * @return A 5970 Engine Controller.PID controller using the pid constants in the class
+ */
 fun PIDConstants.toPID() : Controller.PID {
     return Controller.PID(this.P, this.I, this.D)
 }
