@@ -60,6 +60,7 @@ object TeleOp : Command() {
                 rightSpeed *= ChildSpeedMultiplier * OI.childCanGO
             }
             else {
+                Drivetrain.percentCurvatureDrive(OI.operatorController.leftY*0.3,OI.operatorController.leftX*0.3)
                 return
             }
         }

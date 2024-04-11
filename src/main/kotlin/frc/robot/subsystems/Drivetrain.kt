@@ -76,6 +76,16 @@ object Drivetrain : SubsystemBase() {
     fun tankDrive(left: Double, right: Double) {
         drive.tankDrive(left, right, false)
     }
+    fun percentCurvatureDrive(throttle: Double, turn: Double, allowTurnInPlace: Boolean = true){
+        val wheelSpeeds = DifferentialDrive.curvatureDriveIK(throttle,turn, allowTurnInPlace)
+        percentDrive(wheelSpeeds.left, wheelSpeeds.right)
+    }
+    fun percentDrive(left: Double, right: Double) {
+        //TODO: Prevent voltages higher than 12v or less than -12v? Or not necessary?
+        leftMain.set(left)
+        rightMain.set(right)
+        drive.feed()
+    }
     /** Drive by setting left and right voltage (-12v to 12v)
      * @param left Voltage for left motors
      * @param right Voltage for right motors
