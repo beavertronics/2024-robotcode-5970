@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.units.*
+import edu.wpi.first.units.Angle
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
@@ -14,10 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.Controller
 import frc.engine.controls.toFeedForward
 import frc.engine.controls.toPID
-import frc.engine.utils.RPM
-import frc.engine.utils.Rotations
-import frc.engine.utils.RotationsPerSecond
 import frc.engine.utils.Sugar.within
+import frc.engine.utils.Units.Angular.*
 import frc.engine.utils.initMotorControllers
 import frc.robot.Constants.ShooterConstants as C
 
@@ -76,28 +75,28 @@ object Shooter : SubsystemBase() {
         rightFlywheel.idleMode = CANSparkBase.IdleMode.kCoast
     }
 
-    data class ShooterSpeeds(val leftSpeeds:Rotations = 0.RotationsPerSecond, val rightSpeeds:Rotations = 0.RotationsPerSecond)
+    data class ShooterSpeeds(val leftSpeeds:AngularVelocity = 0.radiansPerSecond, val rightSpeeds:AngularVelocity = 0.radiansPerSecond)
     /**
      * Set the speed of the flywheels using closed loop control
      * @param leftSpeeds Desired speed of left the motor in RPM
      * @param rightSpeeds Desired speed of right the motor in RPM
      */
-    fun setSpeed(leftSpeeds : Rotations, rightSpeeds : Rotations) {
+    fun setSpeed(leftSpeeds : AngularVelocity, rightSpeeds : AngularVelocity) {
         targetSpeed = ShooterSpeeds(leftSpeeds, rightSpeeds)
-        leftPid.setpoint = leftSpeeds.rotationsPerSecond()
-        rightPid.setpoint = rightSpeeds.rotationsPerSecond()
+        leftPid.setpoint = leftSpeeds.asRotationsPerSecond
+        rightPid.setpoint = rightSpeeds.asRotationsPerSecond
         //shooterMode = ShooterMode.CLOSED_LOOP
     }
 
     /** Calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
     fun runClosedLoop(){
-        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity.RPM.rotationsPerSecond())
-        val rightPidCalculated = rightPid.calculate(rightEncoder.velocity.RPM.rotationsPerSecond())
-        val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.rotationsPerSecond())
-        val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.rotationsPerSecond())
+        val leftPidCalculated  = leftPid.calculate(leftEncoder.velocity.RPM.asRotationsPerSecond)
+        val rightPidCalculated = rightPid.calculate(rightEncoder.velocity.RPM.asRotationsPerSecond)
+        val leftFFCalculated   = leftFeedForward.calculate(targetSpeed.leftSpeeds.asRotationsPerSecond)
+        val rightFFCalculated  = rightFeedForward.calculate(targetSpeed.rightSpeeds.asRotationsPerSecond)
 
-        if(targetSpeed.leftSpeeds.value != 0.0) leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
-        if(targetSpeed.rightSpeeds.value != 0.0) rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
+        if(targetSpeed.leftSpeeds.asRadiansPerSecond != 0.0) leftFlywheel.setVoltage(leftPidCalculated+leftFFCalculated)
+        if(targetSpeed.rightSpeeds.asRadiansPerSecond != 0.0) rightFlywheel.setVoltage(rightPidCalculated+rightFFCalculated)
     }
 
     /** Runs the flywheels at percentShooterSpeed
@@ -112,8 +111,8 @@ object Shooter : SubsystemBase() {
         rightFlywheel.set(0.0)
     }
     /** Returns true if the encoder velocity is equal to the desired speed */
-    val isAtSpeed get() = (leftEncoder.velocity.within(targetSpeed.rightSpeeds.value*0.05, targetSpeed.leftSpeeds.value) &&
-            rightEncoder.velocity.within(targetSpeed.rightSpeeds.value*0.05, targetSpeed.rightSpeeds.value))
+    val isAtSpeed get() = (leftEncoder.velocity.within(targetSpeed.rightSpeeds.asRadiansPerSecond*0.05, targetSpeed.leftSpeeds.asRadiansPerSecond) &&
+            rightEncoder.velocity.within(targetSpeed.rightSpeeds.asRadiansPerSecond*0.05, targetSpeed.rightSpeeds.asRadiansPerSecond))
 
 
 
@@ -155,37 +154,19 @@ object Shooter : SubsystemBase() {
     }
     /**
      * Set the speed of the flywheels using closed loop control
-     * @param leftSpeeds Desired speed of left the motor in RPM
-     * @param rightSpeeds Desired speed of right the motor in RPM
-     */
-    fun setSpeed(leftSpeeds : Double, rightSpeeds: Double) = setSpeed(leftSpeeds.RPM, rightSpeeds.RPM)
-    /**
-     * Set the speed of the flywheels using closed loop control
-     * @param speed Desired speed of the motor in RPM
-     */
-    fun setSpeed(speed : Double) = setSpeed(speed.RPM, speed.RPM)
-
-    /**
-     * Set the speed of the flywheels using closed loop control
      * @param speed Desired speed of the motor
      */
-    fun setSpeed(speed : Rotations) = setSpeed(speed, speed)
-    /** First, sets the desired speed of the shooter
-     * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
-    fun runClosedLoop(speed: Double){
-        setSpeed(speed)
-        runClosedLoop()
-    }
+    fun setSpeed(speed : AngularVelocity) = setSpeed(speed, speed)
 
     /** First, sets the desired speed of the shooter
      * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
-    fun runClosedLoop(speed: Rotations){
+    fun runClosedLoop(speed: AngularVelocity){
         setSpeed(speed)
         runClosedLoop()
     }
     /** First, sets the desired speed of the shooter
      * Then, calculates the PID & FeedForward, and sets the motors to the voltage to reach the desired speed */
-    fun runClosedLoop(leftSpeed: Rotations,rightSpeed: Rotations){
+    fun runClosedLoop(leftSpeed: AngularVelocity,rightSpeed: AngularVelocity){
         setSpeed(leftSpeed, rightSpeed)
         runClosedLoop()
     }

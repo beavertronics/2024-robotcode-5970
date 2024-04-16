@@ -2,7 +2,6 @@ package frc.robot.Commands.Basic
 
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
-import frc.engine.utils.RPM
 import frc.robot.Constants
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter

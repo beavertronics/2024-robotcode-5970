@@ -5,22 +5,22 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.math.trajectory.TrajectoryConfig
 import edu.wpi.first.math.trajectory.TrajectoryGenerator
-import frc.engine.utils.Meters
-import frc.engine.utils.MetersPerSecond
-import frc.engine.utils.MetersPerSecondSquared
+import frc.engine.utils.Units.Linear.Acceleration
+import frc.engine.utils.Units.Linear.DistanceUnit
+import frc.engine.utils.Units.Linear.VelocityUnit
 
 @Suppress("UNUSED")
-class TrajectoryMaker(maxVel: MetersPerSecond, maxAccel: MetersPerSecondSquared) {
+class TrajectoryMaker(maxVel: VelocityUnit, maxAccel: Acceleration) {
 
     private val config = TrajectoryConfig(
-        maxVel.metersPerSecondValue(),
-        maxAccel.metersPerSecondSquaredValue()
+        maxVel.asMetersPerSecond,
+        maxAccel.asMetersPerSecondSquared
     )
 
     inner class TrajectoryBuilder internal constructor(private val startPose: Pose2d?, private val splinePoints: Array<Translation2d>, private val endPose: Pose2d?) {
         fun start(pose: Pose2d) = TrajectoryBuilder(pose, splinePoints, endPose)
 
-        fun point(x: Meters, y: Meters) = TrajectoryBuilder(startPose, splinePoints + Translation2d(x.value, y.value), endPose)
+        fun point(x: DistanceUnit, y: DistanceUnit) = TrajectoryBuilder(startPose, splinePoints + Translation2d(x.asMeters, y.asMeters), endPose)
         fun point(x: Double, y: Double) = TrajectoryBuilder(startPose, splinePoints + Translation2d(x, y), endPose)
         fun point(point: Translation2d) = TrajectoryBuilder(startPose, splinePoints + point, endPose)
         fun points(vararg points: Translation2d) = TrajectoryBuilder(startPose, splinePoints + points, endPose)

@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import frc.engine.utils.RPM
+import frc.engine.utils.Units.Angular.AngularVelocity
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
 
 class ShootNote(
-    private val speed: RPM
+    private val speed: AngularVelocity
 ) : Command() {
     private lateinit var autoCommandGroup : SequentialCommandGroup
     override fun initialize() {

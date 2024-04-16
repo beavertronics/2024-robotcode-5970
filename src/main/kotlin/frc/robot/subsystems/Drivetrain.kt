@@ -15,9 +15,11 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.*
-import frc.engine.utils.`M/s`
 import frc.engine.utils.initMotorControllers
 import frc.engine.utils.*
+import frc.engine.utils.Units.Linear.metersPerSecond
+import frc.engine.utils.Units.Linear.*
+import frc.engine.utils.Units.seconds
 import frc.robot.Constants.DriveConstants
 //import frc.robot.subsystems.Odometry.chassisSpeeds
 
@@ -44,7 +46,7 @@ object Drivetrain : SubsystemBase() {
     private var trajectoryStartTime = 0.seconds
 
     private val ramsete: Ramsete = Ramsete(
-        DriveConstants.TrackWidth.toMeters(),
+        DriveConstants.TrackWidth,
         Odometry,
         leftPid,
         rightPid,
@@ -90,7 +92,7 @@ object Drivetrain : SubsystemBase() {
     /**
      * Applies Ramsete wheel voltages to the motors
      */
-    fun voltageDrive(voltages: Ramsete.WheelVoltages) = voltageDrive(voltages.left.value, voltages.right.value)
+    fun voltageDrive(voltages: Ramsete.WheelVoltages) = voltageDrive(voltages.left.asVolts, voltages.right.asVolts)
     /** Drive by setting left and right voltage (-12v to 12v)
      * @param volts Voltage for motors motors
      * */
@@ -151,14 +153,14 @@ object Drivetrain : SubsystemBase() {
      * @param left Desired speed for the left motors, in M/s
      * @param right Desired speed for the right motors, in M/s
      */
-    fun closedLoopDrive(left: `M/s`, right: `M/s`) { closedLoopDrive(left.value, right.value) }
+    fun closedLoopDrive(left: VelocityUnit, right: VelocityUnit) { closedLoopDrive(left.asMetersPerSecond, right.asMetersPerSecond) }
     /** Drive by getting left and right speed, in M/s, from Chassis speeds using PID and FeedForward to correct for errors.
      * @param speeds Desired ChassisSpeeds
      */
     fun closedLoopDrive(speeds: ChassisSpeeds){ //Todo: speeds is passed directly from odometry
-        val kinematics = DifferentialDriveKinematics(DriveConstants.TrackWidth.value)
+        val kinematics = DifferentialDriveKinematics(DriveConstants.TrackWidth.asMeters)
         val wheelSpeeds: DifferentialDriveWheelSpeeds = kinematics.toWheelSpeeds(speeds)
-        closedLoopDrive(wheelSpeeds.leftMetersPerSecond,wheelSpeeds.rightMetersPerSecond)
+        closedLoopDrive(wheelSpeeds.leftMetersPerSecond.metersPerSecond,wheelSpeeds.rightMetersPerSecond.metersPerSecond)
      }
     /** Lambda for driving by getting left and right speed, in M/s, from Chassis speeds using PID and FeedForward to correct for errors. */
     val consumeDrive: (ChassisSpeeds) -> Unit = {

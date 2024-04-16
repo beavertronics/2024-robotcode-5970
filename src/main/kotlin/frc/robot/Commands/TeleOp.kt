@@ -8,10 +8,9 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
-import frc.engine.utils.RPM
-import frc.engine.utils.RotationsPerSecond
 import frc.engine.utils.Sugar.clamp
 import frc.engine.utils.Sugar.within
+import frc.engine.utils.Units.Angular.rotationsPerSecond
 import frc.robot.Constants
 
 import frc.robot.Constants.TeleopConstants as C
@@ -94,11 +93,11 @@ object TeleOp : Command() {
             Shooter.runOpenLoop(OI.shooterThrottle)
         }
         OI.shooterToSpeaker       -> {
-            if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
+            if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.rotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
             Shooter.runClosedLoop(Constants.ShooterConstants.AmpSpeed)
         }//Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
         OI.shooterToAmp           -> {
-            if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
+            if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.rotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
             Shooter.runClosedLoop(Constants.ShooterConstants.SpeakerSpeed)
         }
         else -> Shooter.stop()

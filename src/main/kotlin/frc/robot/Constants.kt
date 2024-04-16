@@ -6,6 +6,11 @@ import frc.engine.controls.PIDConstants
 import frc.engine.controls.SimpleMotorFeedForwardConstants
 
 import frc.engine.utils.*
+import frc.engine.utils.Units.Angular.RPM
+import frc.engine.utils.Units.Linear.inches
+import frc.engine.utils.Units.Linear.meters
+import frc.engine.utils.Units.Linear.metersPerSecond
+import frc.engine.utils.Units.Linear.metersPerSecondSquared
 
 /* Constants for tuning the robot code.
 
@@ -28,12 +33,12 @@ object Constants {
         const val RightMotorMainID = 23
         const val RightMotorSubID  = 24
 
-        val MaxVelocity = `M/s`(2.0)
-        val MaxAcceleration = MetersPerSecondSquared(0.5)
+        val MaxVelocity = 2.0.metersPerSecond
+        val MaxAcceleration = 0.5.metersPerSecondSquared
 
         const val MotorRevsPerWheelRev = (50/14) * (48/16) //~10:1 As taken from CAD- should verify after drivetrain is built in the real world
-        val WheelDiameter = Inches(6.0).meterValue()
-        val TrackWidth = Meters(0.0) //TODO Get track width
+        val WheelDiameter = 6.0.inches
+        val TrackWidth = 0.0.meters //TODO Get track width
 
         val FF_CONSTANTS = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
         val PID_CONSTANTS = PIDConstants(1.0,0.0,0.0)

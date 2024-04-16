@@ -6,8 +6,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.math.trajectory.Trajectory
+import edu.wpi.first.units.Distance
 import frc.engine.odometry.PoseProvider
 import frc.engine.utils.*
+import frc.engine.utils.Units.Electrical.VoltageUnit
+import frc.engine.utils.Units.Electrical.volts
+import frc.engine.utils.Units.Linear.DistanceUnit
+import frc.engine.utils.Units.Time
 
 /**
  * @param trackWidth The width of the drivetrain, wheel-to-wheel
@@ -20,7 +25,7 @@ import frc.engine.utils.*
  * @param z Dampens the path sticking, defaults should work for most drivetrains
  */
 class Ramsete(
-    private val trackWidth: Meters,
+    private val trackWidth: DistanceUnit,
     private val pose: PoseProvider,
     private val leftController: Controller,
     private val rightController: Controller,
@@ -30,20 +35,20 @@ class Ramsete(
     z: Double = 0.7,
 ) {
     private val ramsete = RamseteController(b, z)
-    private val kinematics = DifferentialDriveKinematics(trackWidth.value)
+    private val kinematics = DifferentialDriveKinematics(trackWidth.asMeters)
 
-    private fun velocities(trajectory: Trajectory, time: Seconds): DifferentialDriveWheelSpeeds {
-        val goal = trajectory.sample(time.value)
+    private fun velocities(trajectory: Trajectory, time: Time): DifferentialDriveWheelSpeeds {
+        val goal = trajectory.sample(time.asSeconds)
         val adjustedSpeeds = ramsete.calculate(pose.pose, goal)
         return kinematics.toWheelSpeeds(adjustedSpeeds)
     }
 
-    data class WheelVoltages(val left: Volts, val right: Volts)
+    data class WheelVoltages(val left: VoltageUnit, val right: VoltageUnit)
 
-    fun voltages(trajectory: Trajectory, time: Seconds, wheelVelocities: DifferentialDriveWheelSpeeds): WheelVoltages {
+    fun voltages(trajectory: Trajectory, time: Time, wheelVelocities: DifferentialDriveWheelSpeeds): WheelVoltages {
         val p = pose.pose
 
-        val goal = trajectory.sample(time.value)
+        val goal = trajectory.sample(time.asSeconds)
         val adjustedSpeeds = ramsete.calculate(p, goal)
         val velocities = kinematics.toWheelSpeeds(adjustedSpeeds)
 

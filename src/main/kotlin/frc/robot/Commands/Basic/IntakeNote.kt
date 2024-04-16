@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import frc.engine.utils.RPM
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter

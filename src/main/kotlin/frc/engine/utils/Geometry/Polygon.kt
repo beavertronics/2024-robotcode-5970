@@ -1,7 +1,8 @@
 package frc.engine.utils.geometry
 // File adapted from 2898's bpsrobotics engine 
-import frc.engine.utils.DistanceUnit
 import edu.wpi.first.math.geometry.Pose2d
+import frc.engine.utils.Units.Angular.radians
+import frc.engine.utils.Units.Linear.DistanceUnit
 import kotlin.math.PI
 
 /**
@@ -26,10 +27,9 @@ class Polygon(vararg val coordinates : Coordinate){
     fun contains(coordinate: Coordinate) : Boolean {
         var intersections = 0
         for (i in lines){
-            if (i.intersects(coordinate, PI)) intersections++
-            if (intersections > 1) return false
+            if (i.intersects(coordinate, PI.radians)) intersections++
         }
-        return intersections == 1
+        return intersections % 2 == 1
     }
     /**
      * Returns true if the point is within the bounds of the polygon
@@ -38,7 +38,7 @@ class Polygon(vararg val coordinates : Coordinate){
      * @return If point is in polygon
      * @author Ozy King
      */
-    fun contains(x: Double, y: Double) : Boolean{
+    fun contains(x: DistanceUnit, y: DistanceUnit) : Boolean{
         return contains(Coordinate(x,y))
     }
     /**

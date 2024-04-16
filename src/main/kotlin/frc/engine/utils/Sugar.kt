@@ -10,6 +10,9 @@ import kotlin.math.*
 
 
 object Sugar {
+    /** 2 PI */
+    const val TAU = 2 * PI
+
     /**
      * Converts the value from radians to degrees
      *
