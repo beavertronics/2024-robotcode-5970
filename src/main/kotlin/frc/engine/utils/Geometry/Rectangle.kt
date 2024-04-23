@@ -3,7 +3,6 @@ package frc.engine.utils.geometry
 import edu.wpi.first.math.geometry.Pose2d
 import frc.engine.utils.Units.Linear.DistanceUnit
 import frc.engine.utils.Units.Linear.meters
-import kotlin.math.*
 
 /**
  * A two-dimensional shape with 2 sets of parallel lines
@@ -11,8 +10,8 @@ import kotlin.math.*
  * @property coordinate2 Bottom right corner of the rectangle
  * @author Anthony, Ozy
  */
-data class Rectangle(val coordinate1: Coordinate, val coordinate2: Coordinate) {
-    constructor(x: DistanceUnit, y: DistanceUnit, left: DistanceUnit, down: DistanceUnit) : this(Coordinate(x, y), Coordinate(x+left, y-down))
+data class Rectangle(val coordinate1: Vector2, val coordinate2: Vector2) {
+    constructor(x: DistanceUnit, y: DistanceUnit, left: DistanceUnit, down: DistanceUnit) : this(Vector2(x, y), Vector2(x+left, y-down))
 
     val x1 get() = coordinate1.x
     val y1 get() = coordinate1.y
@@ -27,7 +26,7 @@ data class Rectangle(val coordinate1: Coordinate, val coordinate2: Coordinate) {
      * @return "Other's" distance to the center
      * @author Ozy
      * */
-    fun distToCenter(other: Coordinate) : Coordinate{
+    fun distToCenter(other: Vector2) : Vector2{
         return other - center
     }
     /** Returns "other" as a coordinate if center of rectangle is the origin (Use .magnitude to get the true distance)
@@ -35,8 +34,8 @@ data class Rectangle(val coordinate1: Coordinate, val coordinate2: Coordinate) {
      * @return "Other's" distance to the center
      * @author Ozy
      * */
-    fun distToCenter(other: Pose2d) : Coordinate{
-        return Coordinate(other.x.meters - center.x, other.y.meters - center.y)
+    fun distToCenter(other: Pose2d) : Vector2{
+        return Vector2(other.x.meters - center.x, other.y.meters - center.y)
     }
     /** Returns true if the coordinate given is within the vertical projection of the rectangle
      * @param x X position to check
@@ -51,7 +50,7 @@ data class Rectangle(val coordinate1: Coordinate, val coordinate2: Coordinate) {
      * @return If point is in vertical projection of the rectangle
      * @author Ozy
      * */
-    fun containsX(coordinate: Coordinate): Boolean {
+    fun containsX(coordinate: Vector2): Boolean {
         return containsX(coordinate.x)
     }
     /** Returns true if the coordinate given is within the vertical projection of the rectangle
@@ -75,7 +74,7 @@ data class Rectangle(val coordinate1: Coordinate, val coordinate2: Coordinate) {
      * @return If point is in the horizontal projection of the rectangle
      * @author Ozy
      * */
-    fun containsY(coordinate: Coordinate): Boolean {
+    fun containsY(coordinate: Vector2): Boolean {
         return containsY(coordinate.y)
     }
     /** Returns true if the pose given is within the horizontal projection of the rectangle
@@ -100,7 +99,7 @@ data class Rectangle(val coordinate1: Coordinate, val coordinate2: Coordinate) {
      * @return If point in rectangle
      * @author Anthony, Ozy
      * */
-    fun contains(coordinate: Coordinate): Boolean {
+    fun contains(coordinate: Vector2): Boolean {
         return contains(coordinate.x,coordinate.y)
     }
     /** Returns true if the pose given is within the bounds of the rectangle

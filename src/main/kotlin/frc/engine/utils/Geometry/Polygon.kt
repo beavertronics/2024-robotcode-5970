@@ -10,7 +10,7 @@ import kotlin.math.PI
  * @property coordinates List of polygon vertices of the polygon
  * @author Ozy King
  */
-class Polygon(vararg val coordinates : Coordinate){
+class Polygon(vararg val coordinates : Vector2){
     val lines = mutableListOf<Line>()
     init {
         for ((p1, p2) in coordinates.toList().plus(coordinates.first()).zipWithNext()){
@@ -24,7 +24,7 @@ class Polygon(vararg val coordinates : Coordinate){
      * @return If point is in polygon
      * @author Ozy King
      */
-    fun contains(coordinate: Coordinate) : Boolean {
+    fun contains(coordinate: Vector2) : Boolean {
         var intersections = 0
         for (i in lines){
             if (i.intersects(coordinate, PI.radians)) intersections++
@@ -39,7 +39,7 @@ class Polygon(vararg val coordinates : Coordinate){
      * @author Ozy King
      */
     fun contains(x: DistanceUnit, y: DistanceUnit) : Boolean{
-        return contains(Coordinate(x,y))
+        return contains(Vector2(x,y))
     }
     /**
      * Returns true if the pose is within the bounds of the polygon
@@ -48,7 +48,7 @@ class Polygon(vararg val coordinates : Coordinate){
      * @author Ozy King
      */
     fun contains(pose: Pose2d): Boolean{
-        return contains(Coordinate(pose))
+        return contains(Vector2(pose))
     }
     /**
      * Returns a polygon reflected over the x value given

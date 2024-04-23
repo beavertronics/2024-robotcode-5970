@@ -1,5 +1,6 @@
 package frc.engine.utils.Units.Angular
 
+import edu.wpi.first.math.geometry.Rotation2d
 import frc.engine.utils.Sugar.TAU
 import frc.engine.utils.Sugar.degreesToRadians
 import frc.engine.utils.Sugar.radiansToDegrees
@@ -79,7 +80,7 @@ value class AngleUnit(val asRadians: Double) {
     }
 }
 
-
+inline val Rotation2d.beaverRadians get() = AngleUnit(this.radians)
 
 // constructors
 inline val Number.rotations get() = AngleUnit(this.toDouble() * TAU)
