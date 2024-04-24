@@ -24,7 +24,7 @@ object Sugar {
 
     infix fun Double.eqEpsilon(other: Double) = (this - other).absoluteValue < 0.01
     infix fun Double.eqEpsilon(other: Int) = (this - other).absoluteValue < 0.01
-    inline fun Double.within(maxError: Double, target: Double = 0.0) : Boolean {return (this - target).absoluteValue < maxError }
+    fun Double.within(maxError: Double, target: Double = 0.0) : Boolean = (this - target).absoluteValue < maxError
 
 
     /**

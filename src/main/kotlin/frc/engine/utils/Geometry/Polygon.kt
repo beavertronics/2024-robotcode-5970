@@ -27,7 +27,7 @@ class Polygon(vararg val coordinates : Vector2){
     fun contains(coordinate: Vector2) : Boolean {
         var intersections = 0
         for (i in lines){
-            if (i.intersects(coordinate, PI.radians)) intersections++
+            if (i.intersects(Raycast2D(coordinate, PI.radians))) intersections++
         }
         return intersections % 2 == 1
     }
@@ -38,7 +38,7 @@ class Polygon(vararg val coordinates : Vector2){
      * @return If point is in polygon
      * @author Ozy King
      */
-    fun contains(x: DistanceUnit, y: DistanceUnit) : Boolean{
+    fun contains(x: Double, y: Double) : Boolean{
         return contains(Vector2(x,y))
     }
     /**
@@ -56,7 +56,7 @@ class Polygon(vararg val coordinates : Vector2){
      * @return Reflected polygon
      * @author Ozy King
      */
-    fun reflectHorizontally(x: DistanceUnit) : Polygon{
+    fun reflectHorizontally(x: Double) : Polygon{
         val newCoordinates = coordinates.map { it.reflectHorizontally(x) }
         return Polygon(*newCoordinates.toTypedArray())
     }

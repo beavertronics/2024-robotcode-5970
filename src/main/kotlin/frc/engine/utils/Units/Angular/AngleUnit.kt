@@ -6,6 +6,7 @@ import frc.engine.utils.Sugar.degreesToRadians
 import frc.engine.utils.Sugar.radiansToDegrees
 import frc.engine.utils.Units.Linear.DistanceUnit
 import frc.engine.utils.Units.Time
+import kotlin.math.PI
 
 @JvmInline
 value class AngleUnit(val asRadians: Double) {
@@ -77,6 +78,16 @@ value class AngleUnit(val asRadians: Double) {
                 x.asMeters
             )
         ))
+        /** An angle pointing to the right in standard position (0 radians) */
+        val right = AngleUnit(0.0)
+        /** An angle pointing up in standard position (PI/2 radians) */
+        val up = AngleUnit(PI/2)
+        /** An angle pointing left in standard position (PI radians) */
+        val left = AngleUnit(PI)
+        /** An angle pointing down in standard position (3PI/2 radians) */
+        val down = AngleUnit(PI*3/2)
+
+
     }
 }
 

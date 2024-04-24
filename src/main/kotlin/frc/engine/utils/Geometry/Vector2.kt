@@ -1,16 +1,37 @@
 package frc.engine.utils.geometry
 // File adapted from 2898's bpsrobotics engine 
+import edu.wpi.first.math.Num
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import frc.engine.utils.Units.Angular.AngleUnit
-import frc.engine.utils.Units.Linear.DistanceUnit
-import frc.engine.utils.Units.Linear.meters
+import frc.engine.utils.Units.Linear.*
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 class Vector2(val x: Double, val y: Double) {
+    companion object {
+        @JvmName("FromNumber")
+        fun new(x : Number, y : Number) = Vector2(x.toDouble(), y.toDouble())
+        @JvmName("fromMagnitude&Angle")
+        fun new(angle : AngleUnit, magnitude : Double) = Vector2(angle.cos()*magnitude, angle.sin()*magnitude)
+        @JvmName("fromDistance")
+        fun new(x: DistanceUnit, y: DistanceUnit) = Vector2(x.asMeters, y.asMeters)
+        @JvmName("fromVelocity")
+        fun new(x: VelocityUnit, y: VelocityUnit) = Vector2(x.asMetersPerSecond, y.asMetersPerSecond)
+        @JvmName("fromAcceleration")
+        fun new(x: Acceleration, y: Acceleration) = Vector2(x.asMetersPerSecondSquared, y.asFeetPerSecondSquared)
+
+
+        fun zero() = Vector2(0.0, 0.0)
+        fun crossProduct(vector1 : Vector2, vector2: Vector2 ) = (vector1.x * vector2.y) - (vector1.y * vector2.x)
+
+    }
     constructor(pose: Pose2d) : this(pose.x, pose.y)
+    constructor(angle: AngleUnit) : this(angle.cos(), angle.sin())
+
+
+
     /**
      * Distance from 0, 0, calculated using pythagorean theorem
      * */
@@ -35,6 +56,10 @@ class Vector2(val x: Double, val y: Double) {
     operator fun times(other: Double) : Vector2{
         return Vector2(x * other,y * other)
     }
+    operator fun times(other: Vector2) : Double{
+        return (this.x * other.x) + (this.y * other.y)
+    }
+
     operator fun div(other: Double) : Vector2{
         return Vector2(x / other,y / other)
     }
@@ -48,7 +73,7 @@ class Vector2(val x: Double, val y: Double) {
      * @param x The x value of the vertical line to reflect across
      * @author Ozy King
      */
-    fun reflectHorizontally(x: DistanceUnit) : Vector2{
+    fun reflectHorizontally(x: Double) : Vector2{
         return Vector2(x + (x - this.x),y)
     }
 
@@ -58,6 +83,6 @@ class Vector2(val x: Double, val y: Double) {
      * @return A new Pose2d contructed from the coordinate and the rotation
      */
     fun toPose2d(rotation: Double): Pose2d{
-        return Pose2d(x.asMeters, y.asMeters, Rotation2d.fromDegrees(rotation))
+        return Pose2d(x, y, Rotation2d.fromDegrees(rotation))
     }
 }

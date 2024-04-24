@@ -1,7 +1,7 @@
 package frc.engine.utils.geometry
 // File adapted from 2898 2023 bpsrobotics engine
-import frc.engine.utils.Sugar.eqEpsilon
 import edu.wpi.first.math.geometry.Pose2d
+import frc.engine.utils.Sugar.eqEpsilon
 import frc.engine.utils.Units.Angular.AngleUnit
 import frc.engine.utils.Units.Angular.radians
 import frc.engine.utils.Units.Linear.DistanceUnit
@@ -22,27 +22,21 @@ class Line(val point1 : Vector2, val point2 : Vector2){
      * @return Intersection point of ray-cast and line
      * @sample intersection
      * */
-    fun intersection(raycast : Raycast2D) : Vector2? {
-        val xPosition : Double
-        val yPosition : Double
-        if(!intersects(raycast)) return null
-        //println(theta.cos() eqEpsilon 0)
-        if(point2.x == point1.x || raycast.angle.cos() eqEpsilon 0){
-            val cotOfTheta = raycast.angle.cot()
-            if(slope.isInfinite()) {
-                yPosition=point1.y
-            }
-            else {
-                yPosition=(point1.x-slope*point1.y.asMeters-coordinate.x + coordinate.y*cotOfTheta)/(cotOfTheta-slope.asMeters)
-            }
-            xPosition =yPosition*cotOfTheta+coordinate.x-coordinate.y*cotOfTheta
-        }else{
-            val rm = theta.tan()
-            val lm = (point2.y-point1.y).asMeters/(point2.x-point1.x).asMeters
-            xPosition= (point1.y-point1.x * lm-coordinate.y+coordinate.x * rm)/(rm-lm)
-            yPosition=xPosition*rm+coordinate.y-coordinate.x*rm
-        }
-        return Vector2(xPosition, yPosition)
+    fun distance(raycast : Raycast2D) : Double? {
+        val rayDirection = Vector2(raycast.angle)
+        val v1 = raycast.origin - point1
+        val v2 = point2 - point1
+        val v3 = Vector2(-rayDirection.y, rayDirection.x)
+
+
+        val dot = v2 * v3
+        if (dot eqEpsilon 0) return null
+
+        val t1 = Vector2.crossProduct(v2, v1) / dot
+        val t2 = v1 * v3 / dot
+
+        return if (t1 >= 0.0 && t2 >= 0.0 && t2 <= 1.0) t1 else null
+
     }
     /**
      * Gets the intersection of a ray-cast and the line
@@ -50,8 +44,8 @@ class Line(val point1 : Vector2, val point2 : Vector2){
      * @return Intersection point of ray-cast and line
      * @sample intersection
      * */
-    fun intersection(pose: Pose2d) : Vector2? {
-        return intersection(Vector2(pose.x.meters,pose.y.meters), pose.rotation.radians.radians)
+    fun distance(pose: Pose2d) : Double? {
+        return distance(Raycast2D(pose))
     }
     /**
      * Gets the distance from the intersection of a ray-cast and the line
@@ -60,9 +54,9 @@ class Line(val point1 : Vector2, val point2 : Vector2){
      * @return Distance from the intersection point of ray-cast and line
      * @sample distance
      * */
-    fun distance(coordinate : Vector2, rotation : AngleUnit) : DistanceUnit? {
-        val intersectionPoint = intersection(coordinate, rotation) ?: return null
-        return (coordinate - intersectionPoint).magnitude
+    fun intersection(raycast: Raycast2D) : Vector2? {
+        val intersectionDistance = distance(raycast) ?: return null
+        return raycast.origin + Vector2(raycast.angle)*intersectionDistance
     }
     /**
      * Gets the distance from the intersection of a ray-cast and the line
@@ -70,9 +64,8 @@ class Line(val point1 : Vector2, val point2 : Vector2){
      * @return Distance from the intersection point of ray-cast and line
      * @sample distance
      * */
-    fun distance(pose : Pose2d) : DistanceUnit? {
-        val intersectionPoint = intersection(pose) ?: return null
-        return (Vector2(pose.x.meters,pose.y.meters) - intersectionPoint).magnitude
+    fun intersection(pose : Pose2d) : Vector2? {
+        return intersection(Raycast2D(pose))
     }
     /**
      * Returns the line reflected over a vertical line at the given x coordinate
@@ -80,7 +73,7 @@ class Line(val point1 : Vector2, val point2 : Vector2){
      * @return Reflected line
      * @author Ozy King
      */
-    fun reflectHorizontally(x: DistanceUnit) : Line {
-        return Line(point1.reflectHorizontally(x),point2.reflectHorizontally(x))
+    fun reflectHorizontally(x: Double) : Line {
+        return Line(point1.reflectHorizontally(x), point2.reflectHorizontally(x))
     }
 }
