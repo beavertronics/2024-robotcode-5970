@@ -6,6 +6,7 @@ import frc.engine.utils.Units.Angular.AngleUnit
 import frc.engine.utils.Units.Angular.radians
 import frc.engine.utils.Units.Linear.DistanceUnit
 import frc.engine.utils.Units.Linear.meters
+import frc.engine.utils.geometry.Vector2.Companion.dotProduct
 import kotlin.math.*
 
 class Line(val point1 : Vector2, val point2 : Vector2){
@@ -29,11 +30,11 @@ class Line(val point1 : Vector2, val point2 : Vector2){
         val v3 = Vector2(-rayDirection.y, rayDirection.x)
 
 
-        val dot = v2 * v3
+        val dot = v2 dotProduct v3
         if (dot eqEpsilon 0) return null
 
         val t1 = Vector2.crossProduct(v2, v1) / dot
-        val t2 = v1 * v3 / dot
+        val t2 = v1 dotProduct v3 / dot
 
         return if (t1 >= 0.0 && t2 >= 0.0 && t2 <= 1.0) t1 else null
 
