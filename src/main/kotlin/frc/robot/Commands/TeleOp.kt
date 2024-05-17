@@ -12,9 +12,9 @@ import frc.engine.utils.RPM
 import frc.engine.utils.RotationsPerSecond
 import frc.engine.utils.Sugar.clamp
 import frc.engine.utils.Sugar.within
-import frc.robot.Constants
+import frc.robot.Safety
 
-import frc.robot.Constants.TeleopConstants as C
+import frc.robot.Safety.TeleopConstants as C
 import frc.robot.subsystems.*
 import kotlin.math.*
 
@@ -48,7 +48,7 @@ object TeleOp : Command() {
         Rumble.update()
     }
     private fun handleDrive(){
-        var baseSpeed = if (OI.speedLower) C.SlowSpeed else C.DriveSpeed
+        var baseSpeed = if (OI.speedLower) C.SLOW_SPEED else C.DRIVE_SPEED
 
         if (OI.reverseDrive) baseSpeed *= -1
         //val avrgThrottle = (OI.leftThrottle + OI.rightThrottle)/2
@@ -70,20 +70,18 @@ object TeleOp : Command() {
         leftSpeed = leftSpeed.clamp(-1.0,1.0)
         rightSpeed = rightSpeed.clamp(-1.0,1.0)*/
 
-
-
-        if(!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
-        else Drivetrain.voltageDrive(rightSpeed * C.MaxVoltage, leftSpeed * C.MaxVoltage)
+        if(!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MAX_VOLTAGE, rightSpeed * C.MAX_VOLTAGE)
+        else Drivetrain.voltageDrive(rightSpeed * C.MAX_VOLTAGE, leftSpeed * C.MAX_VOLTAGE)
     }
     private fun handleIntake() = when {
-        OI.feedToShoot -> Intake.runIntake(Constants.IntakeConstants.feedingSpeed)
+        OI.feedToShoot -> Intake.runIntake(Intake.FEEDING_SPEED)
         OI.intakeThrottle < 0.0 -> Intake.runIntake(OI.intakeThrottle.clamp(
-                -Constants.IntakeConstants.reverseSpeed,
-                Constants.IntakeConstants.pickupSpeed))
+                -Intake.REVERSE_SPEED,
+            Intake.PICKUP_SPEED))
         OI.intakeThrottle > 0.0 -> {
             val intakeSpeed = OI.intakeThrottle.clamp(
-                    -Constants.IntakeConstants.reverseSpeed,
-                    Constants.IntakeConstants.pickupSpeed)
+                    -Intake.REVERSE_SPEED,
+                    Intake.PICKUP_SPEED)
             Intake.runIntake(intakeSpeed/2, intakeSpeed)
         }
         else -> Intake.stop()
@@ -95,18 +93,18 @@ object TeleOp : Command() {
         }
         OI.shooterToSpeaker       -> {
             if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
-            Shooter.runClosedLoop(Constants.ShooterConstants.AmpSpeed)
+            Shooter.runClosedLoop(Shooter.SPEAKER_SPEED)
         }//Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
         OI.shooterToAmp           -> {
             if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
-            Shooter.runClosedLoop(Constants.ShooterConstants.SpeakerSpeed)
+            Shooter.runClosedLoop(Shooter.AMP_SPEED)
         }
         else -> Shooter.stop()
     }
 
     private fun handleClimb() = when(OI.climb) {
-        OI.DirectionalPOV.UP   -> Climber.climb(Constants.ClimbConstants.ClimbPos.Extend)
-        OI.DirectionalPOV.DOWN -> Climber.climb(Constants.ClimbConstants.ClimbPos.Retract)
+        OI.DirectionalPOV.UP   -> Climber.climb(Safety.ClimbConstants.ClimbPos.Extend)
+        OI.DirectionalPOV.DOWN -> Climber.climb(Safety.ClimbConstants.ClimbPos.Retract)
         else -> Climber.stop()
     }
 

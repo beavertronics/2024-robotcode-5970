@@ -18,15 +18,16 @@ import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.subsystems.Drivetrain
 import frc.engine.odometry.Vision
 import frc.engine.odometry.aprilTagFieldLayout
 import frc.engine.utils.m
-import frc.robot.Constants
-import frc.robot.Constants.DriveConstants as D
+import frc.robot.Safety
+import frc.robot.subsystems.Drivetrain as D
 
 object Odometry : SubsystemBase(), PoseProvider {
 
+    @Suppress("removal")
+    val VisionDeviation = MatBuilder(Nat.N3(), Nat.N1()).fill(3.0,3.0,1000.0)
 
     var navx = NAVX()
     private val vision = Vision("Wyatt", aprilTagFieldLayout)
@@ -34,8 +35,8 @@ object Odometry : SubsystemBase(), PoseProvider {
     private val visionProvider = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
     private val encoderOnly = DifferentialDrivePoseEstimator(DifferentialDriveKinematics(D.TrackWidth.meterValue()), navx.rotation2d, 0.0, 0.0, Pose2d())
 
-    val leftVel get() =  MetersPerSecond(Drivetrain.leftEncoder.velocity)
-    val rightVel get() = MetersPerSecond(Drivetrain.rightEncoder.velocity)
+    val leftVel get() =  MetersPerSecond(D.leftEncoder.velocity)
+    val rightVel get() = MetersPerSecond(D.rightEncoder.velocity)
     val vels get() = DifferentialDriveWheelSpeeds(leftVel.metersPerSecondValue(), rightVel.metersPerSecondValue())
     val chassisSpeeds get() = ChassisSpeeds(leftVel.metersPerSecondValue(), rightVel.metersPerSecondValue(), navx.rate)
     val getChassesSpeeds: () -> ChassisSpeeds = { chassisSpeeds }
@@ -50,8 +51,8 @@ object Odometry : SubsystemBase(), PoseProvider {
 
     override fun reset(x: Meters, y: Meters, theta: Degrees) {
         val p = Pose2d(x.value, y.value, Rotation2d.fromDegrees(theta.value))
-        visionProvider.resetPosition(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position, p)
-        encoderOnly.resetPosition(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position, p)
+        visionProvider.resetPosition(navx.rotation2d, D.leftEncoder.position, D.rightEncoder.position, p)
+        encoderOnly.resetPosition(navx.rotation2d, D.leftEncoder.position, D.rightEncoder.position, p)
     }
 
     /*override fun periodic() {
@@ -61,12 +62,12 @@ object Odometry : SubsystemBase(), PoseProvider {
     override fun periodic() {
         val visionMeasurements = vision.getEstimatedPose(pose)
         if(visionMeasurements != null){
-            visionProvider.setVisionMeasurementStdDevs(Constants.OdometryConstants.VisionDeviation)
+            visionProvider.setVisionMeasurementStdDevs(VisionDeviation)
             visionProvider.addVisionMeasurement(visionMeasurements.estimatedPose.toPose2d(), visionMeasurements.timestampSeconds)
         }
 
-        pose = visionProvider.update(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position)
-        encoderOnly.update(navx.rotation2d, Drivetrain.leftEncoder.position, Drivetrain.rightEncoder.position)
+        pose = visionProvider.update(navx.rotation2d, D.leftEncoder.position, D.rightEncoder.position)
+        encoderOnly.update(navx.rotation2d, D.leftEncoder.position, D.rightEncoder.position)
 
         field.robotPose = pose
         field.getObject("pure odometry").pose = encoderOnly.estimatedPosition

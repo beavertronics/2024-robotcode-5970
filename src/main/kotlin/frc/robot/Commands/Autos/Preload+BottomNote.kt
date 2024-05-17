@@ -6,21 +6,20 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import frc.robot.Commands.Basic.DrivetrainControl.followPathCommand
 import frc.robot.Commands.Basic.IntakeControl
 import frc.robot.Commands.Basic.ShootNote
-import frc.robot.Constants
-import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Shooter
 
 class `Preload+BottomNote` : Command() {
     private lateinit var autoCommandGroup : SequentialCommandGroup
     override fun initialize() {
 
         autoCommandGroup = SequentialCommandGroup (
-            ShootNote(Constants.ShooterConstants.SpeakerSpeed),
+            ShootNote(Shooter.SPEAKER_SPEED),
             ParallelRaceGroup(
                 followPathCommand("BottomSpeakerToBottomNote"),
                 IntakeControl.Pickup()
             ),
             followPathCommand("BottomNoteToBottomSpeaker"),
-            ShootNote(Constants.ShooterConstants.SpeakerSpeed)
+            ShootNote(Shooter.SPEAKER_SPEED)
         )
         autoCommandGroup.schedule()
     }
