@@ -3,7 +3,6 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
-import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
@@ -18,45 +17,54 @@ import frc.engine.controls.*
 import frc.engine.utils.`M/s`
 import frc.engine.utils.initMotorControllers
 import frc.engine.utils.*
-import frc.robot.Constants.DriveConstants
+import frc.robot.Safety.DriveConstants
 //import frc.robot.subsystems.Odometry.chassisSpeeds
 
 
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = CANSparkMax(DriveConstants.LeftMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
-    private val  leftSecondary = CANSparkMax(DriveConstants.LeftMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
-    private val      rightMain = CANSparkMax(DriveConstants.RightMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
-    private val rightSecondary = CANSparkMax(DriveConstants.RightMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
+
+    private val       leftMain = CANSparkMax(21, CANSparkLowLevel.MotorType.kBrushless)
+    private val  leftSecondary = CANSparkMax(22,  CANSparkLowLevel.MotorType.kBrushless)
+    private val      rightMain = CANSparkMax(23, CANSparkLowLevel.MotorType.kBrushless)
+    private val rightSecondary = CANSparkMax(24,  CANSparkLowLevel.MotorType.kBrushless)
 
     val    leftEncoder: RelativeEncoder = leftMain.encoder
     val   rightEncoder: RelativeEncoder = rightMain.encoder
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 
-    private val leftPid  = DriveConstants.PID_CONSTANTS.toPID()
-    private val rightPid = DriveConstants.PID_CONSTANTS.toPID()
-    private val leftFeedForward  = DriveConstants.FF_CONSTANTS.toFeedForward()
-    private val rightFeedForward = DriveConstants.FF_CONSTANTS.toFeedForward()
+    private val FF_CONSTANTS = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
+    private val PID_CONSTANTS = PIDConstants(1.0,0.0,0.0)
+
+    private val leftPid  = PID_CONSTANTS.toPID()
+    private val rightPid = PID_CONSTANTS.toPID()
+    private val leftFeedForward  = FF_CONSTANTS.toFeedForward()
+    private val rightFeedForward = FF_CONSTANTS.toFeedForward()
 
 
     val trajectoryMaker = TrajectoryMaker(DriveConstants.MaxVelocity, DriveConstants.MaxAcceleration)
     var trajectory : Trajectory? = null
     private var trajectoryStartTime = 0.seconds
 
+    // Yoinked from 2898 charged up code.
+
+    val TrackWidth = Meters(0.0) //TODO Get track width
     private val ramsete: Ramsete = Ramsete(
-        DriveConstants.TrackWidth.toMeters(),
+        TrackWidth.toMeters(),
         Odometry,
         leftPid,
         rightPid,
         leftFeedForward,
         rightFeedForward,
-        DriveConstants.DRIVETRAIN_RAMSETE_B,
-        DriveConstants.DRIVETRAIN_RAMSETE_Z
+        // Ramsete parameters, see [https://file.tavsys.net/control/controls-engineering-in-frc.pdf] page 81
+        // **DO NOT CHANGE B or Z **
+        5.0, // Ramsete B, Higher values make it more aggressively stick to the trajectory. 0 < B
+        0.7, // Ramsete Z, Higher values give it more dampening. 0 < Z < 1
     )
 
     init {
         // Reset motor controllers & set current limits
-        initMotorControllers(DriveConstants.CurrentLimit, leftMain, rightMain, leftSecondary, rightSecondary)
+        initMotorControllers(DriveConstants.CURRENT_LIMIT, leftMain, rightMain, leftSecondary, rightSecondary)
 
         // Set secondary motors to follow the primary ones
         leftSecondary.follow(leftMain)
@@ -156,7 +164,7 @@ object Drivetrain : SubsystemBase() {
      * @param speeds Desired ChassisSpeeds
      */
     fun closedLoopDrive(speeds: ChassisSpeeds){ //Todo: speeds is passed directly from odometry
-        val kinematics = DifferentialDriveKinematics(DriveConstants.TrackWidth.value)
+        val kinematics = DifferentialDriveKinematics(TrackWidth.value)
         val wheelSpeeds: DifferentialDriveWheelSpeeds = kinematics.toWheelSpeeds(speeds)
         closedLoopDrive(wheelSpeeds.leftMetersPerSecond,wheelSpeeds.rightMetersPerSecond)
      }

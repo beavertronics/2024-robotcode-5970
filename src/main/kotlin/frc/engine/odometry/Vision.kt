@@ -13,8 +13,8 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.utils.Sugar.degreesToRadians
-import frc.robot.Constants
 import frc.robot.subsystems.Odometry
+import frc.robot.Safety
 import org.photonvision.EstimatedRobotPose
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
@@ -64,6 +64,6 @@ class Vision (
         return null
     }
     fun getStdDev() : Matrix<N3,N1 > {
-        return Constants.OdometryConstants.VisionDeviation
+        return Safety.OdometryConstants.VisionDeviation
     }
 }

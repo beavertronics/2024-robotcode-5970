@@ -7,21 +7,20 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Timer
 import frc.engine.utils.initMotorControllers
-import frc.robot.Constants.IntakeConstants.unfeedTime
-import frc.robot.Constants.IntakeConstants as C
+import frc.robot.Safety.IntakeConstants as C
 
 object Intake : SubsystemBase() {
 
     val limitSwitch = DigitalInput(C.limitSwitchChannel)
 
-    private val topMotor = TalonSRX(C.TopMotorID)
-    private val bottomMotor = TalonSRX(C.BottomMotorID)
 
     private val unFeedTimer = Timer()
+    private val    topMotor = TalonSRX(28) //CAN IDs
+    private val bottomMotor = TalonSRX(27)
 
     init {
         // Reset motor controllers & set current limits
-        initMotorControllers(C.CurrentLimit, topMotor, bottomMotor)
+        initMotorControllers(C.CURRENT_LIMIT, topMotor, bottomMotor)
 
         // Sets the bottom motor to follow the top (as they should never be running seperatly)
         //bottomMotor.follow(topMotor)
@@ -52,5 +51,17 @@ object Intake : SubsystemBase() {
         bottomMotor.set(ControlMode.PercentOutput, 0.0)
 
     }
+    const val PICKUP_SPEED = 0.7
+    const val PUSHFORWOARD_SPEED = 0.3
+    const val REVERSE_SPEED = 0.5
+    const val FEEDING_SPEED = 0.7
 
+    /* Old intake time constants from auto-intake system
+    const val feedingTime = 1.0 //TODO set feedingTime. In seconds
+    const val unfeedTime = 0.5 //TODO set feedingTime. In seconds
+
+    val limitSwitch = DigitalInput(1) //LIMIT SWITCH CHANNEL ON ROBORIO DIO
+
+    private val unFeedTimer = Timer()
+    */
 }

@@ -4,7 +4,6 @@ import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import com.revrobotics.RelativeEncoder
-import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.units.*
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -12,6 +11,8 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.controls.Controller
+import frc.engine.controls.PIDConstants
+import frc.engine.controls.SimpleMotorFeedForwardConstants
 import frc.engine.controls.toFeedForward
 import frc.engine.controls.toPID
 import frc.engine.utils.RPM
@@ -19,31 +20,34 @@ import frc.engine.utils.Rotations
 import frc.engine.utils.RotationsPerSecond
 import frc.engine.utils.Sugar.within
 import frc.engine.utils.initMotorControllers
-import frc.robot.Constants.ShooterConstants as C
+import frc.robot.Safety.ShooterConstants as C
 
 object Shooter : SubsystemBase() {
-    private val leftFlywheel = CANSparkMax(C.LeftFlywheelMotorID, CANSparkLowLevel.MotorType.kBrushless)
-    private val rightFlywheel = CANSparkMax(C.RightFlywheelMotorID, CANSparkLowLevel.MotorType.kBrushless)
+
+    private val leftFlywheel = CANSparkMax(25, CANSparkLowLevel.MotorType.kBrushless) //CAN ID!
+    private val rightFlywheel = CANSparkMax(26, CANSparkLowLevel.MotorType.kBrushless)
 
     private val    leftEncoder: RelativeEncoder = leftFlywheel.encoder
     private val   rightEncoder: RelativeEncoder = rightFlywheel.encoder
 
 
-    private val leftPid     = C.LEFT_PID_CONSTANTS.toPID()
-    private val rightPid    = C.RIGHT_PID_CONSTANTS.toPID()
-    private val leftFeedForward = C.LEFT_FF_CONSTANTS.toFeedForward()
-    private val rightFeedForward = C.RIGHT_FF_CONSTANTS.toFeedForward()
 
+    private val          leftPid = PIDConstants(0.0019781,0.0,0.0).toPID()
+    private val         rightPid = PIDConstants(0.0073073,0.0,0.0).toPID()
+    private val  leftFeedForward = SimpleMotorFeedForwardConstants(0.19218, 0.12701, 0.02261).toFeedForward()
+    private val rightFeedForward = SimpleMotorFeedForwardConstants(0.26415, 0.13172, 0.028407).toFeedForward()
 
     var targetSpeed = ShooterSpeeds()
 
+    val SPEAKER_SPEED = 5000.RPM //Todo
+    val AMP_SPEED = 0.RPM //Todo
     var leftTestAmpSpeed = 0.RPM
     var rightTestAmpSpeed = 0.RPM
 
 
     init {
         // Reset motor controllers & set current limits
-        initMotorControllers(C.CurrentLimit, leftFlywheel, rightFlywheel)
+        initMotorControllers(C.CURRENT_LIMIT, leftFlywheel, rightFlywheel)
 
         // Invert the left flywheel
         leftFlywheel.inverted = true
