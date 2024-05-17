@@ -23,6 +23,7 @@ import frc.robot.Safety.DriveConstants
 
 object Drivetrain : SubsystemBase() {
 
+
     private val       leftMain = CANSparkMax(21, CANSparkLowLevel.MotorType.kBrushless)
     private val  leftSecondary = CANSparkMax(22,  CANSparkLowLevel.MotorType.kBrushless)
     private val      rightMain = CANSparkMax(23, CANSparkLowLevel.MotorType.kBrushless)
