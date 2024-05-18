@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
@@ -26,6 +27,7 @@ object TeleOp : Command() {
 
     //var ChildSpeedMultiplier = 0.3
     var ChildSpeedMultiplier = 0.4 //Temp change due to 50% motors, TODO: Fix!!
+    var SupervisorSpeedMultiplier = 0.75
 
     init {
     }
@@ -48,7 +50,7 @@ object TeleOp : Command() {
 
     override fun execute() {
 
-        CHILDMODE = SmartDashboard.getBoolean("ChildMode", true)
+        CHILDMODE = SmartDashboard.getBoolean("ChildMode", true) //TODO: Should this default to true?
         SmartDashboard.putBoolean("ChildMode", CHILDMODE)
         //ChildSpeedMultiplier = SmartDashboard.getNumber("ChildSpeedMultiplier", 0.5)
         handleDrive()
@@ -69,23 +71,24 @@ object TeleOp : Command() {
         var rightSpeed = baseSpeed * OI.rightThrottle//avrgThrottle
 
         if (CHILDMODE) {
-            if (OI.childCanGO > 0.8) {
-                leftSpeed *= ChildSpeedMultiplier * OI.childCanGO
-                rightSpeed *= ChildSpeedMultiplier * OI.childCanGO
+            if (OI.childCanGO > 0.8) { //Child control
+                leftSpeed *= ChildSpeedMultiplier
+                rightSpeed *= ChildSpeedMultiplier
 
-            } else {
-                Drivetrain.percentCurvatureDrive(OI.operatorController.leftY * 0.3, OI.operatorController.leftX * 0.3)
-                return
+            } else { //Supervisor Override
+                val speeds = DifferentialDrive.curvatureDriveIK(OI.operatorController.leftY,OI.operatorController.leftX,true)
+                leftSpeed = speeds.left * SupervisorSpeedMultiplier
+                rightSpeed = speeds.right * SupervisorSpeedMultiplier
             }
-
         }
 
-        leftSpeed *= ChildSpeedMultiplier
-        rightSpeed *= ChildSpeedMultiplier
+        if (OI.reverseDrive) {
+            val oldLeftSpeed = leftSpeed
+            leftSpeed = rightSpeed
+            rightSpeed = oldLeftSpeed
+        }
 
-
-        if (!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
-        else Drivetrain.voltageDrive(rightSpeed * C.MaxVoltage, leftSpeed * C.MaxVoltage)
+        Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
     }
 
     private fun handleIntake() {
