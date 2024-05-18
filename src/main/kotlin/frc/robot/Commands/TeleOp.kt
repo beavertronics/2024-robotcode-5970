@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.engine.utils.RPM
@@ -13,8 +14,6 @@ import frc.engine.utils.RotationsPerSecond
 import frc.engine.utils.Sugar.clamp
 import frc.engine.utils.Sugar.within
 import frc.robot.Constants
-import frc.robot.Constants.TeleopConstants.ChildSpeedMultiplier
-
 import frc.robot.Constants.TeleopConstants as C
 import frc.robot.subsystems.*
 import kotlin.math.*
@@ -23,17 +22,24 @@ import kotlin.math.*
 //TeleOp Code- Controls the robot based off of inputs from the humans operating the Driver Station.
 
 object TeleOp : Command() {
-    const val CHILDMODE = true
+    var CHILDMODE = true
+
+    //var ChildSpeedMultiplier = 0.3
+    var ChildSpeedMultiplier = 0.4 //Temp change due to 50% motors, TODO: Fix!!
+
+    init {
+    }
 
     override fun initialize() {
-        addRequirements(Drivetrain,Intake,Shooter)
-        
+        addRequirements(Drivetrain, Intake, Shooter)
+
     }
+
     fun generatePath(dst: Pose2d): Trajectory {
         return Drivetrain.trajectoryMaker.builder()
-            .start(Odometry.pose)
-            .end(dst)
-            .build()
+                .start(Odometry.pose)
+                .end(dst)
+                .build()
     }
     /*
     Runs the code roughly every 0.02 seconds
@@ -41,46 +47,73 @@ object TeleOp : Command() {
      */
 
     override fun execute() {
+
+        CHILDMODE = SmartDashboard.getBoolean("ChildMode", true)
+        SmartDashboard.putBoolean("ChildMode", CHILDMODE)
+        //ChildSpeedMultiplier = SmartDashboard.getNumber("ChildSpeedMultiplier", 0.5)
         handleDrive()
+        handleShooter()
+        handleIntake()
+
 
         Rumble.update()
     }
-    private fun handleDrive(){
+
+    private fun handleDrive() {
         var baseSpeed = if (OI.speedLower) C.SlowSpeed else C.DriveSpeed
 
         if (OI.reverseDrive) baseSpeed *= -1
         //val avrgThrottle = (OI.leftThrottle + OI.rightThrottle)/2
 
-        var leftSpeed  = baseSpeed * OI.leftThrottle//avrgThrottle
+        var leftSpeed = baseSpeed * OI.leftThrottle //avrgThrottle
         var rightSpeed = baseSpeed * OI.rightThrottle//avrgThrottle
 
         if (CHILDMODE) {
             if (OI.childCanGO > 0.8) {
                 leftSpeed *= ChildSpeedMultiplier * OI.childCanGO
                 rightSpeed *= ChildSpeedMultiplier * OI.childCanGO
-            }
-            else {
-                Drivetrain.percentCurvatureDrive(OI.operatorController.leftY*0.3,OI.operatorController.leftX*0.3)
+
+            } else {
+                Drivetrain.percentCurvatureDrive(OI.operatorController.leftY * 0.3, OI.operatorController.leftX * 0.3)
                 return
             }
+
         }
 
-        if(!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
+        leftSpeed *= ChildSpeedMultiplier
+        rightSpeed *= ChildSpeedMultiplier
+
+
+        if (!OI.reverseDrive) Drivetrain.voltageDrive(leftSpeed * C.MaxVoltage, rightSpeed * C.MaxVoltage)
         else Drivetrain.voltageDrive(rightSpeed * C.MaxVoltage, leftSpeed * C.MaxVoltage)
     }
-    private fun handleIntake() = when {
-        OI.feedToShoot -> Intake.runIntake(Constants.IntakeConstants.feedingSpeed)
-        OI.intakeThrottle < 0.0 -> Intake.runIntake(OI.intakeThrottle.clamp(
-                -Constants.IntakeConstants.reverseSpeed,
-                Constants.IntakeConstants.pickupSpeed))
-        OI.intakeThrottle > 0.0 -> {
-            val intakeSpeed = OI.intakeThrottle.clamp(
-                    -Constants.IntakeConstants.reverseSpeed,
-                    Constants.IntakeConstants.pickupSpeed)
-            Intake.runIntake(intakeSpeed/2, intakeSpeed)
+
+    private fun handleIntake() {
+        if (!CHILDMODE) {
+            when {
+                OI.feedToShoot -> Intake.runIntake(Constants.IntakeConstants.feedingSpeed)
+                OI.intakeThrottle < 0.0 -> Intake.runIntake(OI.intakeThrottle.clamp(
+                        -Constants.IntakeConstants.reverseSpeed,
+                        Constants.IntakeConstants.pickupSpeed))
+
+                OI.intakeThrottle > 0.0 -> {
+                    val intakeSpeed = OI.intakeThrottle.clamp(
+                            -Constants.IntakeConstants.reverseSpeed,
+                            Constants.IntakeConstants.pickupSpeed)
+                    Intake.runIntake(intakeSpeed / 2, intakeSpeed)
+                }
+
+                else -> Intake.stop()
+            }
+        } else {
+            when {
+                OI.operatorController.aButton -> Intake.runIntake(Constants.IntakeConstants.feedingSpeed)
+                OI.operatorController.bButton -> Intake.runIntake(-1 * Constants.IntakeConstants.feedingSpeed)
+                else -> Intake.stop()
+            }
         }
-        else -> Intake.stop()
     }
+
     private fun handleShooter() = when {
         OI.shooterThrottle != 0.0 -> {
             if (Shooter.openLoopIsAtSpeed()) {Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)}
@@ -90,10 +123,11 @@ object TeleOp : Command() {
             if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
             Shooter.runClosedLoop(Constants.ShooterConstants.AmpSpeed)
         }//Shooter.runClosedLoop(Shooter.leftTestAmpSpeed,Shooter.rightTestAmpSpeed)
+        /*
         OI.shooterToAmp           -> {
             if (Shooter.isAtSpeed && Shooter.targetSpeed.leftSpeeds != 0.RotationsPerSecond) Rumble.set(0.1,0.3, GenericHID.RumbleType.kRightRumble)
             Shooter.runClosedLoop(Constants.ShooterConstants.SpeakerSpeed)
-        }
+        }*/
         else -> Shooter.stop()
     }
 
@@ -123,7 +157,7 @@ object TeleOp : Command() {
         val intakeThrottle get() = operatorController.leftY.processInput(readjust = false)
         val feedToShoot get() = operatorController.rightTriggerAxis.absGreaterThan(0.1)
         val shooterThrottle get() = operatorController.rightY.processInput(readjust = false).absoluteValue
-        val shooterToAmp get() = operatorController.aButton
+        //val shooterToAmp get() = operatorController.aButton
         val shooterToSpeaker get() = operatorController.yButton
         val climb get() = operatorController.pov.DirectionY()
         val childCanGO get() = operatorController.rightTriggerAxis

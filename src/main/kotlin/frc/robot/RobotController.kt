@@ -60,7 +60,8 @@ object RobotController : TimedRobot() {
         for (test in tests) {
             autoChooser.addOption(test.key, test.value);
         }
-
+        SmartDashboard.putBoolean("ChildMode", true)
+        SmartDashboard.putNumber("ChildSpeedMultiplier", 0.3)
         SmartDashboard.putData(autoChooser)
     }
     
@@ -68,15 +69,19 @@ object RobotController : TimedRobot() {
         //Initialize the robot!
         //SmartDashboard.putNumber("leftTestAmpSpeed",0.0)
         //SmartDashboard.putNumber("rightTestAmpSpeed",0.0)
+        TeleOp
         Intake
         Drivetrain
         Shooter
         CameraServer.startAutomaticCapture() //TODO: Can we offload camera streaming to a Raspberry Pi? Should we?
 
+
     }
     override fun robotPeriodic() {
         //Runs while the robot is on, regarless of whether it is enabled.
         // (use for telemetry, command scheduler)
+        SmartDashboard.putNumber("left motor Celcius", Drivetrain.leftMain.motorTemperature)
+        SmartDashboard.putNumber("right motor Celcius", Drivetrain.rightMain.motorTemperature)
         CommandScheduler.getInstance().run()
     }
 

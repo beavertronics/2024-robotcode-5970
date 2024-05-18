@@ -23,10 +23,10 @@ import frc.robot.Constants.DriveConstants
 
 
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = CANSparkMax(DriveConstants.LeftMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
-    private val  leftSecondary = CANSparkMax(DriveConstants.LeftMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
-    private val      rightMain = CANSparkMax(DriveConstants.RightMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
-    private val rightSecondary = CANSparkMax(DriveConstants.RightMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
+     val       leftMain = CANSparkMax(DriveConstants.LeftMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
+    //private val  leftSecondary = CANSparkMax(DriveConstants.LeftMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
+     val      rightMain = CANSparkMax(DriveConstants.RightMotorMainID, CANSparkLowLevel.MotorType.kBrushless)
+    //private val rightSecondary = CANSparkMax(DriveConstants.RightMotorSubID,  CANSparkLowLevel.MotorType.kBrushless)
 
     val    leftEncoder: RelativeEncoder = leftMain.encoder
     val   rightEncoder: RelativeEncoder = rightMain.encoder
@@ -56,18 +56,18 @@ object Drivetrain : SubsystemBase() {
 
     init {
         // Reset motor controllers & set current limits
-        initMotorControllers(DriveConstants.CurrentLimit, leftMain, rightMain, leftSecondary, rightSecondary)
+        initMotorControllers(DriveConstants.CurrentLimit, leftMain, rightMain)//, //leftSecondary, rightSecondary)
 
         // Set secondary motors to follow the primary ones
-        leftSecondary.follow(leftMain)
-        rightSecondary.follow(rightMain)
+        //leftSecondary.follow(leftMain)
+        //rightSecondary.follow(rightMain)
 
         // Set the dead band to 0, as this is handled elsewhere in the code.
         drive.setDeadband(0.0)
 
         // Invert the left motors
         leftMain.inverted = true
-        leftSecondary.inverted = true
+        //leftSecondary.inverted = true
     }
     /** Drive by setting left and right power (-1 to 1).
      * @param left Power for left motors [-1.0.. 1.0]. Forward is positive.

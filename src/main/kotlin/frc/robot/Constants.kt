@@ -23,10 +23,12 @@ object Constants {
         const val DRIVETRAIN_RAMSETE_B = 5.0  // Higher values make it more aggressively stick to the trajectory. 0 < B
         const val DRIVETRAIN_RAMSETE_Z = 0.7  // Higher values give it more dampening. 0 < Z < 1
 
-        const val LeftMotorMainID = 21
-        const val LeftMotorSubID  = 22
-        const val RightMotorMainID = 23
-        const val RightMotorSubID  = 24
+        //const val LeftMotorMainID = 21
+        //const val LeftMotorSubID  = 22
+        //const val RightMotorMainID = 23
+       // const val RightMotorSubID  = 24
+        const val LeftMotorMainID = 22
+        const val RightMotorMainID = 24
 
         val MaxVelocity = `M/s`(2.0)
         val MaxAcceleration = MetersPerSecondSquared(0.5)
@@ -40,7 +42,7 @@ object Constants {
 
 
 
-        const val CurrentLimit = 30 //amps, per motor controller
+        const val CurrentLimit = 20 //amps, per motor controller
         /* See
            https://the-charge.com/uploads/3/5/3/0/35304458/testing_and_analysis_of_first_robotics_batteries__2018_.pdf
            For info on battery characteristics
@@ -91,10 +93,10 @@ object Constants {
         const val MaxIntakeSpeed = 0.5
         const val MaxVoltage = 12.0
         const val DriveSpeed = 1.0 //TODO set drive speed
-        const val SlowSpeed = 0.3 //TODO set speed boost speed
+        const val SlowSpeed = 0.75
+        //const val SlowSpeed = 0.3 //TODO set speed boost speed
         const val QuickTurnDeadzone = 0.1 //TODO set quick turn dead zone
         const val QuickTurnSpeed = 0.7 //TODO set quick turn speed.
-        const val ChildSpeedMultiplier = 0.3
         //const val MaxSpeed = 5.0 //M/s
         //TODO: Maybe change to feet per second? Metric is Good, but many teams communicate drivetrain speed in feet per second so for communicating quickly it could be worth leaving in fps.
         //  Possible implementation:
