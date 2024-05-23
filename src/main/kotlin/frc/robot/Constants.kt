@@ -23,12 +23,11 @@ object Constants {
         const val DRIVETRAIN_RAMSETE_B = 5.0  // Higher values make it more aggressively stick to the trajectory. 0 < B
         const val DRIVETRAIN_RAMSETE_Z = 0.7  // Higher values give it more dampening. 0 < Z < 1
 
-        //const val LeftMotorMainID = 21
-        //const val LeftMotorSubID  = 22
-        //const val RightMotorMainID = 23
-       // const val RightMotorSubID  = 24
-        const val LeftMotorMainID = 22
-        const val RightMotorMainID = 24
+//        const val LeftMotorMainID = 21
+        const val LeftMotorMainID = 22 // change to 21 when new motor is installed
+        const val LeftMotorSubID  = 21 // change to 22 when new motor is installed
+        const val RightMotorMainID = 23
+        const val RightMotorSubID  = 24
 
         val MaxVelocity = `M/s`(2.0)
         val MaxAcceleration = MetersPerSecondSquared(0.5)
